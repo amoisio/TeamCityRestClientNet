@@ -31,6 +31,7 @@ namespace TeamCityRestClientNet
         public abstract Change change(BuildConfigurationId buildConfigurationId, string vcsRevision);
         public abstract Change change(ChangeId id);
 
+        private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
 
         protected virtual void Dispose(bool disposing)
         {
@@ -70,10 +71,8 @@ namespace TeamCityRestClientNet
             this.stringType = stringType;
         }
 
+        public readonly static VcsRootType GIT = new VcsRootType("jetbrains.git");
         public readonly string stringType;
-        // companion object {
-        //     val GIT = VcsRootType("jetbrains.git")
-        // }
     }
 
     public interface VcsRootLocator
@@ -313,10 +312,8 @@ namespace TeamCityRestClientNet
         public bool isSnapshotDependencyError
             => this.stringId == "SNAPSHOT_DEPENDENCY_ERROR_BUILD_PROCEEDS_TYPE"
             || this.stringId == "SNAPSHOT_DEPENDENCY_ERROR";
-        //         companion object
-        // {
-        //     val FAILED_TESTS = BuildProblemType("TC_FAILED_TESTS")
-        //     }
+        
+        public readonly static BuildProblemType FAILED_TESTS = new BuildProblemType("TC_FAILED_TESTS");
     }
 
     public interface Project
