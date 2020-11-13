@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using BAMCIS.Util.Concurrent;
 
-namespace TeamcityRestClientNet
+namespace TeamCityRestClientNet
 {
     public abstract class TeamCityInstance : IDisposable
     {
