@@ -3,33 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using BAMCIS.Util.Concurrent;
 
-namespace TeamCityRestClientNet
+namespace TeamCityRestClientNet.Api
 {
     public abstract class TeamCityInstance : IDisposable
     {
+        public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
+        public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
         private bool disposedValue;
         protected abstract string ServerUrl { get; }
-
-        public abstract TeamCityInstance withLogResponses();
-        public abstract TeamCityInstance withTimeout(long timeout, TimeUnit unit);
-        public abstract BuildLocator builds();
-        public abstract InvestigationLocator investigations();
-        public abstract Build build(BuildId id);
-        public abstract Build build(BuildConfigurationId buildConfigurationId, string number);
-        public abstract BuildConfiguration buildConfiguration(BuildConfigurationId id);
-        public abstract VcsRootLocator vcsRoots();
-        public abstract VcsRoot vcsRoot(VcsRootId id);
-        public abstract Project project(ProjectId id);
-        public abstract Project rootProject();
-        public abstract BuildQueue buildQueue();
-        public abstract User user(UserId id);
-        public abstract User user(string userName);
-        public abstract UserLocator users();
-        public abstract BuildAgentLocator buildAgents();
-        public abstract BuildAgentPoolLocator buildAgentPools();
-        public abstract TestRunsLocator testRuns();
-        public abstract Change change(BuildConfigurationId buildConfigurationId, string vcsRevision);
-        public abstract Change change(ChangeId id);
+        public abstract TeamCityInstance WithLogResponses();
+        public abstract TeamCityInstance WithTimeout(long timeout, TimeUnit unit);
+        public abstract IBuildLocator Builds();
+        public abstract IInvestigationLocator Investigations();
+        public abstract IBuild Build(BuildId id);
+        public abstract IBuild Build(BuildConfigurationId buildConfigurationId, string number);
+        public abstract IBuildConfiguration BuildConfiguration(BuildConfigurationId id);
+        public abstract IVcsRootLocator VcsRoots();
+        public abstract IVcsRoot VcsRoot(VcsRootId id);
+        public abstract IProject Project(ProjectId id);
+        public abstract IProject RootProject();
+        public abstract IBuildQueue BuildQueue();
+        public abstract IUser User(UserId id);
+        public abstract IUser User(string userName);
+        public abstract IUserLocator Users();
+        public abstract IBuildAgentLocator BuildAgents();
+        public abstract IBuildAgentPoolLocator BuildAgentPools();
+        public abstract ITestRunsLocator TestRuns();
+        public abstract IChange Change(BuildConfigurationId buildConfigurationId, string vcsRevision);
+        public abstract IChange Change(ChangeId id);
 
         private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
 
@@ -75,96 +76,96 @@ namespace TeamCityRestClientNet
         public readonly string stringType;
     }
 
-    public interface VcsRootLocator
+    public interface IVcsRootLocator
     {
-        IEnumerable<VcsRoot> all();
+        IEnumerable<IVcsRoot> All();
     }
 
-    public interface BuildAgentLocator
+    public interface IBuildAgentLocator
     {
-        IEnumerable<BuildAgent> all();
+        IEnumerable<IBuildAgent> All();
     }
 
-    public interface BuildAgentPoolLocator
+    public interface IBuildAgentPoolLocator
     {
-        IEnumerable<BuildAgentPool> all();
+        IEnumerable<IBuildAgentPool> All();
     }
 
-    public interface UserLocator
+    public interface IUserLocator
     {
-        IEnumerable<User> all();
+        IEnumerable<IUser> All();
     }
 
-    public interface BuildLocator
+    public interface IBuildLocator
     {
-        BuildLocator fromConfiguration(BuildConfigurationId buildConfigurationId);
+        IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId);
 
-        BuildLocator withNumber(string buildNumber);
+        IBuildLocator WithNumber(string buildNumber);
 
         /**
          * Filters builds to include only ones which are built on top of the specified revision.
          */
-        BuildLocator withVcsRevision(string vcsRevision);
+        IBuildLocator WithVcsRevision(string vcsRevision);
 
-        BuildLocator snapshotDependencyTo(BuildId buildId);
+        IBuildLocator SnapshotDependencyTo(BuildId buildId);
 
         /**
          * By default only successful builds are returned, call this method to include failed builds as well.
          */
-        BuildLocator includeFailed();
+        IBuildLocator IncludeFailed();
 
         /**
          * By default only finished builds are returned
          */
-        BuildLocator includeRunning();
-        BuildLocator onlyRunning();
+        IBuildLocator IncludeRunning();
+        IBuildLocator OnlyRunning();
 
         /**
          * By default canceled builds are not returned
          */
-        BuildLocator includeCanceled();
-        BuildLocator onlyCanceled();
+        IBuildLocator IncludeCanceled();
+        IBuildLocator OnlyCanceled();
 
-        BuildLocator withStatus(BuildStatus status);
-        BuildLocator withTag(string tag);
+        IBuildLocator WithStatus(BuildStatus status);
+        IBuildLocator WithTag(string tag);
 
-        BuildLocator withBranch(string branch);
+        IBuildLocator WithBranch(string branch);
 
         /**
          * By default only builds from the default branch are returned, call this method to include builds from all branches.
          */
-        BuildLocator withAllBranches();
+        IBuildLocator WithAllBranches();
 
-        BuildLocator pinnedOnly();
+        IBuildLocator PinnedOnly();
 
-        BuildLocator includePersonal();
-        BuildLocator onlyPersonal();
+        IBuildLocator IncludePersonal();
+        IBuildLocator OnlyPersonal();
 
-        BuildLocator limitResults(int count);
-        BuildLocator pageSize(int pageSize);
-        BuildLocator since(DateTime date);
-        BuildLocator until(DateTime date);
+        IBuildLocator LimitResults(int count);
+        IBuildLocator PageSize(int pageSize);
+        IBuildLocator Since(DateTime date);
+        IBuildLocator Until(DateTime date);
 
-        Build latest();
-        IEnumerable<Build> all();
+        IBuild Latest();
+        IEnumerable<IBuild> All();
     }
 
-    public interface InvestigationLocator
+    public interface IInvestigationLocator
     {
-        InvestigationLocator limitResults(int count);
-        InvestigationLocator forProject(ProjectId projectId);
-        InvestigationLocator withTargetType(InvestigationTargetType targetType);
-        IEnumerable<Investigation> all();
+        IInvestigationLocator LimitResults(int count);
+        IInvestigationLocator ForProject(ProjectId projectId);
+        IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
+        IEnumerable<IInvestigation> All();
     }
 
-    public interface TestRunsLocator
+    public interface ITestRunsLocator
     {
-        TestRunsLocator limitResults(int count);
-        TestRunsLocator pageSize(int pageSize);
-        TestRunsLocator forBuild(BuildId buildId);
-        TestRunsLocator forTest(TestId testId);
-        TestRunsLocator forProject(ProjectId projectId);
-        TestRunsLocator withStatus(TestStatus testStatus);
+        ITestRunsLocator LimitResults(int count);
+        ITestRunsLocator PageSize(int pageSize);
+        ITestRunsLocator ForBuild(BuildId buildId);
+        ITestRunsLocator ForTest(TestId testId);
+        ITestRunsLocator ForProject(ProjectId projectId);
+        ITestRunsLocator WithStatus(TestStatus testStatus);
 
         /**
          * If expandMultipleInvocations is enabled, individual runs of tests, which were executed several
@@ -172,8 +173,8 @@ namespace TeamCityRestClientNet
          * By default such runs are aggregated into a single value, duration property will be the sum of durations
          * of individual runs, and status will be SUCCESSFUL if and only if all runs are successful.
          */
-        TestRunsLocator expandMultipleInvocations();
-        IEnumerable<TestRun> all();
+        ITestRunsLocator ExpandMultipleInvocations();
+        IEnumerable<ITestRun> All();
     }
 
     public struct Name
@@ -316,64 +317,64 @@ namespace TeamCityRestClientNet
         public readonly static BuildProblemType FAILED_TESTS = new BuildProblemType("TC_FAILED_TESTS");
     }
 
-    public interface Project
+    public interface IProject
     {
         ProjectId Id { get; }
-        string name { get; }
-        bool archived { get; }
-        ProjectId? parentProjectId { get; }
+        string Name { get; }
+        bool Archived { get; }
+        ProjectId? ParentProjectId { get; }
 
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string getHomeUrl(string branch = null);
-        string getTestHomeUrl(TestId testId);
+        string GetHomeUrl(string branch = null);
+        string GetTestHomeUrl(TestId testId);
 
-        List<Project> childProjects { get; }
-        List<BuildConfiguration> buildConfigurations { get; }
-        List<Parameter> parameters { get; }
+        List<IProject> ChildProjects { get; }
+        List<IBuildConfiguration> BuildConfigurations { get; }
+        List<IParameter> Parameters { get; }
 
-        void setParameter(string name, string value);
+        void SetParameter(string name, string value);
 
         /**
          * See properties example from existing VCS roots via inspection of the following url:
          * https://teamcity/app/rest/vcs-roots/id:YourVcsRootId
          */
-        VcsRoot createVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
+        IVcsRoot CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
 
-        Project createProject(ProjectId id, string name);
+        IProject CreateProject(ProjectId id, string name);
 
         /**
          * XML in the same format as
          * https://teamcity/app/rest/buildTypes/YourBuildConfigurationId
          * returns
          */
-        BuildConfiguration createBuildConfiguration(string buildConfigurationDescriptionXml);
+        IBuildConfiguration CreateBuildConfiguration(string buildConfigurationDescriptionXml);
     }
 
 
-    public interface BuildConfiguration
+    public interface IBuildConfiguration
     {
-        BuildConfigurationId id { get; }
-        string name { get; }
-        ProjectId projectId { get; }
-        bool paused { get; }
+        BuildConfigurationId Id { get; }
+        string Name { get; }
+        ProjectId ProjectId { get; }
+        bool Paused { get; }
 
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string getHomeUrl(string branch = null);
+        string GetHomeUrl(string branch = null);
 
-        List<string> buildTags { get; }
-        List<FinishBuildTrigger> finishBuildTriggers { get; }
-        List<ArtifactDependency> artifactDependencies { get; }
+        List<string> BuildTags { get; }
+        List<IFinishBuildTrigger> FinishBuildTriggers { get; }
+        List<IArtifactDependency> ArtifactDependencies { get; }
 
-        void setParameter(string name, string value);
+        void SetParameter(string name, string value);
 
-        int buildCounter { get; }
-        string buildNumberFormat { get; }
+        int BuildCounter { get; }
+        string BuildNumberFormat { get; }
 
-        Build runBuild(
+        IBuild RunBuild(
             IDictionary<string, string> parameters = null,
             bool queueAtTop = false,
             bool? cleanSources = null,
@@ -381,190 +382,189 @@ namespace TeamCityRestClientNet
             string comment = null,
             string logicalBranchName = null,
             bool personal = false);
-
     }
 
 
 
-    public interface BuildProblem
+    public interface IBuildProblem
     {
-        BuildProblemId id { get; }
-        BuildProblemType type { get; }
-        string identity { get; }
+        BuildProblemId Id { get; }
+        BuildProblemType Type { get; }
+        string Identity { get; }
     }
 
 
 
-    public interface BuildProblemOccurrence
+    public interface IBuildProblemOccurrence
     {
-        BuildProblem buildProblem { get; }
-        Build build { get; }
-        string details { get; }
-        string additionalData { get; }
+        IBuildProblem BuildProblem { get; }
+        IBuild Build { get; }
+        string Details { get; }
+        string AdditionalData { get; }
     }
 
-    public interface Parameter
+    public interface IParameter
     {
-        string name { get; }
-        string value { get; }
-        bool own { get; }
+        string Name { get; }
+        string Value { get; }
+        bool Own { get; }
     }
 
-    public interface Branch
+    public interface IBranch
     {
-        string name { get; }
-        bool isDefault { get; }
+        string Name { get; }
+        bool IsDefault { get; }
     }
 
-    public interface BuildCommentInfo
+    public interface IBuildCommentInfo
     {
-        User user { get; }
-        DateTimeOffset timestamp { get; }
-        string text { get; }
+        IUser User { get; }
+        DateTimeOffset Timestamp { get; }
+        string Text { get; }
     }
 
-    public interface BuildAgentEnabledInfo
+    public interface IBuildAgentEnabledInfo
     {
-        User user { get; }
-        DateTimeOffset timestamp { get; }
-        string text { get; }
+        IUser User { get; }
+        DateTimeOffset Timestamp { get; }
+        string Text { get; }
     }
 
-    public interface BuildAgentAuthorizedInfo
+    public interface IBuildAgentAuthorizedInfo
     {
-        User user { get; }
-        DateTimeOffset timestamp { get; }
-        string text { get; }
+        IUser User { get; }
+        DateTimeOffset Timestamp { get; }
+        string Text { get; }
     }
 
-    public interface BuildCanceledInfo
+    public interface IBuildCanceledInfo
     {
-        User user { get; }
-        DateTimeOffset cancelDateTime { get; }
-        string text { get; }
+        IUser User { get; }
+        DateTimeOffset CancelDateTime { get; }
+        string Text { get; }
     }
 
-    public interface Build
+    public interface IBuild
     {
-        BuildId id { get; }
-        BuildConfigurationId buildConfigurationId { get; }
-        string buildNumber { get; }
-        BuildStatus status { get; }
-        Branch branch { get; }
-        BuildState state { get; }
-        bool personal { get; }
-        string name { get; }
-        BuildCanceledInfo canceledInfo { get; }
-        BuildCommentInfo comment { get; }
-        bool? composite { get; }
+        BuildId Id { get; }
+        BuildConfigurationId BuildConfigurationId { get; }
+        string BuildNumber { get; }
+        BuildStatus Status { get; }
+        IBranch Branch { get; }
+        BuildState State { get; }
+        bool Personal { get; }
+        string Name { get; }
+        IBuildCanceledInfo CanceledInfo { get; }
+        IBuildCommentInfo Comment { get; }
+        bool? Composite { get; }
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string getHomeUrl();
+        string GetHomeUrl();
 
-        string statusText { get; }
-        DateTimeOffset queuedDateTime { get; }
-        DateTimeOffset startDateTime { get; }
-        DateTimeOffset finishDateTime { get; }
+        string StatusText { get; }
+        DateTimeOffset QueuedDateTime { get; }
+        DateTimeOffset StartDateTime { get; }
+        DateTimeOffset FinishDateTime { get; }
 
-        BuildRunningInfo runningInfo { get; }
+        IBuildRunningInfo RunningInfo { get; }
 
-        List<Parameter> parameters { get; }
+        List<IParameter> Parameters { get; }
 
-        List<string> tags { get; }
+        List<string> Tags { get; }
 
         /**
          * The same as revisions table on the build's Changes tab in TeamCity UI:
          * it lists the revisions of all of the VCS repositories associated with this build
          * that will be checked out by the build on the agent.
          */
-        List<Revision> revisions { get; }
+        List<IRevision> Revisions { get; }
 
         /**
          * Changes is meant to represent changes the same way as displayed in the build's Changes in TeamCity UI.
          * In the most cases these are the commits between the current and previous build.
          */
-        List<Change> changes { get; }
+        List<IChange> Changes { get; }
 
         /**
          * All snapshot-dependency-linked builds this build depends on
          */
-        List<Build> snapshotDependencies { get; }
+        List<IBuild> SnapshotDependencies { get; }
 
-        PinInfo pinInfo { get; }
+        IPinInfo PinInfo { get; }
 
-        TriggeredInfo triggeredInfo { get; }
+        ITriggeredInfo TriggeredInfo { get; }
 
-        BuildAgent agent { get; }
+        IBuildAgent Agent { get; }
 
-        IEnumerable<TestRun> testRuns(TestStatus? status = null);
+        IEnumerable<ITestRun> TestRuns(TestStatus? status = null);
 
-        IEnumerable<BuildProblemOccurrence> buildProblems { get; }
+        IEnumerable<IBuildProblemOccurrence> BuildProblems { get; }
 
-        void addTag(string tag);
-        void setComment(string comment);
-        void replaceTags(List<string> tags);
-        void pin(string comment = "pinned via REST API");
-        void unpin(string comment = "unpinned via REST API");
-        List<BuildArtifact> getArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
-        BuildArtifact findArtifact(string pattern, string parentPath = "");
-        BuildArtifact findArtifact(string pattern, string parentPath = "", bool recursive = false);
-        void downloadArtifacts(string pattern, File outputDir);
+        void AddTag(string tag);
+        void SetComment(string comment);
+        void ReplaceTags(List<string> tags);
+        void Pin(string comment = "pinned via REST API");
+        void Unpin(string comment = "unpinned via REST API");
+        List<IBuildArtifact> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
+        IBuildArtifact FindArtifact(string pattern, string parentPath = "");
+        IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
+        void DownloadArtifacts(string pattern, File outputDir);
 
-        void downloadArtifact(string artifactPath, Stream output);
-        // void downloadArtifact(string artifactPath, OutputStream output);
-        void downloadArtifact(string artifactPath, File output);
-        Stream openArtifactInputStream(string artifactPath);
-        void downloadBuildLog(File output);
-        void cancel(string comment = "", bool reAddIntoQueue = false);
-        List<Parameter> getResultingParameters();
+        void DownloadArtifact(string artifactPath, Stream output);
+        // void DownloadArtifact(string artifactPath, OutputStream output);
+        void DownloadArtifact(string artifactPath, File output);
+        Stream OpenArtifactInputStream(string artifactPath);
+        void DownloadBuildLog(File output);
+        void Cancel(string comment = "", bool reAddIntoQueue = false);
+        List<IParameter> GetResultingParameters();
 
     }
 
 
-    public interface Investigation
+    public interface IInvestigation
     {
-        InvestigationId id { get; }
-        InvestigationState state { get; }
-        User assignee { get; }
-        User reporter { get; }
-        string comment { get; }
-        InvestigationResolveMethod resolveMethod { get; }
-        InvestigationTargetType targetType { get; }
-        List<TestId> testIds { get; }
-        List<BuildProblemId> problemIds { get; }
-        InvestigationScope scope { get; }
+        InvestigationId Id { get; }
+        InvestigationState State { get; }
+        IUser Assignee { get; }
+        IUser Reporter { get; }
+        string Comment { get; }
+        InvestigationResolveMethod ResolveMethod { get; }
+        InvestigationTargetType TargetType { get; }
+        List<TestId> TestIds { get; }
+        List<BuildProblemId> ProblemIds { get; }
+        IInvestigationScope Scope { get; }
     }
 
-    public interface BuildRunningInfo
+    public interface IBuildRunningInfo
     {
-        int percentageComplete { get; }
-        long elapsedSeconds { get; }
-        long estimatedTotalSeconds { get; }
-        bool outdated { get; }
-        bool probablyHanging { get; }
+        int PercentageComplete { get; }
+        long ElapsedSeconds { get; }
+        long EstimatedTotalSeconds { get; }
+        bool Outdated { get; }
+        bool ProbablyHanging { get; }
     }
 
-    public interface Change
+    public interface IChange
     {
-        ChangeId id { get; }
-        string version { get; }
-        string username { get; }
-        User user { get; }
-        DateTimeOffset dateTime { get; }
-        string comment { get; }
-        VcsRootInstance vcsRootInstance { get; }
+        ChangeId Id { get; }
+        string Version { get; }
+        string Username { get; }
+        IUser User { get; }
+        DateTimeOffset DateTime { get; }
+        string Comment { get; }
+        IVcsRootInstance VcsRootInstance { get; }
 
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string getHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null);
+        string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null);
 
         /**
          * Returns an uncertain amount of builds which contain the revision. The builds are not necessarily from the same
          * configuration as the revision. The feature is experimental, see https://youtrack.jetbrains.com/issue/TW-24633
          */
-        List<Build> firstBuilds();
+        List<IBuild> FirstBuilds();
     }
 
 
@@ -579,76 +579,76 @@ namespace TeamCityRestClientNet
         public override string ToString() => this.stringId;
     }
 
-    public interface User
+    public interface IUser
     {
-        UserId id { get; }
-        string username { get; }
-        string name { get; }
-        string email { get; }
+        UserId Id { get; }
+        string Username { get; }
+        string Name { get; }
+        string Email { get; }
 
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string getHomeUrl();
+        string GetHomeUrl();
     }
 
-    public interface BuildArtifact
+    public interface IBuildArtifact
     {
         /** Artifact name without path. e.g. my.jar */
-        string name { get; }
+        string Name { get; }
         /** Artifact name with path. e.g. directory/my.jar */
-        string fullName { get; }
-        long? size { get; }
-        DateTimeOffset modificationDateTime { get; }
+        string FullName { get; }
+        long? Size { get; }
+        DateTimeOffset ModificationDateTime { get; }
 
-        Build build { get; }
+        IBuild Build { get; }
 
-        void download(File output);
-        void download(Stream output);
-        Stream openArtifactInputStream();
+        void Download(File output);
+        void Download(Stream output);
+        Stream OpenArtifactInputStream();
     }
 
-    public interface VcsRoot
+    public interface IVcsRoot
     {
-        VcsRootId id { get; }
-        string name { get; }
+        VcsRootId Id { get; }
+        string Name { get; }
 
-        string url { get; }
-        string defaultBranch { get; }
+        string Url { get; }
+        string DefaultBranch { get; }
     }
 
-    public interface BuildAgent
+    public interface IBuildAgent
     {
-        BuildAgentId id { get; }
-        string name { get; }
-        BuildAgentPool pool { get; }
-        bool connected { get; }
-        bool enabled { get; }
-        bool authorized { get; }
-        bool outdated { get; }
-        string ipAddress { get; }
-        List<Parameter> parameters { get; }
-        BuildAgentEnabledInfo enabledInfo { get; }
-        BuildAgentAuthorizedInfo authorizedInfo { get; }
+        BuildAgentId Id { get; }
+        string Name { get; }
+        IBuildAgentPool Pool { get; }
+        bool Connected { get; }
+        bool Enabled { get; }
+        bool Authorized { get; }
+        bool Outdated { get; }
+        string IpAddress { get; }
+        List<IParameter> Parameters { get; }
+        IBuildAgentEnabledInfo EnabledInfo { get; }
+        IBuildAgentAuthorizedInfo AuthorizedInfo { get; }
 
-        Build currentBuild { get; }
+        IBuild CurrentBuild { get; }
 
-        string getHomeUrl();
+        string GetHomeUrl();
     }
 
-    public interface BuildAgentPool
+    public interface IBuildAgentPool
     {
-        BuildAgentPoolId id { get; }
-        string name { get; }
+        BuildAgentPoolId Id { get; }
+        string Name { get; }
 
-        List<Project> projects { get; }
-        List<BuildAgent> agents { get; }
+        List<IProject> Projects { get; }
+        List<IBuildAgent> Agents { get; }
     }
 
-    public interface VcsRootInstance
+    public interface IVcsRootInstance
     {
-        VcsRootId vcsRootId { get; }
-        string name { get; }
+        VcsRootId VcsRootId { get; }
+        string Name { get; }
     }
 
     public enum BuildStatus
@@ -682,17 +682,17 @@ namespace TeamCityRestClientNet
     }
 
 
-    public interface PinInfo
+    public interface IPinInfo
     {
-        User user { get; }
-        DateTimeOffset dateTime { get; }
+        IUser User { get; }
+        DateTimeOffset DateTime { get; }
     }
 
-    public interface Revision
+    public interface IRevision
     {
-        string version { get; }
-        string vcsBranchName { get; }
-        VcsRootInstance vcsRootInstance { get; }
+        string Version { get; }
+        string VcsBranchName { get; }
+        IVcsRootInstance VcsRootInstance { get; }
     }
 
     public enum TestStatus
@@ -703,77 +703,77 @@ namespace TeamCityRestClientNet
         UNKNOWN
     }
 
-    public interface TestRun
+    public interface ITestRun
     {
-        string name { get; }
-        TestStatus status { get; }
+        string Name { get; }
+        TestStatus Status { get; }
 
         /**
          * Test run duration. It may be ZERO if a test finished too fast (<1ms)
          */
-        TimeSpan duration { get; }
+        TimeSpan Duration { get; }
 
-        string details { get; }
-        bool ignored { get; }
+        string Details { get; }
+        bool Ignored { get; }
 
         /**
          * Current 'muted' status of this test on TeamCity
          */
-        bool currentlyMuted { get; }
+        bool CurrentlyMuted { get; }
 
         /**
          * Muted at the moment of running tests
          */
-        bool muted { get; }
+        bool Muted { get; }
 
         /**
          * Newly failed test or not
          */
-        bool newFailure { get; }
+        bool NewFailure { get; }
 
-        BuildId buildId { get; }
-        BuildId? fixedIn { get; }
-        BuildId? firstFailedIn { get; }
-        TestId testId { get; }
+        BuildId BuildId { get; }
+        BuildId? FixedIn { get; }
+        BuildId? FirstFailedIn { get; }
+        TestId TestId { get; }
     }
 
-    public interface TriggeredInfo
+    public interface ITriggeredInfo
     {
-        User user { get; }
-        Build build { get; }
+        IUser User { get; }
+        IBuild Build { get; }
     }
 
-    public interface FinishBuildTrigger
+    public interface IFinishBuildTrigger
     {
-        BuildConfigurationId initiatedBuildConfiguration { get; }
-        bool afterSuccessfulBuildOnly { get; }
-        HashSet<string> includedBranchPatterns { get; }
-        HashSet<string> excludedBranchPatterns { get; }
+        BuildConfigurationId InitiatedBuildConfiguration { get; }
+        bool AfterSuccessfulBuildOnly { get; }
+        HashSet<string> IncludedBranchPatterns { get; }
+        HashSet<string> ExcludedBranchPatterns { get; }
     }
 
-    public interface ArtifactDependency
+    public interface IArtifactDependency
     {
-        BuildConfiguration dependsOnBuildConfiguration { get; }
-        string branch { get; }
-        List<ArtifactRule> artifactRules { get; }
-        bool cleanDestinationDirectory { get; }
+        IBuildConfiguration DependsOnBuildConfiguration { get; }
+        string Branch { get; }
+        List<IArtifactRule> ArtifactRules { get; }
+        bool CleanDestinationDirectory { get; }
     }
 
-    public interface ArtifactRule
+    public interface IArtifactRule
     {
-        bool include { get; }
+        bool Include { get; }
         /**
          * Specific file, directory, or wildcards to match multiple files can be used. Ant-like wildcards are supported.
          */
-        string sourcePath { get; }
+        string SourcePath { get; }
         /**
          * Follows general rules for sourcePath: ant-like wildcards are allowed.
          */
-        string archivePath { get; }
+        string ArchivePath { get; }
         /**
          * Destination directory where files are to be placed.
          */
-        string destinationPath { get; }
+        string DestinationPath { get; }
     }
 
 
@@ -805,10 +805,10 @@ namespace TeamCityRestClientNet
         }
     }
 
-    public interface BuildQueue
+    public interface IBuildQueue
     {
-        void removeBuild(BuildId id, string comment = "", bool reAddIntoQueue = false);
-        IEnumerable<Build> queuedBuilds(ProjectId? projectId = null);
+        void RemoveBuild(BuildId id, string comment = "", bool reAddIntoQueue = false);
+        IEnumerable<IBuild> QueuedBuilds(ProjectId? projectId = null);
     }
 
     public enum InvestigationTargetType
@@ -819,25 +819,25 @@ namespace TeamCityRestClientNet
     }
 
 
-    public interface InvestigationScope
+    public interface IInvestigationScope
     {
 
     }
 
-    public class InProject : InvestigationScope
+    public class InProject : IInvestigationScope
     {
-        private readonly Project project;
-        public InProject(Project project)
+        private readonly IProject project;
+        public InProject(IProject project)
         {
             this.project = project;
         }
 
 
     }
-    public class InBuildConfiguration : InvestigationScope
+    public class InBuildConfiguration : IInvestigationScope
     {
-        private readonly BuildConfiguration configuration;
-        public InBuildConfiguration(BuildConfiguration configuration)
+        private readonly IBuildConfiguration configuration;
+        public InBuildConfiguration(IBuildConfiguration configuration)
         {
             this.configuration = configuration;
         }

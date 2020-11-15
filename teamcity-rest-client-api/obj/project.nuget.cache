@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kneO1JedXzAY8VOByhleXySGbXmfWo9UH9gz1aS1v1WvrFj8lLebtxaOlRNsGUyTDdW0I1tDeyNwxCGpYZueSw==",
+  "dgSpecHash": "oVWX046oukdrdJyRi85QeiCkCviTeK9rTB27RbDVUW/Fe5cN8Ga4Z4UActwNVSrBli5VKu7Li3YqJvs8sru7QA==",
   "success": true,
   "projectFilePath": "/home/aleksi/sources/repos/teamcity-rest-client-net/teamcity-rest-client-api/teamcity-rest-client-api.csproj",
   "expectedPackageFiles": [
