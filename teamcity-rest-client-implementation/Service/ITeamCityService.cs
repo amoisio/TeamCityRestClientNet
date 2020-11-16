@@ -10,11 +10,11 @@ namespace TeamCityRestClientNet.Service
         // @Streaming
         // @Headers("Accept: application/json")
         // @GET("/{path}")
-        Task<IEnumerable<T>> Root<T>(/*@Path("path", encode = false)*/string path);
+        Task<T> Root<T>(/*@Path("path", encode = false)*/string path);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds")
-        BuildListDto Builds(/*@Query("locator")*/string buildLocator);
+        Task<BuildListDto> Builds(/*@Query("locator")*/string buildLocator);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildQueue")
