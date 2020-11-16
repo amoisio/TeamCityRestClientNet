@@ -10,26 +10,26 @@ using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Service
 {
-    internal class Paged<T> : IAsyncEnumerable<T>
+    class Paged<TType, TDto> : IAsyncEnumerable<TType>
     {
         private readonly ITeamCityService _service;
-        private readonly Func<Task<IEnumerable<T>>> _getFirst;
-        private readonly Func<IEnumerable<T>, Task<Page<T>>> _convertToPage;
+        private readonly Func<Task<TDto>> _getFirst;
+        private readonly Func<TDto, Task<Page<TType>>> _convertToPage;
 
         public Paged(
             ITeamCityService service,
-            Func<Task<IEnumerable<T>>> getFirst,
-            Func<IEnumerable<T>, Task<Page<T>>> convertToPage)
+            Func<Task<TDto>> getFirst,
+            Func<TDto, Task<Page<TType>>> convertToPage)
         {
             this._service = service;
             this._getFirst = getFirst;
             this._convertToPage = convertToPage;
         }
 
-        public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public async IAsyncEnumerator<TType> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            IEnumerable<T> items = await this._getFirst();
-            var page = await this._convertToPage(items);
+            TDto dto = await this._getFirst();
+            var page = await this._convertToPage(dto);
             foreach (var item in page.ItemsNotNull)
             {
                 yield return item;
@@ -38,8 +38,8 @@ namespace TeamCityRestClientNet.Service
             while (!String.IsNullOrEmpty(page.NextHref))
             {
                 var path = page.NextHref.RemovePrefix($"{this._service.ServerUrlBase}/");
-                items = await this._service.Root<T>(path);
-                page = await this._convertToPage(items);
+                dto = await this._service.Root<TDto>(path);
+                page = await this._convertToPage(dto);
                 foreach (var item in page.ItemsNotNull)
                 {
                     yield return item;
@@ -48,7 +48,7 @@ namespace TeamCityRestClientNet.Service
         }
     }
 
-    internal class Page<T>
+    class Page<T>
     {
         public Page(T[] items, string nextHref)
         {
