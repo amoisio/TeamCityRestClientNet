@@ -5,14 +5,12 @@ using BAMCIS.Util.Concurrent;
 
 namespace TeamCityRestClientNet.Api
 {
-    public abstract class TeamCityInstance : IDisposable
+    public abstract class TeamCityInstanceBase : IDisposable
     {
-        public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
-        public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
         private bool disposedValue;
         protected abstract string ServerUrl { get; }
-        public abstract TeamCityInstance WithLogResponses();
-        public abstract TeamCityInstance WithTimeout(long timeout, TimeUnit unit);
+        public abstract TeamCityInstanceBase WithLogResponses();
+        public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
         public abstract IBuildLocator Builds();
         public abstract IInvestigationLocator Investigations();
         public abstract IBuild Build(BuildId id);
@@ -449,7 +447,7 @@ namespace TeamCityRestClientNet.Api
         BuildId Id { get; }
         BuildConfigurationId BuildConfigurationId { get; }
         string BuildNumber { get; }
-        BuildStatus Status { get; }
+        BuildStatus? Status { get; }
         IBranch Branch { get; }
         BuildState State { get; }
         bool Personal { get; }
