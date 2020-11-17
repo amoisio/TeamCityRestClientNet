@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds/id:{id}")
-        BuildDto Build(/*@Path("id")*/string id);
+        Task<BuildDto> Build(/*@Path("id")*/string id);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/investigations")
@@ -49,7 +49,7 @@ namespace TeamCityRestClientNet.Service
         VcsRootDto VcsRoot(/*@Path("id")*/string id);
 
         // @POST("/app/rest/builds/id:{id}/tags/")
-        // HttpResponse AddTag(/*@Path("id")*/string buildId,/*@Body*/string tag);
+        Task AddTag(/*@Path("id")*/string buildId,/*@Body*/string tag);
 
         // // @PUT("/app/rest/builds/id:{id}/comment/")
         // HttpResponse SetComment(/*@Path("id")*/string buildId,/*@Body*/string comment);
@@ -116,7 +116,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @POST("/app/rest/builds/id:{id}")
-        // HttpResponse CancelBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestBean value);
+        Task CancelBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestDto value);
 
         // // @Headers("Accept: application/json")
         // // @POST("/app/rest/buildQueue/id:{id}")
@@ -128,7 +128,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/users/{userLocator}")
-        UserDto Users(/*@Path("userLocator")*/string userLocator);
+        Task<UserDto> Users(/*@Path("userLocator")*/string userLocator);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agents")
