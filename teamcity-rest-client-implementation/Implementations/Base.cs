@@ -6,43 +6,50 @@ namespace TeamCityRestClientNet.Implementations
 {
     abstract class Base<TDto> where TDto : IdDto
     {
-        private TDto _dto;
-        private bool _isFullDto;
-        internal Base(TDto dto, bool isFullBean, TeamCityInstance instance)
+        internal Base(TDto dto, bool isFullDto, TeamCityInstance instance)
         {
-            this._dto = dto ?? throw new ArgumentNullException("dto must not be null.");
+            this.Dto = dto ?? throw new ArgumentNullException("dto must not be null.");
 
             if (String.IsNullOrEmpty(dto.Id))
             {
                 throw new InvalidOperationException($"{nameof(dto)}.Id should not be null");
             }
-            this._isFullDto = isFullBean;
+            this.IsFullDto = isFullDto;
             this.Instance = instance;
         }
 
-        internal TeamCityInstance Instance { get; }
-        protected string IdString => this._dto.Id;
+        protected TeamCityInstance Instance { get; }
+        protected ITeamCityService Service => Instance.Service;
+        protected TDto Dto { get; set; }
+        protected bool IsFullDto { get; set; }
+        protected string IdString => this.Dto.Id;
 
-        internal async Task<TDto> FullDto()
+        protected TDto FullDto 
+            => GetFullDto().GetAwaiter().GetResult();
+
+        protected async Task<TDto> FullDtoAsync()
+            => await GetFullDto();
+
+        private async Task<TDto> GetFullDto()
         {
-            if (!this._isFullDto)
+            if (!this.IsFullDto)
             {
-                this._dto = await FetchFullDto();
-                this._isFullDto = true;
+                this.Dto = await FetchFullDto();
+                this.IsFullDto = true;
             }
-            return this._dto;
+            return this.Dto;
         }
 
         protected async Task<T> NotNull<T>(Func<TDto, T> getter)
-            => getter(this._dto) 
-            ?? getter(await this.FullDto()) 
+            => getter(this.Dto) 
+            ?? getter(await this.GetFullDto()) 
             ?? throw new NullReferenceException();
 
         protected async Task<T> Nullable<T>(Func<TDto, T> getter)
-            => getter(this._dto)
-            ?? getter(await this.FullDto());
+            => getter(this.Dto)
+            ?? getter(await this.GetFullDto());
 
-        internal abstract Task<TDto> FetchFullDto();
+        protected abstract Task<TDto> FetchFullDto();
 
         public abstract override string ToString();
 
