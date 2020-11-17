@@ -142,11 +142,11 @@ namespace TeamCityRestClientNet.Api
 
         IBuildLocator LimitResults(int count);
         IBuildLocator PageSize(int pageSize);
-        IBuildLocator Since(DateTime date);
-        IBuildLocator Until(DateTime date);
+        IBuildLocator Since(DateTimeOffset date);
+        IBuildLocator Until(DateTimeOffset date);
 
-        IBuild Latest();
-        IEnumerable<IBuild> All();
+        Task<IBuild> Latest();
+        IAsyncEnumerable<IBuild> All();
     }
 
     public interface IInvestigationLocator
