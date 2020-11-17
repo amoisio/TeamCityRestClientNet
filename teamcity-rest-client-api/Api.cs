@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
 
 namespace TeamCityRestClientNet.Api
@@ -462,8 +463,8 @@ namespace TeamCityRestClientNet.Api
 
         string StatusText { get; }
         DateTimeOffset QueuedDateTime { get; }
-        DateTimeOffset StartDateTime { get; }
-        DateTimeOffset FinishDateTime { get; }
+        DateTimeOffset? StartDateTime { get; }
+        DateTimeOffset? FinishDateTime { get; }
 
         IBuildRunningInfo RunningInfo { get; }
 
@@ -499,7 +500,7 @@ namespace TeamCityRestClientNet.Api
 
         IEnumerable<IBuildProblemOccurrence> BuildProblems { get; }
 
-        void AddTag(string tag);
+        Task AddTag(string tag);
         void SetComment(string comment);
         void ReplaceTags(List<string> tags);
         void Pin(string comment = "pinned via REST API");
@@ -507,14 +508,14 @@ namespace TeamCityRestClientNet.Api
         List<IBuildArtifact> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
         IBuildArtifact FindArtifact(string pattern, string parentPath = "");
         IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
-        void DownloadArtifacts(string pattern, File outputDir);
 
         void DownloadArtifact(string artifactPath, Stream output);
         // void DownloadArtifact(string artifactPath, OutputStream output);
-        void DownloadArtifact(string artifactPath, File output);
+        void DownloadArtifact(string artifactPath, FileInfo outputFile);
+        void DownloadArtifacts(string pattern, DirectoryInfo outputDir);
         Stream OpenArtifactInputStream(string artifactPath);
-        void DownloadBuildLog(File output);
-        void Cancel(string comment = "", bool reAddIntoQueue = false);
+        void DownloadBuildLog(FileInfo outputFile);
+        Task Cancel(string comment = "", bool reAddIntoQueue = false);
         List<IParameter> GetResultingParameters();
 
     }
