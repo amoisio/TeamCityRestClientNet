@@ -1,7 +1,9 @@
 using System;
 using System.Text;
+using BAMCIS.Util.Concurrent;
+using TeamCityRestClientNet.Api;
 
-namespace TeamCityRestClientNet
+namespace TeamCityRestClientNet.Implementations
 {
     /**
   * Factory object to create new object of [TeamCityInstance] interface
@@ -16,11 +18,11 @@ namespace TeamCityRestClientNet
         *
         * Used via reflection for backward compatibility for deprecated methods
         */
-        public static TeamCityInstance guestAuth(string serverUrl)
-          => createGuestAuthInstance(serverUrl);
+        public static TeamCityInstanceBase GuestAuth(string serverUrl)
+          => CreateGuestAuthInstance(serverUrl);
 
-        internal static TeamCityInstanceImpl createGuestAuthInstance(string serverUrl)
-          => new TeamCityInstanceImpl(serverUrl.TrimEnd('/'), "/guestAuth", null, false);
+        internal static TeamCityInstance CreateGuestAuthInstance(string serverUrl)
+          => new TeamCityInstance(serverUrl.TrimEnd('/'), "/guestAuth", null, false, TimeUnit.MINUTES);
 
         /**
         * Creates username/password authenticated accessor
@@ -31,14 +33,14 @@ namespace TeamCityRestClientNet
         *
         * Used via reflection for backward compatibility for deprecated methods
         */
-        public static TeamCityInstance httpAuth(string serverUrl, string username, string password)
-          => createHttpAuthInstance(serverUrl, username, password);
+        public static TeamCityInstanceBase HttpAuth(string serverUrl, string username, string password)
+          => CreateHttpAuthInstance(serverUrl, username, password);
 
-        internal static TeamCityInstanceImpl createHttpAuthInstance(string serverUrl, string username, string password)
+        internal static TeamCityInstance CreateHttpAuthInstance(string serverUrl, string username, string password)
         {
             var bytes = Encoding.UTF8.GetBytes($"{username}:{password}");
             var authorization = Convert.ToBase64String(bytes);
-            return new TeamCityInstanceImpl(serverUrl.TrimEnd('/'), "/httpAuth", "Basic $authorization", false);
+            return new TeamCityInstance(serverUrl.TrimEnd('/'), "/httpAuth", $"Basic {authorization}", false, TimeUnit.MINUTES);
         }
 
         /**
@@ -50,10 +52,10 @@ namespace TeamCityRestClientNet
         *
         * see https://www.jetbrains.com/help/teamcity/rest-api.html#RESTAPI-RESTAuthentication
         */
-        public static TeamCityInstance tokenAuth(string serverUrl, string token)
-          => createTokenAuthInstance(serverUrl, token);
+        public static TeamCityInstanceBase TokenAuth(string serverUrl, string token)
+          => CreateTokenAuthInstance(serverUrl, token);
 
-        internal static TeamCityInstanceImpl createTokenAuthInstance(string serverUrl, string token)
-          => new TeamCityInstanceImpl(serverUrl.TrimEnd('/'), "", "Bearer $token", false);
+        internal static TeamCityInstance CreateTokenAuthInstance(string serverUrl, string token)
+          => new TeamCityInstance(serverUrl.TrimEnd('/'), "", $"Bearer {token}", false, TimeUnit.MINUTES);
     }
 }
