@@ -40,12 +40,18 @@ namespace TeamCityRestClientNet.Implementations
             return this.Dto;
         }
 
-        protected async Task<T> NotNull<T>(Func<TDto, T> getter)
+        protected T NotNull<T>(Func<TDto, T> getter)
+            => NotNullAsync(getter).GetAwaiter().GetResult();
+
+        protected async Task<T> NotNullAsync<T>(Func<TDto, T> getter)
             => getter(this.Dto) 
             ?? getter(await this.GetFullDto()) 
             ?? throw new NullReferenceException();
 
-        protected async Task<T> Nullable<T>(Func<TDto, T> getter)
+        protected T Nullable<T>(Func<TDto, T> getter)
+            => NullableAsync(getter).GetAwaiter().GetResult();
+
+        protected async Task<T> NullableAsync<T>(Func<TDto, T> getter)
             => getter(this.Dto)
             ?? getter(await this.GetFullDto());
 
