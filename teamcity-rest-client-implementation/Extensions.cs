@@ -11,6 +11,10 @@ namespace TeamCityRestClientNet.Extensions
         public static bool IsEmpty<T>(this IList<T> list)
             => list.Count == 0;
 
+
+        public static U Let<T, U>(this T item, Func<T, U> transform)
+            => (item == null) ? default(U) : transform(item);
+
         public static string Let<T>(this T value, string pattern)
             => (value == null) ? null : string.Format(pattern, value);
 
