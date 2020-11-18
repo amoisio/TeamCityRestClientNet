@@ -782,19 +782,6 @@
 //         Get() = pathRule.substringAfter("=>", "").let { if (it != "") it else null }
 // }
 
-// private class RevisionImpl(private val bean: RevisionBean) : Revision
-// {
-//     override val version: String
-//         Get() = bean.version!!
-
-//     override val vcsBranchName: String
-//         Get() = bean.vcsBranchName!!
-
-//     override val vcsRootInstance: VcsRootInstance
-//         Get() = GcsRootInstanceImpl(bean.`vcs - root - instance`!!)
-// }
-
-
 
 
 
