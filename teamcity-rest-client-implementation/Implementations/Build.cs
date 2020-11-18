@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
 
@@ -120,33 +121,28 @@ namespace TeamCityRestClientNet.Implementations
             }
         }
 
-        //     override val revisions: List<Revision>
-        //         Get() = fullBean.revisions!!.revision!!.map { GevisionImpl(it) }
-        public List<IRevision> Revisions => throw new NotImplementedException();
-
-        //     override val changes: List<Change>
-        //         Get() = instance.service.changes(
-        //                 "build:$idString",
-        //                 "change(id,version,username,user,date,comment,vcsRootInstance)")
-        //                 .change!!.map { ChangeImpl(it, true, instance) }
-        public List<IChange> Changes => throw new NotImplementedException();
-        // {
-        //     get 
-        //     {
-        //         Service.Changes(
-        //             "build:$idString", 
-        //             "change(id,version,username,user,date,comment,vcsRootInstance)")
-        //             .Change?.
-        //     }    
-        // }
-
+        public List<IRevision> Revisions 
+            => this.FullDto.Revisions?.Revision
+                ?.Select(rev => new Revision(rev))
+                .ToList<IRevision>() ?? throw new NullReferenceException();
+                
+        public List<IChange> Changes 
+            => Service.Changes(
+                $"build:{IdString}",
+                "change(id,version,username,user,date,comment,vcsRootInstance)")
+                .GetAwaiter()
+                .GetResult()
+                .Change
+                ?.Select(c => new Change(c, true, Instance))
+                .ToList<IChange>() ?? throw new NullReferenceException();
+            
         public List<IBuild> SnapshotDependencies 
-            => FullDto.SnapshotDependencies?.Build
+            => this.FullDto.SnapshotDependencies?.Build
                 ?.Select(dto => new Build(dto, false, Instance))
                 .ToList<IBuild>() ?? new List<IBuild>();
 
-        //     override val pinInfo Get() = fullBean.pinInfo?.let { GinInfoImpl(it, instance) }
-        public IPinInfo PinInfo => throw new NotImplementedException();
+        public IPinInfo PinInfo 
+            => this.FullDto.PinInfo.Let(dto => new PinInfo(dto, Instance));
 
         //     override val triggeredInfo Get() = fullBean.triggered?.let { GriggeredImpl(it, instance) }
         public ITriggeredInfo TriggeredInfo => throw new NotImplementedException();

@@ -34,7 +34,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes")
-        ChangesDto Changes(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        Task<ChangesDto> Changes(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/testOccurrences/")

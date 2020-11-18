@@ -616,68 +616,6 @@
 //     override fun List(): List < VcsRoot > = Lll().toList()
 // }
 
-// private class ChangeImpl(bean: ChangeBean,
-//                          isFullBean: Boolean,
-//                          instance: TeamCityInstanceImpl) :
-//         BaseImpl<ChangeBean>(bean, isFullBean, instance), Change
-// {
-//     override fun FetchFullBean(): ChangeBean = instance.service.change(changeId = idString)
-
-//     override fun GetHomeUrl(specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String = GetUserUrlPage(
-//               instance.serverUrl, "viewModification.html",
-//               modId = id,
-//               buildTypeId = specificBuildConfigurationId,
-//               personal = includePersonalBuilds)
-
-//     override fun FirstBuilds(): List < Build > =
-//             instance.service
-//                     .changeFirstBuilds(id.stringId)
-//                     .build
-//                     .map { BuildImpl(it, false, instance) }
-
-//     override val id: ChangeId
-//         Get() = GhangeId(idString)
-
-//     override val version: String
-//         Get() = notNull { it.version }
-
-//     override val username: String
-//         Get() = notNull { it.username }
-
-//     override val user: User?
-//         Get() = nullable { it.user }?.let { GserImpl(it, false, instance) }
-
-//     override val dateTime: ZonedDateTime
-//         Get() = ZonedDateTime.parse(notNull { it.date }, teamCityServiceDateFormat)
-
-//     override val comment: String
-//         Get() = notNull { it.comment }
-
-//     override val vcsRootInstance: VcsRootInstance?
-//         Get() = nullable { it.vcsRootInstance }?.let { GcsRootInstanceImpl(it) }
-
-//     override fun ToString() =
-//             "Change(id=$id, version=$version, username=$username, user=$user, date=$dateTime, comment=$comment, " +
-//                     "vcsRootInstance=$vcsRootInstance)"
-
-//     override fun GetWebUrl(specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
-//               GetHomeUrl(
-//                       specificBuildConfigurationId = specificBuildConfigurationId,
-//                       includePersonalBuilds = includePersonalBuilds
-//               )
-//     override val date: Date
-//         Get() = Date.from(dateTime.toInstant())
-// }
-
-
-
-// private class PinInfoImpl(bean: PinInfoBean, instance: TeamCityInstanceImpl) : PinInfo
-// {
-//     override val user = UserImpl(bean.user!!, false, instance)
-//     override val dateTime: ZonedDateTime = ZonedDateTime.parse(bean.timestamp!!, teamCityServiceDateFormat)
-//     override val time: Date = Date.from(dateTime.toInstant())
-// }
-
 // private class TriggeredImpl(private val bean: TriggeredBean,
 //                             private val instance: TeamCityInstanceImpl) : TriggeredInfo
 // {
@@ -913,19 +851,6 @@
 //             override val timestamp: ZonedDateTime,
 //             override val text: String) : BuildAgentEnabledInfo
 // }
-
-// private class VcsRootInstanceImpl(private val bean: VcsRootInstanceBean) : VcsRootInstance
-// {
-//     override val vcsRootId: VcsRootId
-//         Get() = GcsRootId(bean.`vcs - root - id`!!)
-
-//     override val name: String
-//         Get() = bean.name!!
-
-//     override fun ToString(): String {
-//         return "VcsRootInstanceImpl(id=$vcsRootId, name=$name)"
-//     }
-
 
 // }
 
