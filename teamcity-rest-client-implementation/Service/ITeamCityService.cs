@@ -172,7 +172,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/id:{id}")
-        ChangeDto Change(/*@Path("id")*/string changeId);
+        Task<ChangeDto> Change(/*@Path("id")*/string changeId);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/{id}/firstBuilds")
