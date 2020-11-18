@@ -12,6 +12,10 @@ namespace TeamCityRestClientNet.Extensions
             => list.Count == 0;
 
 
+        /// <summary>
+        /// Runs a transformation on the item and returns its result. 
+        /// If item is null, short-circuits and returns null.
+        /// </summary>
         public static U Let<T, U>(this T item, Func<T, U> transform)
             => (item == null) ? default(U) : transform(item);
 
