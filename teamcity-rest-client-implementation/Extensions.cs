@@ -14,6 +14,10 @@ namespace TeamCityRestClientNet.Extensions
         public static string Let<T>(this T value, string pattern)
             => (value == null) ? null : string.Format(pattern, value);
 
+        public static T SelfOrNullRefException<T>(this T value) 
+            => (value is string s && String.IsNullOrEmpty(s) || value == null)
+                ? throw new NullReferenceException()
+                : value;
         public static string RemovePrefix(this string str, string prefix)
         {
             if (string.IsNullOrWhiteSpace(str) || string.IsNullOrWhiteSpace(prefix))
