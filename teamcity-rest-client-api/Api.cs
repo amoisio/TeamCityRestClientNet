@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.Api
     public abstract class TeamCityInstanceBase : IDisposable
     {
         private bool disposedValue;
-        protected abstract string ServerUrl { get; }
+        internal abstract string ServerUrl { get; }
         public abstract TeamCityInstanceBase WithLogResponses();
         public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
         public abstract IBuildLocator Builds();
