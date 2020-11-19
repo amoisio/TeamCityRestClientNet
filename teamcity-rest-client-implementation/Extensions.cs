@@ -11,16 +11,28 @@ namespace TeamCityRestClientNet.Extensions
         public static bool IsEmpty<T>(this IList<T> list)
             => list.Count == 0;
 
-        public static string SubstringAfter(this string str, string pattern)
+        public static string SubstringAfter(this string str, string pattern, string missingDelimiter = null)
         {
             if (String.IsNullOrWhiteSpace(str))
                 return str;
             
             int index = str.IndexOf(pattern);
             if (index == -1)
-                return str;
+                return missingDelimiter == null ? str : missingDelimiter;
 
             return str.Substring(index + 1);
+        }
+
+        public static string SubstringBefore(this string str, string pattern, string missingDelimiter = null)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+                return str;
+
+            int index = str.IndexOf(pattern);
+            if (index == -1)
+                return missingDelimiter == null ? str : missingDelimiter;
+
+            return str.Substring(0, index);
         }
 
         /// <summary>
