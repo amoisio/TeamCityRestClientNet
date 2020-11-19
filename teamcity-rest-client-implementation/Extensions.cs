@@ -11,6 +11,17 @@ namespace TeamCityRestClientNet.Extensions
         public static bool IsEmpty<T>(this IList<T> list)
             => list.Count == 0;
 
+        public static string SubstringAfter(this string str, string pattern)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+                return str;
+            
+            int index = str.IndexOf(pattern);
+            if (index == -1)
+                return str;
+
+            return str.Substring(index + 1);
+        }
 
         /// <summary>
         /// Runs a transformation on the item and returns its result. 
@@ -22,7 +33,7 @@ namespace TeamCityRestClientNet.Extensions
         public static string Let<T>(this T value, string pattern)
             => (value == null) ? null : string.Format(pattern, value);
 
-        public static T SelfOrNullRefException<T>(this T value) 
+        public static T SelfOrNullRefException<T>(this T value)
             => (value is string s && String.IsNullOrEmpty(s) || value == null)
                 ? throw new NullReferenceException()
                 : value;
