@@ -46,7 +46,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/vcs-roots/id:{id}")
-        VcsRootDto VcsRoot(/*@Path("id")*/string id);
+        Task<VcsRootDto> VcsRoot(/*@Path("id")*/string id);
 
         // @POST("/app/rest/builds/id:{id}/tags/")
         Task AddTag(/*@Path("id")*/string buildId,/*@Body*/string tag);
@@ -83,36 +83,36 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/projects/id:{id}")
-        ProjectDto Project(/*@Path("id")*/string id);
+        Task<ProjectDto> Project(/*@Path("id")*/string id);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildTypes/id:{id}")
-        BuildTypeDto BuildConfiguration(/*@Path("id")*/string buildTypeId);
+        Task<BuildTypeDto> BuildConfiguration(/*@Path("id")*/string buildTypeId);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildTypes/id:{id}/buildTags")
-        TagsDto BuildTypeTags(/*@Path("id")*/string buildTypeId);
+        Task<TagsDto> BuildTypeTags(/*@Path("id")*/string buildTypeId);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildTypes/id:{id}/triggers")
-        TriggersDto BuildTypeTriggers(/*@Path("id")*/string buildTypeId);
+        Task<TriggersDto> BuildTypeTriggers(/*@Path("id")*/string buildTypeId);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildTypes/id:{id}/artifact-dependencies")
-        ArtifactDependenciesDto BuildTypeArtifactDependencies(/*@Path("id")*/string buildTypeId);
+        Task<ArtifactDependenciesDto> BuildTypeArtifactDependencies(/*@Path("id")*/string buildTypeId);
 
         // @PUT("/app/rest/projects/id:{id}/parameters/{name}")
-        // HttpResponse SetProjectParameter(/*@Path("id")*/string projectId,/*@Path("name")*/string name,/*@Body*/string value);
+        Task SetProjectParameter(/*@Path("id")*/string projectId,/*@Path("name")*/string name,/*@Body*/string value);
 
         // // @PUT("/app/rest/buildTypes/id:{id}/parameters/{name}")
-        // HttpResponse SetBuildTypeParameter(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
+        Task SetBuildTypeParameter(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
 
         // // @PUT("/app/rest/buildTypes/id:{id}/settings/{name}")
-        // HttpResponse SetBuildTypeSettings(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
+        Task SetBuildTypeSettings(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
 
         // @Headers("Accept: application/json")
         // @POST("/app/rest/buildQueue")
-        TriggeredBuildDto TriggerBuild(/*@Body*/TriggerBuildRequestDto value);
+        Task<TriggeredBuildDto> TriggerBuild(/*@Body*/TriggerBuildRequestDto value);
 
         // @Headers("Accept: application/json")
         // @POST("/app/rest/builds/id:{id}")
@@ -140,11 +140,11 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agents/{locator}")
-        BuildAgentDto Agents(/*@Path("locator")*/string agentLocator = null);
+        Task<BuildAgentDto> Agents(/*@Path("locator")*/string agentLocator = null);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agentPools/{locator}")
-        BuildAgentPoolDto AgentPools(/*@Path("locator")*/string agentLocator = null);
+        Task<BuildAgentPoolDto> AgentPools(/*@Path("locator")*/string agentLocator = null);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/problemOccurrences")
@@ -152,15 +152,15 @@ namespace TeamCityRestClientNet.Service
 
         // @POST("/app/rest/projects")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
-        ProjectDto CreateProject(/*@Body*/string projectDescriptionXml);
+        Task<ProjectDto> CreateProject(/*@Body*/string projectDescriptionXml);
 
         // @POST("/app/rest/vcs-roots")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
-        VcsRootDto CreateVcsRoot(/*@Body*/string vcsRootXml);
+        Task<VcsRootDto> CreateVcsRoot(/*@Body*/string vcsRootXml);
 
         // @POST("/app/rest/buildTypes")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
-        BuildTypeDto CreateBuildType(/*@Body*/string buildTypeXml);
+        Task<BuildTypeDto> CreateBuildType(/*@Body*/string buildTypeXml);
 
         // @Streaming
         // @GET("/downloadBuildLog.html")
