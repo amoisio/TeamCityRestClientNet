@@ -37,7 +37,7 @@ namespace TeamCityRestClientNet.Implementations
             this._timeout = timeout;
         }
 
-        protected override string ServerUrl => throw new System.NotImplementedException();
+        public override string ServerUrl { get; }
 
         public override IBuild Build(BuildId id)
         {

@@ -144,8 +144,8 @@ namespace TeamCityRestClientNet.Implementations
         public IPinInfo PinInfo 
             => this.FullDto.PinInfo.Let(dto => new PinInfo(dto, Instance));
 
-        //     override val triggeredInfo Get() = fullBean.triggered?.let { GriggeredImpl(it, instance) }
-        public ITriggeredInfo TriggeredInfo => throw new NotImplementedException();
+        public ITriggeredInfo TriggeredInfo 
+            => this.FullDto.Triggered.Let(dto => new Triggered(dto, Instance));
 
         //     override val agent: BuildAgent?
         //         Get()
