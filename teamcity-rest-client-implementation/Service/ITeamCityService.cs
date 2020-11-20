@@ -178,4 +178,3 @@ namespace TeamCityRestClientNet.Service
         Task<BuildListDto> ChangeFirstBuilds(/*@Path("id")*/string id);
     }
 }
-
