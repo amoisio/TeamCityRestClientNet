@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public List<NameValueProperty> Properties
-            => this.FullDto.Properties
+            => this.FullDtoSync.Properties
                 ?.Property
                 ?.Select(prop => new NameValueProperty(prop))
                 .ToList()
@@ -26,7 +26,7 @@ namespace TeamCityRestClientNet.Domain
         public VcsRootId Id => new VcsRootId(IdString);
 
         public string Name
-            => NotNull(dto => dto.Name);
+            => NotNullSync(dto => dto.Name);
 
         private string GetNameValueProperty(List<NameValueProperty> properties, string name)
             => properties.SingleOrDefault((prop) => prop.Name == name)?.Value;

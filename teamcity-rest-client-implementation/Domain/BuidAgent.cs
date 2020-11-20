@@ -18,28 +18,28 @@ namespace TeamCityRestClientNet.Domain
 
         public BuildAgentId Id => new BuildAgentId(IdString);
 
-        public string Name => NotNull(dto => dto.Name);
+        public string Name => NotNullSync(dto => dto.Name);
 
         public IBuildAgentPool Pool 
-            => new BuildAgentPool(NotNull(dto => dto.Pool), false, Instance);
+            => new BuildAgentPool(NotNullSync(dto => dto.Pool), false, Instance);
 
-        public bool Connected => NotNull(dto => dto.Connected).Value;
+        public bool Connected => NotNullSync(dto => dto.Connected).Value;
 
-        public bool Enabled => NotNull(dto => dto.Enabled).Value;
+        public bool Enabled => NotNullSync(dto => dto.Enabled).Value;
 
-        public bool Authorized => NotNull(dto => dto.Authorized).Value;
+        public bool Authorized => NotNullSync(dto => dto.Authorized).Value;
 
-        public bool Outdated => !NotNull(dto => dto.Uptodate).Value;
+        public bool Outdated => !NotNullSync(dto => dto.Uptodate).Value;
 
-        public string IpAddress => NotNull(dto => dto.Ip);
+        public string IpAddress => NotNullSync(dto => dto.Ip);
 
         public List<IParameter> Parameters
-            => NotNull(dto => dto.Properties?.Property)
+            => NotNullSync(dto => dto.Properties?.Property)
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 
         public IBuildAgentEnabledInfo EnabledInfo
-            => this.FullDto.EnabledInfo
+            => this.FullDtoSync.EnabledInfo
                 .Let(info => info.Comment
                     .Let(comment => new BuildAgentEnabledInfo(
                         comment.User.Let(user => new User(user, false, Instance)),
@@ -48,7 +48,7 @@ namespace TeamCityRestClientNet.Domain
                     )));
 
         public IBuildAgentAuthorizedInfo AuthorizedInfo
-            => this.FullDto.AuthorizedInfo
+            => this.FullDtoSync.AuthorizedInfo
                 .Let(info => info.Comment
                     .Let(comment => new BuildAgentAuthorizedInfo(
                         comment.User.Let(user => new User(user, false, Instance)),
@@ -57,7 +57,7 @@ namespace TeamCityRestClientNet.Domain
                     )));
 
         public IBuild CurrentBuild
-            => this.FullDto.Build.Let(dto => dto.Id == null ? null : new Build(dto, false, Instance));
+            => this.FullDtoSync.Build.Let(dto => dto.Id == null ? null : new Build(dto, false, Instance));
 
         public string GetHomeUrl()
             => $"{Instance.ServerUrl}/agentDetails.html?id={Id.stringId}";

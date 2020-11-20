@@ -16,15 +16,15 @@ namespace TeamCityRestClientNet.Domain
 
         public BuildAgentPoolId Id => new BuildAgentPoolId(IdString);
 
-        public string Name => NotNull(dto => dto.Name);
+        public string Name => NotNullSync(dto => dto.Name);
 
         public List<IProject> Projects 
-            => this.FullDto.Projects?.Project
+            => this.FullDtoSync.Projects?.Project
                 ?.Select(project => new Project(project, false, Instance))
                 .ToList<IProject>() ?? new List<IProject>();
 
         public List<IBuildAgent> Agents 
-            => this.FullDto.Agents?.Agent
+            => this.FullDtoSync.Agents?.Agent
                 ?.Select(agent => new BuildAgent(agent, false, Instance))
                 .ToList<IBuildAgent>() ?? new List<IBuildAgent>();
 

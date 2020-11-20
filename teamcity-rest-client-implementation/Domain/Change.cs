@@ -18,16 +18,16 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public ChangeId Id => new ChangeId(IdString);
-        public string Version => NotNull(dto => dto.Version);
-        public string Username => NotNull(dto => dto.Username);
+        public string Version => NotNullSync(dto => dto.Version);
+        public string Username => NotNullSync(dto => dto.Username);
         public IUser User 
-            => Nullable(dto => dto.User)
+            => NullableSync(dto => dto.User)
               .Let(userDto => new User(userDto, false, Instance));
         public DateTimeOffset DateTime 
-            => Utilities.ParseTeamCity(NotNull(dto => dto.Date)).Value;
-        public string Comment => NotNull(dto => dto.Comment);
+            => Utilities.ParseTeamCity(NotNullSync(dto => dto.Date)).Value;
+        public string Comment => NotNullSync(dto => dto.Comment);
         public IVcsRootInstance VcsRootInstance 
-            => Nullable(dto => dto.VcsRootInstance)
+            => NullableSync(dto => dto.VcsRootInstance)
               .Let(rootDto => new VcsRootInstance(rootDto));
 
         public List<IBuild> FirstBuilds()

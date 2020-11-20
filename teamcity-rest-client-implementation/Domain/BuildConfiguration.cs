@@ -17,11 +17,11 @@ namespace TeamCityRestClientNet.Domain
 
         public BuildConfigurationId Id => new BuildConfigurationId(IdString);
 
-        public string Name => NotNull(dto => dto.Name);
+        public string Name => NotNullSync(dto => dto.Name);
 
-        public ProjectId ProjectId => new ProjectId(NotNull(dto => dto.ProjectId));
+        public ProjectId ProjectId => new ProjectId(NotNullSync(dto => dto.ProjectId));
 
-        public bool Paused => Nullable(dto => dto.Paused) ?? false;
+        public bool Paused => NullableSync(dto => dto.Paused) ?? false;
 
         public List<string> BuildTags
             => Service.BuildTypeTags(IdString).GetAwaiter().GetResult()
@@ -81,7 +81,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         private string GetSetting(string settingName)
-            => Nullable(dto => dto.Settings)
+            => NullableSync(dto => dto.Settings)
                 ?.Property
                 ?.FirstOrDefault(prop => prop.Name == settingName)
                 ?.Value;

@@ -69,33 +69,33 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public IBuildCanceledInfo CanceledInfo 
-            => FullDto.CanceledInfo != null
-                ? new BuildCanceledInfo(FullDto.CanceledInfo, Instance)
+            => FullDtoSync.CanceledInfo != null
+                ? new BuildCanceledInfo(FullDtoSync.CanceledInfo, Instance)
                 : null;
 
         public IBuildCommentInfo Comment 
-            => FullDto.Comment != null
-                ? new BuildCommentInfo(FullDto.Comment, Instance)
+            => FullDtoSync.Comment != null
+                ? new BuildCommentInfo(FullDtoSync.Comment, Instance)
                 : null;
-        public bool? Composite => this.FullDto.Composite;
-        public string StatusText => this.FullDto.StatusText;
+        public bool? Composite => this.FullDtoSync.Composite;
+        public string StatusText => this.FullDtoSync.StatusText;
         public DateTimeOffset QueuedDateTime
-            => Utilities.ParseTeamCity(this.FullDto.QueuedDate)
+            => Utilities.ParseTeamCity(this.FullDtoSync.QueuedDate)
             ?? throw new NullReferenceException();
 
         public DateTimeOffset? StartDateTime
-            => Utilities.ParseTeamCity(this.FullDto.StartDate);
+            => Utilities.ParseTeamCity(this.FullDtoSync.StartDate);
 
         public DateTimeOffset? FinishDateTime
-            => Utilities.ParseTeamCity(this.FullDto.FinishDate);
+            => Utilities.ParseTeamCity(this.FullDtoSync.FinishDate);
 
         public IBuildRunningInfo RunningInfo 
-            => this.FullDto.RunningInfo != null
-                ? new BuildRunningInfo(this.FullDto.RunningInfo)
+            => this.FullDtoSync.RunningInfo != null
+                ? new BuildRunningInfo(this.FullDtoSync.RunningInfo)
                 : null;
 
         public List<IParameter> Parameters 
-            => this.FullDto.Properties?.Property
+            => this.FullDtoSync.Properties?.Property
                 ?.Select(prop => new Parameter(prop))
                 .ToList<IParameter>() ?? throw new NullReferenceException();
 
@@ -106,7 +106,7 @@ namespace TeamCityRestClientNet.Domain
             get
             {
                 var tagNames = new List<string>();
-                var tags = FullDto.Tags?.Tag;
+                var tags = FullDtoSync.Tags?.Tag;
                 if (tags != null)
                 {
                     foreach (var tag in tags)
@@ -122,7 +122,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public List<IRevision> Revisions 
-            => this.FullDto.Revisions?.Revision
+            => this.FullDtoSync.Revisions?.Revision
                 ?.Select(rev => new Revision(rev))
                 .ToList<IRevision>() ?? throw new NullReferenceException();
                 
@@ -137,15 +137,15 @@ namespace TeamCityRestClientNet.Domain
                 .ToList<IChange>() ?? throw new NullReferenceException();
             
         public List<IBuild> SnapshotDependencies 
-            => this.FullDto.SnapshotDependencies?.Build
+            => this.FullDtoSync.SnapshotDependencies?.Build
                 ?.Select(dto => new Build(dto, false, Instance))
                 .ToList<IBuild>() ?? new List<IBuild>();
 
         public IPinInfo PinInfo 
-            => this.FullDto.PinInfo.Let(dto => new PinInfo(dto, Instance));
+            => this.FullDtoSync.PinInfo.Let(dto => new PinInfo(dto, Instance));
 
         public ITriggeredInfo TriggeredInfo 
-            => this.FullDto.Triggered.Let(dto => new Triggered(dto, Instance));
+            => this.FullDtoSync.Triggered.Let(dto => new Triggered(dto, Instance));
 
         //     override val agent: BuildAgent?
         //         Get()

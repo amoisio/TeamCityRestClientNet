@@ -20,27 +20,27 @@ namespace TeamCityRestClientNet.Domain
 
         public ProjectId Id => new ProjectId(IdString);
 
-        public string Name => NotNull(dto => dto.Name);
+        public string Name => NotNullSync(dto => dto.Name);
 
-        public bool Archived => Nullable(dto => dto.Archived) ?? false;
+        public bool Archived => NullableSync(dto => dto.Archived) ?? false;
 
         public ProjectId? ParentProjectId 
-            => Nullable(dto => dto.ParentProjectId)
+            => NullableSync(dto => dto.ParentProjectId)
                 .Let(dto => new ProjectId(dto));
 
         public List<IProject> ChildProjects 
-            => NotNull(dto => dto.Projects).Project
+            => NotNullSync(dto => dto.Projects).Project
                 .Select(project => new Project(project, false, Instance))
                 .ToList<IProject>();
         public List<IBuildConfiguration> BuildConfigurations 
-            => this.FullDto.BuildTypes
+            => this.FullDtoSync.BuildTypes
                 ?.BuildType
                 .Select(type => new BuildConfiguration(type, false, Instance))
                 .ToList<IBuildConfiguration>()
                 ?? throw new NullReferenceException();
 
         public List<IParameter> Parameters 
-            => NotNull(dto => dto.Parameters?.Property)
+            => NotNullSync(dto => dto.Parameters?.Property)
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 

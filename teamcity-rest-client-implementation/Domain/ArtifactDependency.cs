@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public IBuildConfiguration DependsOnBuildConfiguration
-            => new BuildConfiguration(NotNull(dto => dto.SourceBuildType), false, Instance);
+            => new BuildConfiguration(NotNullSync(dto => dto.SourceBuildType), false, Instance);
 
         public string Branch
             => FindPropertyByName("revisionBranch");
@@ -40,7 +40,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         private string FindPropertyByName(string name)
-            => this.FullDto.Properties
+            => this.FullDtoSync.Properties
                 ?.Property
                 ?.FirstOrDefault(prop => prop.Name == name)
                 ?.Value;
