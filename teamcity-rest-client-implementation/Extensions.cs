@@ -11,6 +11,13 @@ namespace TeamCityRestClientNet.Extensions
         public static bool IsEmpty<T>(this IList<T> list)
             => list.Count == 0;
 
+
+        /// <summary>
+        /// Returns the string value iff string is non-empty, otherwise null.
+        /// </summary>
+        public static string ValueOrNull(this string str)
+         => String.IsNullOrWhiteSpace(str) ? null : str;
+
         public static string SubstringAfter(this string str, string pattern, string missingDelimiter = null)
         {
             if (String.IsNullOrWhiteSpace(str))
