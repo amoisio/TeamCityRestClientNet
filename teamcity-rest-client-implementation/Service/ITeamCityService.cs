@@ -119,7 +119,7 @@ namespace TeamCityRestClientNet.Service
 
         // // @Headers("Accept: application/json")
         // // @POST("/app/rest/buildQueue/id:{id}")
-        // HttpResponse RemoveQueuedBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestBean value);
+        Task RemoveQueuedBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestDto value);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/users")
