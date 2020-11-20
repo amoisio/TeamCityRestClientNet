@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace TeamCityRestClientNet.Service
@@ -18,7 +17,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/buildQueue")
-        BuildListDto QueuedBuilds(/*@Query("locator")*/string locator);
+        Task<BuildListDto> QueuedBuilds(/*@Query("locator")*/string locator);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds/id:{id}")
@@ -26,11 +25,11 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/investigations")
-        InvestigationListDto Investigations(/*@Query("locator")*/string investigationLocator);
+        Task<InvestigationListDto> Investigations(/*@Query("locator")*/string investigationLocator);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/investigations/id:{id}")
-        InvestigationDto Investigation(/*@Path("id")*/string id);
+        Task<InvestigationDto> Investigation(/*@Path("id")*/string id);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes")
@@ -38,11 +37,11 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/testOccurrences/")
-        TestOccurrencesDto TestOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        Task<TestOccurrencesDto> TestOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/vcs-roots")
-        VcsRootListDto VcsRoots(/*@Query("locator")*/string locator = null);
+        Task<VcsRootListDto> VcsRoots(/*@Query("locator")*/string locator = null);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/vcs-roots/id:{id}")
@@ -52,26 +51,26 @@ namespace TeamCityRestClientNet.Service
         Task AddTag(/*@Path("id")*/string buildId,/*@Body*/string tag);
 
         // // @PUT("/app/rest/builds/id:{id}/comment/")
-        // HttpResponse SetComment(/*@Path("id")*/string buildId,/*@Body*/string comment);
+        Task SetComment(/*@Path("id")*/string buildId,/*@Body*/string comment);
 
         // // @PUT("/app/rest/builds/id:{id}/tags/")
-        // HttpResponse ReplaceTags(/*@Path("id")*/string buildId,/*@Body*/ TagsBean tags);
+        Task ReplaceTags(/*@Path("id")*/string buildId,/*@Body*/ TagsDto tags);
 
         // // @PUT("/app/rest/builds/id:{id}/pin/")
-        // HttpResponse Pin(/*@Path("id")*/string buildId,/*@Body*/ string comment);
+        Task Pin(/*@Path("id")*/string buildId,/*@Body*/ string comment);
 
         // //The standard DELETE annotation doesn't allow to include a body, so we need to use our own.
         // //Probably it would be better to change Rest API here (https://youtrack.jetbrains.com/issue/TW-49178).
         // // @DELETE_WITH_BODY("/app/rest/builds/id:{id}/pin/")
-        // HttpResponse Unpin(/*@Path("id")*/string buildId,/*@Body*/string comment);
+        Task Unpin(/*@Path("id")*/string buildId,/*@Body*/string comment);
 
         // // @Streaming
         // // @GET("/app/rest/builds/id:{id}/artifacts/content/{path}")
-        // HttpResponse ArtifactContent(/*@Path("id")*/string buildId,/*@Path("path", encode = false)*/string artifactPath);
+        Task ArtifactContent(/*@Path("id")*/string buildId,/*@Path("path", encode = false)*/string artifactPath);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds/id:{id}/artifacts/children/{path}")
-        ArtifactFileListDto ArtifactChildren(
+        Task<ArtifactFileListDto> ArtifactChildren(
             /*@Path("id")*/string buildId,
             /*@Path("path", encode = false)*/string artifactPath,
             /*@Query("locator")*/string locator,
@@ -79,7 +78,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds/id:{id}/resulting-properties")
-        ParametersDto ResultingProperties(/*@Path("id")*/string buildId);
+        Task<ParametersDto> ResultingProperties(/*@Path("id")*/string buildId);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/projects/id:{id}")
@@ -124,7 +123,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/users")
-        UserListDto Users();
+        Task<UserListDto> Users();
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/users/{userLocator}")
@@ -132,11 +131,11 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agents")
-        BuildAgentsDto Agents();
+        Task<BuildAgentsDto> Agents();
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agentPools")
-        BuildAgentPoolsDto AgentPools();
+        Task<BuildAgentPoolsDto> AgentPools();
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/agents/{locator}")
@@ -148,7 +147,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/problemOccurrences")
-        BuildProblemOccurrencesDto ProblemOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        Task<BuildProblemOccurrencesDto> ProblemOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
 
         // @POST("/app/rest/projects")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
@@ -164,11 +163,11 @@ namespace TeamCityRestClientNet.Service
 
         // @Streaming
         // @GET("/downloadBuildLog.html")
-        // HttpResponse BuildLog(/*@Query ("buildId")*/string id);
+        Task BuildLog(/*@Query ("buildId")*/string id);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/buildType:{id},version:{version}")
-        ChangeDto Change(/*@Path("id")*/string buildType,/*@Path("version")*/string version);
+        Task<ChangeDto> Change(/*@Path("id")*/string buildType,/*@Path("version")*/string version);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/id:{id}")
@@ -176,7 +175,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/{id}/firstBuilds")
-        BuildListDto ChangeFirstBuilds(/*@Path("id")*/string id);
+        Task<BuildListDto> ChangeFirstBuilds(/*@Path("id")*/string id);
     }
 }
 

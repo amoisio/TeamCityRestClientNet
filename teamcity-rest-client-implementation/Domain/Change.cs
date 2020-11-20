@@ -33,6 +33,8 @@ namespace TeamCityRestClientNet.Domain
         public List<IBuild> FirstBuilds()
             => Service
             .ChangeFirstBuilds(this.Id.stringId)
+            .GetAwaiter()
+            .GetResult()
             .Build
             .Select(build => new Build(build, false, Instance))
             .ToList<IBuild>();
