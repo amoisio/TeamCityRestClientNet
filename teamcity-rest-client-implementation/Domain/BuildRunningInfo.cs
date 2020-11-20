@@ -1,7 +1,7 @@
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations 
+namespace TeamCityRestClientNet.Domain 
 {
     class BuildRunningInfo : IBuildRunningInfo
     {

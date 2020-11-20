@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using TeamCityRestClientNet.Implementations;
+using TeamCityRestClientNet.Domain;
 
 namespace TeamCityRestClientNet.Tools
 {

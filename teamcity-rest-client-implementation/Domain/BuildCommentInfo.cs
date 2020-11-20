@@ -3,7 +3,7 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class BuildCommentInfo : IBuildCommentInfo
     {

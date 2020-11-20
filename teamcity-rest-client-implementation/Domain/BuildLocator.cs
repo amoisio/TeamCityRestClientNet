@@ -8,7 +8,7 @@ using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using System.Threading.Tasks;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class BuildLocator : IBuildLocator
     {

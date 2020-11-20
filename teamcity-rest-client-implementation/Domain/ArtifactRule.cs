@@ -1,7 +1,7 @@
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class ArtifactRule : IArtifactRule
     {

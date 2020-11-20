@@ -1,7 +1,7 @@
 using System;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class NameValueProperty {
         private readonly NameValuePropertyDto _dto;

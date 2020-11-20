@@ -3,7 +3,7 @@ using System.Text;
 using BAMCIS.Util.Concurrent;
 using TeamCityRestClientNet.Api;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     /**
   * Factory object to create new object of [TeamCityInstance] interface

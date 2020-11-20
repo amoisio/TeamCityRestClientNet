@@ -8,7 +8,7 @@ using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class Build : Base<BuildDto>, IBuild
     {

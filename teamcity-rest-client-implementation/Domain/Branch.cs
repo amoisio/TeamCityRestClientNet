@@ -1,6 +1,6 @@
 using TeamCityRestClientNet.Api;
 
-namespace TeamCityRestClientNet.Implementations 
+namespace TeamCityRestClientNet.Domain 
 {
     struct Branch : IBranch
     {

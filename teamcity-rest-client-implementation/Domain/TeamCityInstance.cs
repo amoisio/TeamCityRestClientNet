@@ -6,7 +6,7 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class TeamCityInstance : TeamCityInstanceBase
     {

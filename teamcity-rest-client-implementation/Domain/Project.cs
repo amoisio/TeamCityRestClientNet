@@ -8,7 +8,7 @@ using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using System.Xml.Linq;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class Project : Base<ProjectDto>, IProject 
     {

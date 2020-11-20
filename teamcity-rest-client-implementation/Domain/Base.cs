@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     abstract class Base<TDto> where TDto : IdDto
     {

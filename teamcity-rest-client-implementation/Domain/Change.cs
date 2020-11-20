@@ -7,7 +7,7 @@ using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Tools;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class Change : Base<ChangeDto>, IChange
     {

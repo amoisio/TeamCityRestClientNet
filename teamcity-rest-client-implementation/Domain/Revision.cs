@@ -3,7 +3,7 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class Revision : IRevision
     {

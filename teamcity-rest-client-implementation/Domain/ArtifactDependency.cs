@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class ArtifactDependency : Base<ArtifactDependencyDto>, IArtifactDependency
     {

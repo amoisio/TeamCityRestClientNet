@@ -2,7 +2,7 @@ using System;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Implementations
+namespace TeamCityRestClientNet.Domain
 {
     class Parameter : IParameter {
         private readonly ParameterDto _dto;
