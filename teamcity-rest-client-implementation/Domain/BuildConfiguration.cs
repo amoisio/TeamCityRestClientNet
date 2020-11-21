@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Nito.AsyncEx;
+
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
@@ -9,46 +12,45 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildConfiguration : Base<BuildTypeDto>, IBuildConfiguration
     {
-        public BuildConfiguration(BuildTypeDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
+        private BuildConfiguration(BuildTypeDto dto, TeamCityInstance instance)
+            : base(dto, instance)
         {
+            this.BuildTags = new AsyncLazy<List<string>>(async ()
+                => (await Service.BuildTypeTags(IdString).ConfigureAwait(false))
+                    .Tag
+                    .Select(tag => tag.Name ?? throw new NullReferenceException())
+                    .ToList());
 
+            this.FinishBuildTriggers = new AsyncLazy<List<IFinishBuildTrigger>>(async ()
+                => (await Service.BuildTypeTriggers(IdString).ConfigureAwait(false))
+                    .Trigger
+                    ?.Where(trigger => trigger.Type == "buildDependencyTrigger")
+                    ?.Select(trigger => new FinishBuildTrigger(trigger))
+                    .ToList<IFinishBuildTrigger>()
+                    ?? new List<IFinishBuildTrigger>());
+
+            this.ArtifactDependencies = new AsyncLazy<List<IArtifactDependency>>(async ()
+                => (await Service.BuildTypeArtifactDependencies(IdString).ConfigureAwait(false))
+                    .ArtifactDependency
+                    ?.Where(dep => dep.Disabled == false)
+                    ?.Select(dep => new ArtifactDependency(dep, Instance))
+                    .ToList<IArtifactDependency>()
+                    ?? new List<IArtifactDependency>());
+        }
+
+        public static async Task<BuildConfiguration> Create(string idString, TeamCityInstance instance)
+        {
+            var dto = await instance.Service.BuildConfiguration(idString).ConfigureAwait(false);
+            return new BuildConfiguration(dto, instance);
         }
 
         public BuildConfigurationId Id => new BuildConfigurationId(IdString);
-
-        public string Name => NotNullSync(dto => dto.Name);
-
-        public ProjectId ProjectId => new ProjectId(NotNullSync(dto => dto.ProjectId));
-
-        public bool Paused => NullableSync(dto => dto.Paused) ?? false;
-
-        public List<string> BuildTags
-            => Service.BuildTypeTags(IdString).GetAwaiter().GetResult()
-                .Tag
-                .Select(tag => tag.Name ?? throw new NullReferenceException())
-                .ToList();
-
-        public List<IFinishBuildTrigger> FinishBuildTriggers
-            => Service.BuildTypeTriggers(IdString)
-                .GetAwaiter()
-                .GetResult()
-                .Trigger
-                ?.Where(trigger => trigger.Type == "buildDependencyTrigger")
-                ?.Select(trigger => new FinishBuildTrigger(trigger))
-                .ToList<IFinishBuildTrigger>()
-                ?? new List<IFinishBuildTrigger>();
-
-        public List<IArtifactDependency> ArtifactDependencies
-            => Service.BuildTypeArtifactDependencies(IdString)
-                .GetAwaiter()
-                .GetResult()
-                .ArtifactDependency
-                ?.Where(dep => dep.Disabled == false)
-                ?.Select(dep => new ArtifactDependency(dep, true, Instance))
-                .ToList<IArtifactDependency>()
-                ?? new List<IArtifactDependency>();
-
+        public string Name => NotNull(dto => dto.Name);
+        public ProjectId ProjectId => new ProjectId(NotNull(dto => dto.ProjectId));
+        public bool Paused => this.Dto.Paused ?? false;
+        public AsyncLazy<List<string>> BuildTags { get; }
+        public AsyncLazy<List<IFinishBuildTrigger>> FinishBuildTriggers { get; }
+        public AsyncLazy<List<IArtifactDependency>> ArtifactDependencies { get; }
         public int BuildCounter
         {
             get
@@ -59,12 +61,10 @@ namespace TeamCityRestClientNet.Domain
                 else
                     throw new TeamCityQueryException($"Cannot get 'buildNumberCounter' setting for {IdString}");
             }
-            set
-            {
-                //         LOG.info("Setting build counter to '$value' in BuildConfigurationId=$idString")
-                Service.SetBuildTypeSettings(IdString, "buildNumberCounter", value.ToString()).GetAwaiter().GetResult();
-            }
         }
+
+        public async Task SetBuildCounter(int count)
+            => await SetParameter("buildNumberCounter", count).ConfigureAwait(false);
 
         public string BuildNumberFormat
         {
@@ -73,15 +73,13 @@ namespace TeamCityRestClientNet.Domain
                 return GetSetting("buildNumberPattern")
                     ?? throw new TeamCityQueryException($"Cannot get 'buildNumberPattern' setting for {IdString}");
             }
-            set
-            {
-                //         LOG.info("Setting build number format to '$value' in BuildConfigurationId=$idString")
-                Service.SetBuildTypeSettings(IdString, "buildNumberPattern", value).GetAwaiter().GetResult();
-            }
         }
 
+        public async Task SetBuildNumberFormat(string format)
+            => await SetParameter("buildNumberPattern", format).ConfigureAwait(false);
+
         private string GetSetting(string settingName)
-            => NullableSync(dto => dto.Settings)
+            => this.Dto.Settings
                 ?.Property
                 ?.FirstOrDefault(prop => prop.Name == settingName)
                 ?.Value;
@@ -92,13 +90,13 @@ namespace TeamCityRestClientNet.Domain
                 buildTypeId: Id,
                 branch: branch);
 
-        public IBuild RunBuild(
-            IDictionary<string, string> parameters = null, 
-            bool queueAtTop = false, 
-            bool? cleanSources = null, 
-            bool rebuildAllDependencies = false, 
-            string comment = null, 
-            string logicalBranchName = null, 
+        public async Task<IBuild> RunBuild(
+            IDictionary<string, string> parameters = null,
+            bool queueAtTop = false,
+            bool? cleanSources = null,
+            bool rebuildAllDependencies = false,
+            string comment = null,
+            string logicalBranchName = null,
             bool personal = false)
         {
             var request = new TriggerBuildRequestDto();
@@ -106,7 +104,8 @@ namespace TeamCityRestClientNet.Domain
             request.BranchName = logicalBranchName;
             request.Comment = comment != null ? new CommentDto { Text = comment } : null;
             request.Personal = personal;
-            request.TriggeringOptions = new TriggeringOptionsDto {
+            request.TriggeringOptions = new TriggeringOptionsDto
+            {
                 CleanSources = cleanSources,
                 RebuildAllDependencies = rebuildAllDependencies,
                 QueueAtTop = queueAtTop
@@ -115,21 +114,31 @@ namespace TeamCityRestClientNet.Domain
                 ? new ParametersDto(parameters.Select(par => new ParameterDto(par.Key, par.Value)).ToList())
                 : null;
 
-            var triggeredBuildDto = Service.TriggerBuild(request).GetAwaiter().GetResult();
-            return Instance.Build(
-                    new BuildId(
-                        triggeredBuildDto.Id?.ToString() 
-                        ?? throw new NullReferenceException()));
+            var triggeredBuildDto = await Service.TriggerBuild(request).ConfigureAwait(false);
+            return await Instance.Build(
+                new BuildId(
+                    triggeredBuildDto.Id?.ToString()
+                    ?? throw new NullReferenceException())).ConfigureAwait(false);
         }
-        public void SetParameter(string name, string value)
+
+        public async Task SetParameter<T>(string name, T value)
         {
+            var valueStr = value.ToString();
             //  LOG.info("Setting parameter $name=$value in BuildConfigurationId=$idString")
-            Service.SetBuildTypeParameter(IdString, name, value).GetAwaiter().GetResult();
+            await Service.SetBuildTypeParameter(IdString, name, valueStr).ConfigureAwait(false);
+            SetSetting(name, valueStr);
+        }
+
+        private void SetSetting(string settingName, string value)
+        {
+            var setting = this.Dto.Settings
+                ?.Property
+                ?.FirstOrDefault(prop => prop.Name == settingName);
+            if (setting != null)
+                setting.Value = value;
         }
 
         public override string ToString()
             => $"BuildConfiguration(id={IdString},name={Name})";
-        protected override async Task<BuildTypeDto> FetchFullDto()
-            => await Service.BuildConfiguration(IdString);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
@@ -39,7 +40,7 @@ namespace TeamCityRestClientNet.Domain
 
         public override string ServerUrl { get; }
 
-        public override IBuild Build(BuildId id)
+        public override Task<IBuild> Build(BuildId id)
         {
             throw new System.NotImplementedException();
         }

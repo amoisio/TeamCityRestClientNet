@@ -12,25 +12,28 @@ namespace TeamCityRestClientNet.Domain
 {
     class Build : Base<BuildDto>, IBuild
     {
-        internal Build(BuildDto dto, bool isFullBean, TeamCityInstance instance)
-            : base(dto, isFullBean, instance)
-        {
+        private Build(BuildDto fullDto, TeamCityInstance instance)
+            : base(fullDto, instance) { }
 
+        public static async Task<IBuild> Create(string idString, TeamCityInstance instance)
+        {
+            var dto = await instance.Service.Build(idString).ConfigureAwait(false);
+            return new Build(dto, instance);
         }
 
         public BuildId Id => new BuildId(this.IdString);
 
         public BuildConfigurationId BuildConfigurationId
-            => new BuildConfigurationId(Dto.BuildTypeId);
+            => new BuildConfigurationId(this.Dto.BuildTypeId);
 
-        public string BuildNumber => Dto.Number;
-        public BuildStatus? Status => Dto.Status;
+        public string BuildNumber => this.Dto.Number;
+        public BuildStatus? Status => this.Dto.Status;
         public IBranch Branch
         {
             get
             {
-                var branchName = Dto.BranchName;
-                var isDefaultBranch = Dto.DefaultBranch;
+                var branchName = this.Dto.BranchName;
+                var isDefaultBranch = this.Dto.DefaultBranch;
                 return new Branch(branchName, isDefaultBranch ?? String.IsNullOrEmpty(branchName));
             }
         }
@@ -39,7 +42,7 @@ namespace TeamCityRestClientNet.Domain
         {
             get
             {
-                if (Enum.TryParse<BuildState>(Dto.State, true, out BuildState state))
+                if (Enum.TryParse<BuildState>(this.Dto.State, true, out BuildState state))
                 {
                     return state;
                 }
@@ -50,7 +53,7 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-        public bool Personal => Dto.Personal ?? false;
+        public bool Personal => this.Dto.Personal ?? false;
 
         public string Name
         {
@@ -59,6 +62,7 @@ namespace TeamCityRestClientNet.Domain
                 var name = this.Dto.BuildType?.Name;
                 if (String.IsNullOrEmpty(name))
                 {
+                    // May be async
                     return Instance.BuildConfiguration(this.BuildConfigurationId).Name;
                 }
                 else
@@ -68,52 +72,54 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-        public IBuildCanceledInfo CanceledInfo 
-            => FullDtoSync.CanceledInfo != null
-                ? new BuildCanceledInfo(FullDtoSync.CanceledInfo, Instance)
+        public IBuildCanceledInfo CanceledInfo
+            => this.Dto.CanceledInfo != null
+                ? new BuildCanceledInfo(this.Dto.CanceledInfo, Instance)
                 : null;
 
-        public IBuildCommentInfo Comment 
-            => FullDtoSync.Comment != null
-                ? new BuildCommentInfo(FullDtoSync.Comment, Instance)
+        public IBuildCommentInfo Comment
+            => this.Dto.Comment != null
+                ? new BuildCommentInfo(this.Dto.Comment, Instance)
                 : null;
-        public bool? Composite => this.FullDtoSync.Composite;
-        public string StatusText => this.FullDtoSync.StatusText;
+        public bool? Composite => this.Dto.Composite;
+        public string StatusText => this.Dto.StatusText;
         public DateTimeOffset QueuedDateTime
-            => Utilities.ParseTeamCity(this.FullDtoSync.QueuedDate)
+            => Utilities.ParseTeamCity(this.Dto.QueuedDate)
             ?? throw new NullReferenceException();
 
         public DateTimeOffset? StartDateTime
-            => Utilities.ParseTeamCity(this.FullDtoSync.StartDate);
+            => Utilities.ParseTeamCity(this.Dto.StartDate);
 
         public DateTimeOffset? FinishDateTime
-            => Utilities.ParseTeamCity(this.FullDtoSync.FinishDate);
+            => Utilities.ParseTeamCity(this.Dto.FinishDate);
 
-        public IBuildRunningInfo RunningInfo 
-            => this.FullDtoSync.RunningInfo != null
-                ? new BuildRunningInfo(this.FullDtoSync.RunningInfo)
+        public IBuildRunningInfo RunningInfo
+            => this.Dto.RunningInfo != null
+                ? new BuildRunningInfo(this.Dto.RunningInfo)
                 : null;
 
-        public List<IParameter> Parameters 
-            => this.FullDtoSync.Properties?.Property
+        public List<IParameter> Parameters
+            => this.Dto.Properties
+                ?.Property
                 ?.Select(prop => new Parameter(prop))
-                .ToList<IParameter>() ?? throw new NullReferenceException();
+                .ToList<IParameter>()
+                ?? throw new NullReferenceException();
 
-        public List<string> Tags 
+        public List<string> Tags
         {
             //     override val tags: List<String>
             //         Get() = fullBean.tags?.tag?.map { it.name!! } ?: GmptyList()
             get
             {
                 var tagNames = new List<string>();
-                var tags = FullDtoSync.Tags?.Tag;
+                var tags = this.Dto.Tags?.Tag;
                 if (tags != null)
                 {
                     foreach (var tag in tags)
                     {
                         if (String.IsNullOrEmpty(tag.Name))
                             throw new NullReferenceException();
-                        else 
+                        else
                             tagNames.Add(tag.Name);
                     }
                 }
@@ -121,12 +127,15 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-        public List<IRevision> Revisions 
-            => this.FullDtoSync.Revisions?.Revision
+        public List<IRevision> Revisions
+            => this.Dto.Revisions
+                ?.Revision
                 ?.Select(rev => new Revision(rev))
-                .ToList<IRevision>() ?? throw new NullReferenceException();
-                
-        public List<IChange> Changes 
+                .ToList<IRevision>()
+                ?? throw new NullReferenceException();
+
+        // Async
+        public List<IChange> Changes
             => Service.Changes(
                 $"build:{IdString}",
                 "change(id,version,username,user,date,comment,vcsRootInstance)")
@@ -135,17 +144,25 @@ namespace TeamCityRestClientNet.Domain
                 .Change
                 ?.Select(c => new Change(c, true, Instance))
                 .ToList<IChange>() ?? throw new NullReferenceException();
-            
-        public List<IBuild> SnapshotDependencies 
-            => this.FullDtoSync.SnapshotDependencies?.Build
-                ?.Select(dto => new Build(dto, false, Instance))
-                .ToList<IBuild>() ?? new List<IBuild>();
 
-        public IPinInfo PinInfo 
-            => this.FullDtoSync.PinInfo.Let(dto => new PinInfo(dto, Instance));
 
-        public ITriggeredInfo TriggeredInfo 
-            => this.FullDtoSync.Triggered.Let(dto => new Triggered(dto, Instance));
+        // Async
+        public List<IBuild> SnapshotDependencies
+            => this.Dto.SnapshotDependencies
+                ?.Build
+                ?.Select(dto => new Build(dto, Instance))
+                .ToList<IBuild>()
+                ?? new List<IBuild>();
+
+        // Async
+        public IPinInfo PinInfo
+            => this.Dto.PinInfo
+                .Let(dto => new PinInfo(dto, Instance));
+
+        // Async
+        public ITriggeredInfo TriggeredInfo
+            => this.Dto.Triggered
+                .Let(dto => new Triggered(dto, Instance));
 
         //     override val agent: BuildAgent?
         //         Get()
@@ -175,13 +192,14 @@ namespace TeamCityRestClientNet.Domain
 
         public async Task AddTag(string tag)
         {
-        //         LOG.info("Adding tag $tag to build ${getHomeUrl()}")
+            //         LOG.info("Adding tag $tag to build ${getHomeUrl()}")
             await Service.AddTag(IdString, tag).ConfigureAwait(false);
         }
 
         public async Task Cancel(string comment = "", bool reAddIntoQueue = false)
         {
-            var request = new BuildCancelRequestDto {
+            var request = new BuildCancelRequestDto
+            {
                 Comment = comment,
                 ReaddIntoQueue = reAddIntoQueue
             };
@@ -318,7 +336,7 @@ namespace TeamCityRestClientNet.Domain
         {
             throw new NotImplementedException();
         }
-       
+
         public string GetHomeUrl()
             => Instance.GetUserUrlPage("viewLog.html", buildId: Id);
 
@@ -410,12 +428,6 @@ namespace TeamCityRestClientNet.Domain
         public void Unpin(string comment = "unpinned via REST API")
         {
             throw new NotImplementedException();
-        }
-
-        protected override async Task<BuildDto> FetchFullDto()
-        {
-            return await Service.Build(IdString);
-
         }
     }
 }

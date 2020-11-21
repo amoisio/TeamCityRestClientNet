@@ -14,10 +14,10 @@ namespace TeamCityRestClientNet.Domain
             this._dto = dto;
         }
 
-        public string Version => this._dto.Version.SelfOrNullRefException();
+        public string Version => this._dto.Version.SelfOrNullRef();
         public string VcsBranchName 
-            => this._dto.VcsBranchName.SelfOrNullRefException();
+            => this._dto.VcsBranchName.SelfOrNullRef();
         public IVcsRootInstance VcsRootInstance 
-            => new VcsRootInstance(this._dto.VcsRootInstance.SelfOrNullRefException());
+            => new VcsRootInstance(this._dto.VcsRootInstance.SelfOrNullRef());
     }
 }

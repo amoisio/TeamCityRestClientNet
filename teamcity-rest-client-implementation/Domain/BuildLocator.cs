@@ -215,9 +215,12 @@ namespace TeamCityRestClientNet.Domain
                     // LOG.debug("Retrieving builds from ${instance.serverUrl} using query '$IBuildLocator'")
                     return await this._service.Builds(query);
                 },
-                async (list) => await Task.FromResult(new Page<IBuild>(
-                    list.Build.Select(IdDto => new Build(IdDto, false, this._instance)).ToArray(),
-                    list.NextHref))
+                async (list) => 
+                {
+                    var tasks = list.Build.Select(IdDto => Build.Create(IdDto.Id, _instance));
+                    var builds = await Task.WhenAll(tasks).ConfigureAwait(false);
+                    return new Page<IBuild>(builds, list.NextHref);
+                }
             );
 
             var limitResults1 = _limitResults;

@@ -13,9 +13,15 @@ namespace TeamCityRestClientNet.Domain
     class Project : Base<ProjectDto>, IProject 
     {
         public Project(ProjectDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
+            : base(dto, instance)
         {
             
+        }
+
+        public static async Task<IProject> Create(string idString, TeamCityInstance instance)
+        {
+            var projectDto = await instance.Service.Project(idString).ConfigureAwait(false);
+            return new Project(projectDto, true, instance);
         }
 
         public ProjectId Id => new ProjectId(IdString);

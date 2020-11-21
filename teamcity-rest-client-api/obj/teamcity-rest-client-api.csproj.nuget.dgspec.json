@@ -38,6 +38,10 @@
         "netstandard2.1": {
           "targetAlias": "netstandard2.1",
           "dependencies": {
+            "Nito.AsyncEx": {
+              "target": "Package",
+              "version": "[5.1.0, )"
+            },
             "TimeUnit": {
               "target": "Package",
               "version": "[1.0.2, )"

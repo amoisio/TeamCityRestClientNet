@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Nito.AsyncEx;
+
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
@@ -8,30 +11,44 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildAgentPool : Base<BuildAgentPoolDto>, IBuildAgentPool
     {
-        public BuildAgentPool(BuildAgentPoolDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
+        private BuildAgentPool(BuildAgentPoolDto fullDto, TeamCityInstance instance)
+            : base(fullDto, instance)
         {
-            
+            this.Projects = new AsyncLazy<List<IProject>>(async ()
+                => {
+                    var tasks = this.Dto.Projects
+                        ?.Project
+                        ?.Select(project => Project.Create(project.Id, Instance));
+                    
+                    return tasks != null
+                        ? (await Task.WhenAll(tasks).ConfigureAwait(false)).ToList()
+                        : new List<IProject>();
+                });
+
+            this.Agents = new AsyncLazy<List<IBuildAgent>>(async ()
+                => {
+                    var tasks = this.Dto.Agents
+                        ?.Agent
+                        ?.Select(agent => BuildAgent.Create(agent.Id, Instance));
+                    
+                    return tasks != null
+                        ? (await Task.WhenAll(tasks).ConfigureAwait(false)).ToList()
+                        : new List<IBuildAgent>();
+                });
+        }
+
+        public static async Task<BuildAgentPool> Create(string idString, TeamCityInstance instance)
+        {
+            var dto = await instance.Service.AgentPools($"id:{idString}").ConfigureAwait(false);
+            return new BuildAgentPool(dto, instance);
         }
 
         public BuildAgentPoolId Id => new BuildAgentPoolId(IdString);
-
-        public string Name => NotNullSync(dto => dto.Name);
-
-        public List<IProject> Projects 
-            => this.FullDtoSync.Projects?.Project
-                ?.Select(project => new Project(project, false, Instance))
-                .ToList<IProject>() ?? new List<IProject>();
-
-        public List<IBuildAgent> Agents 
-            => this.FullDtoSync.Agents?.Agent
-                ?.Select(agent => new BuildAgent(agent, false, Instance))
-                .ToList<IBuildAgent>() ?? new List<IBuildAgent>();
+        public string Name => NotNull(dto => dto.Name);
+       public AsyncLazy<List<IProject>> Projects { get; }
+        public AsyncLazy<List<IBuildAgent>> Agents { get; }
 
         public override string ToString()
             => $"BuildAgentPool(id={Id}, name={Name})";
-
-        protected override async Task<BuildAgentPoolDto> FetchFullDto()
-            => await Service.AgentPools($"id:{IdString}");
     }
 }

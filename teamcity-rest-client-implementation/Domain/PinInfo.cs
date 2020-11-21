@@ -18,9 +18,9 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public IUser User 
-            => new User(this._dto.User.SelfOrNullRefException(), false, this._instance);
+            => new User(this._dto.User.SelfOrNullRef(), false, this._instance);
 
         public DateTimeOffset DateTime 
-            => Utilities.ParseTeamCity(this._dto.Timestamp.SelfOrNullRefException()).Value;
+            => Utilities.ParseTeamCity(this._dto.Timestamp.SelfOrNullRef()).Value;
     }
 }

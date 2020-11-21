@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Nito.AsyncEx;
+
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
@@ -11,92 +14,75 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildAgent : Base<BuildAgentDto>, IBuildAgent
     {
-        internal BuildAgent(BuildAgentDto dto, bool isFullDto, TeamCityInstance instance) : base(dto, isFullDto, instance)
+        private BuildAgent(BuildAgentDto fullDto, TeamCityInstance instance) 
+            : base(fullDto, instance)
         {
+            this.Pool = new AsyncLazy<IBuildAgentPool>(async ()
+                => await BuildAgentPool.Create(this.Dto.Pool.Id, Instance).ConfigureAwait(false));
 
+            this.CurrentBuild = new AsyncLazy<IBuild>(async ()
+                => String.IsNullOrEmpty(this.Dto.Build.Id)
+                    ? null
+                    : await Build.Create(this.Dto.Build.Id, Instance).ConfigureAwait(false));
+        }
+
+        public static async Task<IBuildAgent> Create(string idString, TeamCityInstance instance)
+        {
+            var dto = await instance.Service.Agents($"id:{idString}").ConfigureAwait(false);
+            return new BuildAgent(dto, instance);
         }
 
         public BuildAgentId Id => new BuildAgentId(IdString);
-
-        public string Name => NotNullSync(dto => dto.Name);
-
-        public IBuildAgentPool Pool 
-            => new BuildAgentPool(NotNullSync(dto => dto.Pool), false, Instance);
-
-        public bool Connected => NotNullSync(dto => dto.Connected).Value;
-
-        public bool Enabled => NotNullSync(dto => dto.Enabled).Value;
-
-        public bool Authorized => NotNullSync(dto => dto.Authorized).Value;
-
-        public bool Outdated => !NotNullSync(dto => dto.Uptodate).Value;
-
-        public string IpAddress => NotNullSync(dto => dto.Ip);
-
+        public string Name => Dto.Name.SelfOrNullRef();
+        public AsyncLazy<IBuildAgentPool> Pool { get; }
+        public bool Connected => Dto.Connected.Value;
+        public bool Enabled => Dto.Enabled.Value;
+        public bool Authorized => Dto.Authorized.Value;
+        public bool Outdated => !Dto.Uptodate.Value;
+        public string IpAddress => Dto.Ip.SelfOrNullRef();
         public List<IParameter> Parameters
-            => NotNullSync(dto => dto.Properties?.Property)
+            => Dto.Properties
+                ?.Property
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
-
-        public IBuildAgentEnabledInfo EnabledInfo
-            => this.FullDtoSync.EnabledInfo
+        public IInfo EnabledInfo 
+            => this.Dto.EnabledInfo
                 .Let(info => info.Comment
-                    .Let(comment => new BuildAgentEnabledInfo(
-                        comment.User.Let(user => new User(user, false, Instance)),
+                    .Let(comment => new BuildAgentInfo(
+                        comment.User.Id,
                         Utilities.ParseTeamCity(comment.Timestamp).Value,
-                        comment.Text ?? String.Empty
-                    )));
-
-        public IBuildAgentAuthorizedInfo AuthorizedInfo
-            => this.FullDtoSync.AuthorizedInfo
+                        comment.Text ?? String.Empty,
+                        Instance)
+                    )
+                );
+        public IInfo AuthorizedInfo
+            => this.Dto.AuthorizedInfo
                 .Let(info => info.Comment
-                    .Let(comment => new BuildAgentAuthorizedInfo(
-                        comment.User.Let(user => new User(user, false, Instance)),
+                    .Let(comment => new BuildAgentInfo(
+                        comment.User.Id,
                         Utilities.ParseTeamCity(comment.Timestamp).Value,
-                        comment.Text ?? String.Empty
-                    )));
-
-        public IBuild CurrentBuild
-            => this.FullDtoSync.Build.Let(dto => dto.Id == null ? null : new Build(dto, false, Instance));
-
+                        comment.Text ?? String.Empty,
+                        Instance)
+                    )
+                );
+        public AsyncLazy<IBuild> CurrentBuild { get; }
         public string GetHomeUrl()
             => $"{Instance.ServerUrl}/agentDetails.html?id={Id.stringId}";
 
-
         public override string ToString() => $"BuildAgent(id={Id}, name={Name})";
 
-        protected override async Task<BuildAgentDto> FetchFullDto()
-            => await Service.Agents($"id:{IdString}");
-
-        private class BuildAgentAuthorizedInfo : IBuildAgentAuthorizedInfo
+        private class BuildAgentInfo : IInfo
         {
-            public BuildAgentAuthorizedInfo(IUser user, DateTimeOffset timestamp, string text)
+            public BuildAgentInfo(string userId, DateTimeOffset timestamp, string text, TeamCityInstance instance)
             {
-                this.User = user;
+                this.User = new AsyncLazy<IUser>(async () 
+                    => await Domain.User.Create(userId, instance).ConfigureAwait(false));
                 this.Timestamp = timestamp;
                 this.Text = text;
             }
 
-            public IUser User { get; }
-
+            public AsyncLazy<IUser> User { get; }
             public DateTimeOffset Timestamp { get; }
-
-            public string Text { get; }
-        }
-
-        private class BuildAgentEnabledInfo : IBuildAgentEnabledInfo
-        {
-            public BuildAgentEnabledInfo(IUser user, DateTimeOffset timestamp, string text)
-            {
-                this.User = user;
-                this.Timestamp = timestamp;
-                this.Text = text;
-            }
-
-            public IUser User { get; }
-
-            public DateTimeOffset Timestamp { get; }
-
             public string Text { get; }
         }
     }

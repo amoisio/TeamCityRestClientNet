@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
+using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
@@ -14,7 +15,7 @@ namespace TeamCityRestClientNet.Api
         public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
         public abstract IBuildLocator Builds();
         public abstract IInvestigationLocator Investigations();
-        public abstract IBuild Build(BuildId id);
+        public abstract Task<IBuild> Build(BuildId id);
         public abstract IBuild Build(BuildConfigurationId buildConfigurationId, string number);
         public abstract IBuildConfiguration BuildConfiguration(BuildConfigurationId id);
         public abstract IVcsRootLocator VcsRoots();
@@ -363,17 +364,15 @@ namespace TeamCityRestClientNet.Api
          * Web UI URL for user, especially useful for error and log messages
          */
         string GetHomeUrl(string branch = null);
-
-        List<string> BuildTags { get; }
-        List<IFinishBuildTrigger> FinishBuildTriggers { get; }
-        List<IArtifactDependency> ArtifactDependencies { get; }
-
-        void SetParameter(string name, string value);
-
+        AsyncLazy<List<string>> BuildTags { get; }
+        AsyncLazy<List<IFinishBuildTrigger>> FinishBuildTriggers { get; }
+        AsyncLazy<List<IArtifactDependency>> ArtifactDependencies { get; }
         int BuildCounter { get; }
+        Task SetBuildCounter(int count);
         string BuildNumberFormat { get; }
-
-        IBuild RunBuild(
+        Task SetBuildNumberFormat(string format);
+        Task SetParameter<T>(string name, T value);
+        Task<IBuild> RunBuild(
             IDictionary<string, string> parameters = null,
             bool queueAtTop = false,
             bool? cleanSources = null,
@@ -382,8 +381,6 @@ namespace TeamCityRestClientNet.Api
             string logicalBranchName = null,
             bool personal = false);
     }
-
-
 
     public interface IBuildProblem
     {
@@ -415,33 +412,20 @@ namespace TeamCityRestClientNet.Api
         bool IsDefault { get; }
     }
 
-    public interface IBuildCommentInfo
+    public interface IInfo 
     {
-        IUser User { get; }
+        AsyncLazy<IUser> User { get; }
         DateTimeOffset Timestamp { get; }
         string Text { get; }
     }
 
-    public interface IBuildAgentEnabledInfo
-    {
-        IUser User { get; }
-        DateTimeOffset Timestamp { get; }
-        string Text { get; }
-    }
+    public interface IBuildCommentInfo : IInfo { }
 
-    public interface IBuildAgentAuthorizedInfo
-    {
-        IUser User { get; }
-        DateTimeOffset Timestamp { get; }
-        string Text { get; }
-    }
+    public interface IBuildAgentEnabledInfo : IInfo { }
 
-    public interface IBuildCanceledInfo
-    {
-        IUser User { get; }
-        DateTimeOffset CancelDateTime { get; }
-        string Text { get; }
-    }
+    public interface IBuildAgentAuthorizedInfo : IInfo { }
+
+    public interface IBuildCanceledInfo : IInfo { }
 
     public interface IBuild
     {
@@ -549,7 +533,7 @@ namespace TeamCityRestClientNet.Api
         ChangeId Id { get; }
         string Version { get; }
         string Username { get; }
-        IUser User { get; }
+        AsyncLazy<IUser> User { get; }
         DateTimeOffset DateTime { get; }
         string Comment { get; }
         IVcsRootInstance VcsRootInstance { get; }
@@ -563,7 +547,7 @@ namespace TeamCityRestClientNet.Api
          * Returns an uncertain amount of builds which contain the revision. The builds are not necessarily from the same
          * configuration as the revision. The feature is experimental, see https://youtrack.jetbrains.com/issue/TW-24633
          */
-        List<IBuild> FirstBuilds();
+        Task<List<IBuild>> FirstBuilds();
     }
 
 
@@ -620,18 +604,16 @@ namespace TeamCityRestClientNet.Api
     {
         BuildAgentId Id { get; }
         string Name { get; }
-        IBuildAgentPool Pool { get; }
+        AsyncLazy<IBuildAgentPool> Pool { get; }
         bool Connected { get; }
         bool Enabled { get; }
         bool Authorized { get; }
         bool Outdated { get; }
         string IpAddress { get; }
         List<IParameter> Parameters { get; }
-        IBuildAgentEnabledInfo EnabledInfo { get; }
-        IBuildAgentAuthorizedInfo AuthorizedInfo { get; }
-
-        IBuild CurrentBuild { get; }
-
+        IInfo EnabledInfo { get; }
+        IInfo AuthorizedInfo { get; }
+        AsyncLazy<IBuild> CurrentBuild { get; }
         string GetHomeUrl();
     }
 
@@ -639,9 +621,8 @@ namespace TeamCityRestClientNet.Api
     {
         BuildAgentPoolId Id { get; }
         string Name { get; }
-
-        List<IProject> Projects { get; }
-        List<IBuildAgent> Agents { get; }
+        AsyncLazy<List<IProject>> Projects { get; }
+        AsyncLazy<List<IBuildAgent>> Agents { get; }
     }
 
     public interface IVcsRootInstance
@@ -752,7 +733,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IArtifactDependency
     {
-        IBuildConfiguration DependsOnBuildConfiguration { get; }
+        AsyncLazy<IBuildConfiguration> DependsOnBuildConfiguration { get; }
         string Branch { get; }
         List<IArtifactRule> ArtifactRules { get; }
         bool CleanDestinationDirectory { get; }

@@ -6,38 +6,42 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Tools;
+using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Domain
 {
     class Change : Base<ChangeDto>, IChange
     {
-        public Change(ChangeDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
+        private Change(ChangeDto fullDto, TeamCityInstance instance)
+            : base(fullDto, instance)
         {
-            
+            this.User = new AsyncLazy<IUser>(async ()
+                => await Domain.User.Create(IdString, Instance).ConfigureAwait(false));
+        }
+
+        public static async Task<Change> Create(string idString, TeamCityInstance instance)
+        {
+            var dto = await instance.Service.Change(idString).ConfigureAwait(false);
+            return new Change(dto, instance);
         }
 
         public ChangeId Id => new ChangeId(IdString);
-        public string Version => NotNullSync(dto => dto.Version);
-        public string Username => NotNullSync(dto => dto.Username);
-        public IUser User 
-            => NullableSync(dto => dto.User)
-              .Let(userDto => new User(userDto, false, Instance));
+        public string Version => this.Dto.Version.SelfOrNullRef();
+        public string Username => this.Dto.Username.SelfOrNullRef();
+        public AsyncLazy<IUser> User { get; }
         public DateTimeOffset DateTime 
-            => Utilities.ParseTeamCity(NotNullSync(dto => dto.Date)).Value;
-        public string Comment => NotNullSync(dto => dto.Comment);
+            => Utilities.ParseTeamCity(this.Dto.Date.SelfOrNullRef()).Value;
+        public string Comment => this.Dto.Comment.SelfOrNullRef();
         public IVcsRootInstance VcsRootInstance 
-            => NullableSync(dto => dto.VcsRootInstance)
+            => this.Dto.VcsRootInstance
               .Let(rootDto => new VcsRootInstance(rootDto));
 
-        public List<IBuild> FirstBuilds()
-            => Service
-            .ChangeFirstBuilds(this.Id.stringId)
-            .GetAwaiter()
-            .GetResult()
-            .Build
-            .Select(build => new Build(build, false, Instance))
-            .ToList<IBuild>();
+        public async Task<List<IBuild>> FirstBuilds()
+        {
+            var change = await Service.ChangeFirstBuilds(this.Id.stringId).ConfigureAwait(false);
+            var tasks = change.Build.Select(build => Build.Create(build.Id, Instance));
+            return (await Task.WhenAll(tasks).ConfigureAwait(false)).ToList();
+        }
 
         public string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null)
             => Instance.GetUserUrlPage(
@@ -48,8 +52,5 @@ namespace TeamCityRestClientNet.Domain
 
         public override string ToString()
             => $"Change(id={Id}, version={Version}, username={Username}, user={User}, date={DateTime}, comment={Comment}, vcsRootInstance={VcsRootInstance})";
-
-        protected override async Task<ChangeDto> FetchFullDto()
-            => await Service.Change(IdString);
     }
 }

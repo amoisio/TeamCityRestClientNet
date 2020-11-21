@@ -1,68 +1,48 @@
 using System;
-using System.Threading.Tasks;
 
 using TeamCityRestClientNet.Service;
-using TeamCityRestClientNet.Extensions;
+
 namespace TeamCityRestClientNet.Domain
 {
     abstract class Base<TDto> where TDto : IdDto
     {
-        protected Base(TDto dto, bool isFullDto, TeamCityInstance instance)
+        protected Base(TDto fullDto, TeamCityInstance instance)
         {
-            this.Dto = dto  ?? throw new ArgumentNullException("dto must not be null.");
+            this.Dto = fullDto ?? throw new ArgumentNullException($"{nameof(fullDto)} must not be null.");
 
-            if (String.IsNullOrWhiteSpace(dto.Id))
-                throw new InvalidOperationException($"{nameof(dto)}.Id must not be null.");
+            if (String.IsNullOrWhiteSpace(fullDto.Id))
+                throw new InvalidOperationException($"{nameof(fullDto)}.Id must not be null.");
 
-            this.IsFullDto = isFullDto;
             this.Instance = instance ?? throw new ArgumentNullException("Instance must not be null.");
         }
 
+        /// <summary>
+        /// The backing TeamCity instance.
+        /// </summary>
         protected TeamCityInstance Instance { get; }
+        /// <summary>
+        /// The service used for communicating with the backing TeamCity instance.
+        /// </summary>
         protected ITeamCityService Service => Instance.Service;
-        protected TDto Dto { get; set; }
-        protected bool IsFullDto { get; set; }
+        /// <summary>
+        /// DTO used for querying the backing TeamCity instance and storing the
+        /// received data.
+        /// </summary>
+        protected TDto Dto { get; private set; }
         protected string IdString => this.Dto.Id;
 
-        protected async Task<TDto> FullDto() 
-            => await GetFullDto().ConfigureAwait(false);
-
-        protected TDto FullDtoSync 
-            => GetFullDto().GetAwaiter().GetResult();
-
-        private async Task<TDto> GetFullDto()
-        {
-            if (!this.IsFullDto)
-            {
-                this.Dto = await FetchFullDto().ConfigureAwait(false);
-                this.IsFullDto = true;
-            }
-            return this.Dto;
-        }
-
-        protected T NotNullSync<T>(Func<TDto, T> getter)
-            => NotNull(getter).GetAwaiter().GetResult();
-
-        protected async Task<T> NotNull<T>(Func<TDto, T> getter)
-            => getter(this.Dto) 
-            ?? getter(await this.GetFullDto().ConfigureAwait(false)) 
+        protected T NotNull<T>(Func<TDto, T> getter)
+            => getter(this.Dto)
             ?? throw new NullReferenceException();
 
-        protected T NullableSync<T>(Func<TDto, T> getter)
-            => Nullable(getter).GetAwaiter().GetResult();
-
-        protected async Task<T> Nullable<T>(Func<TDto, T> getter)
-            => getter(this.Dto)
-            ?? getter(await this.GetFullDto().ConfigureAwait(false));
-
-        protected abstract Task<TDto> FetchFullDto();
+        protected T Nullable<T>(Func<TDto, T> getter)
+            => getter(this.Dto);
 
         public abstract override string ToString();
 
         public override bool Equals(object obj)
         {
             if (this == obj) return true;
-
             var other = obj as Base<TDto>;
             return IdString == other.IdString
                 && this.Instance == other.Instance;

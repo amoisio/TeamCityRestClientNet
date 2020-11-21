@@ -14,9 +14,9 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public VcsRootId VcsRootId 
-            => new VcsRootId(this._dto.VcsRootId.SelfOrNullRefException());
+            => new VcsRootId(this._dto.VcsRootId.SelfOrNullRef());
 
-        public string Name => this._dto.Name.SelfOrNullRefException();
+        public string Name => this._dto.Name.SelfOrNullRef();
 
         public override string ToString()
             => $"VcsRootInstanceImpl(id={VcsRootId}, name={Name})";

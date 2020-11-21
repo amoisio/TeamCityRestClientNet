@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 
@@ -9,17 +9,21 @@ namespace TeamCityRestClientNet.Domain
 {
     class ArtifactDependency : Base<ArtifactDependencyDto>, IArtifactDependency
     {
-        public ArtifactDependency(ArtifactDependencyDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
-        {
-
+        public ArtifactDependency(ArtifactDependencyDto fullDto, TeamCityInstance instance)
+            : base(fullDto, instance) 
+        { 
+            this.DependsOnBuildConfiguration = new AsyncLazy<IBuildConfiguration>(async () 
+                => await BuildConfiguration.Create(
+                    NotNull(dto => dto.SourceBuildType.Id), 
+                    Instance)
+                    .ConfigureAwait(false));
         }
 
-        public IBuildConfiguration DependsOnBuildConfiguration
-            => new BuildConfiguration(NotNullSync(dto => dto.SourceBuildType), false, Instance);
+        private string DependentBuildConfigurationId 
+            => this.Dto.SourceBuildType.Id;
+        public AsyncLazy<IBuildConfiguration> DependsOnBuildConfiguration { get; }
 
-        public string Branch
-            => FindPropertyByName("revisionBranch");
+        public string Branch => FindPropertyByName("revisionBranch");
 
         public List<IArtifactRule> ArtifactRules
             => FindPropertyByName("pathRules")
@@ -40,15 +44,13 @@ namespace TeamCityRestClientNet.Domain
         }
 
         private string FindPropertyByName(string name)
-            => this.FullDtoSync.Properties
+            => this.Dto
+                .Properties
                 ?.Property
                 ?.FirstOrDefault(prop => prop.Name == name)
                 ?.Value;
 
         public override string ToString()
-            => $"ArtifactDependency(buildConf={DependsOnBuildConfiguration.Id.stringId})";
-
-        protected override Task<ArtifactDependencyDto> FetchFullDto()
-            => throw new NotSupportedException("Not supported, ArtifactDependency must be created with full dto.");
+            => $"ArtifactDependency(buildConf={DependentBuildConfigurationId})";
     }
 }
