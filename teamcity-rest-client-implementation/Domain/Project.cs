@@ -7,78 +7,84 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using System.Xml.Linq;
+using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Domain
 {
-    class Project : Base<ProjectDto>, IProject 
+    class Project : Base<ProjectDto>, IProject
     {
-        public Project(ProjectDto dto, bool isFullDto, TeamCityInstance instance)
+        private Project(ProjectDto dto, TeamCityInstance instance)
             : base(dto, instance)
         {
-            
+            this.ChildProjects = new AsyncLazy<List<IProject>>(async () 
+                => {
+                    var tasks = dto.Projects.Project
+                        .Select(proj => Project.Create(proj, false, instance));
+                    var projects = await Task.WhenAll(tasks).ConfigureAwait(false);
+                    return projects.ToList();
+                });
+
+            this.BuildConfigurations = new AsyncLazy<List<IBuildConfiguration>>(async ()
+                => {
+                    var tasks = dto.BuildTypes.BuildType
+                        .Select(type => BuildConfiguration.Create(type.Id, instance));
+                    var configs = await Task.WhenAll(tasks).ConfigureAwait(false);
+                    return configs.ToList();                    
+                });
+
         }
 
-        public static async Task<IProject> Create(string idString, TeamCityInstance instance)
+        public static async Task<IProject> Create(ProjectDto dto, bool isFullDto, TeamCityInstance instance)
         {
-            var projectDto = await instance.Service.Project(idString).ConfigureAwait(false);
-            return new Project(projectDto, true, instance);
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.Project(dto.Id).ConfigureAwait(false);
+            return new Project(fullDto, instance);
         }
 
         public ProjectId Id => new ProjectId(IdString);
-
-        public string Name => NotNullSync(dto => dto.Name);
-
-        public bool Archived => NullableSync(dto => dto.Archived) ?? false;
-
-        public ProjectId? ParentProjectId 
-            => NullableSync(dto => dto.ParentProjectId)
-                .Let(dto => new ProjectId(dto));
-
-        public List<IProject> ChildProjects 
-            => NotNullSync(dto => dto.Projects).Project
-                .Select(project => new Project(project, false, Instance))
-                .ToList<IProject>();
-        public List<IBuildConfiguration> BuildConfigurations 
-            => this.FullDtoSync.BuildTypes
-                ?.BuildType
-                .Select(type => new BuildConfiguration(type, false, Instance))
-                .ToList<IBuildConfiguration>()
-                ?? throw new NullReferenceException();
-
-        public List<IParameter> Parameters 
-            => NotNullSync(dto => dto.Parameters?.Property)
+        public string Name => Dto.Name.SelfOrNullRef();
+        public bool Archived => Dto.Archived ?? false;
+        public ProjectId? ParentProjectId
+            => Dto.ParentProjectId.Let(id => new ProjectId(Dto.ParentProjectId));
+        public AsyncLazy<List<IProject>> ChildProjects { get; }
+        public AsyncLazy<List<IBuildConfiguration>> BuildConfigurations { get; }
+        public List<IParameter> Parameters
+            => Dto.Parameters
+                ?.Property
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 
-        public IBuildConfiguration CreateBuildConfiguration(string buildConfigurationDescriptionXml)
+        public async Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml)
         {
-            var dto = Service.CreateBuildType(buildConfigurationDescriptionXml).GetAwaiter().GetResult();
-            return new BuildConfiguration(dto, false, Instance);
+            var dto = await Service.CreateBuildType(buildConfigurationDescriptionXml).ConfigureAwait(false);
+            return await BuildConfiguration.Create(dto.Id, Instance).ConfigureAwait(false);
         }
 
-        public IProject CreateProject(ProjectId id, string name)
+        public async Task<IProject> CreateProject(ProjectId id, string name)
         {
             var xml = new XElement("newProjectDescription",
                 new XAttribute("name", name),
                 new XAttribute("id", Id.stringId),
-                new XElement("parentProject", 
+                new XElement("parentProject",
                     new XAttribute("locator", $"id:{Id.stringId}")
                 )
             );
-            var projectDto = Service.CreateProject(xml.ToString()).GetAwaiter().GetResult();
-            return new Project(projectDto, true, Instance);
+            var projectDto = await Service.CreateProject(xml.ToString()).ConfigureAwait(false);
+            return new Project(projectDto, Instance);
         }
 
-        public IVcsRoot CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
+        public async Task<IVcsRoot> CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
         {
             var propElement = new XElement("properties");
-            foreach(var prop in properties.OrderBy(prop => prop.Key)) {
+            foreach (var prop in properties.OrderBy(prop => prop.Key))
+            {
                 propElement.Add(new XElement("property",
                     new XAttribute("name", prop.Key),
                     new XAttribute("value", prop.Value)));
             }
 
-            var xml = new XElement("vcs-root", 
+            var xml = new XElement("vcs-root",
                 new XAttribute("name", name),
                 new XAttribute("id", Id.stringId),
                 new XAttribute("vcsName", type.stringType),
@@ -87,14 +93,14 @@ namespace TeamCityRestClientNet.Domain
                 ),
                 propElement);
 
-            var vcsRootDto = Service.CreateVcsRoot(xml.ToString()).GetAwaiter().GetResult();
-            return new VcsRoot(vcsRootDto, true, Instance);
+            var vcsRootDto = await Service.CreateVcsRoot(xml.ToString()).ConfigureAwait(false);
+            return await VcsRoot.Create(vcsRootDto, true, Instance).ConfigureAwait(false);
         }
 
         public string GetHomeUrl(string branch = null)
             => Instance.GetUserUrlPage(
-                "project.html", 
-                projectId: Id, 
+                "project.html",
+                projectId: Id,
                 branch: branch);
 
         public string GetTestHomeUrl(TestId testId)
@@ -104,17 +110,13 @@ namespace TeamCityRestClientNet.Domain
                 testNameId: testId,
                 tab: "testDetails");
 
-        public void SetParameter(string name, string value)
+        public async Task SetParameter(string name, string value)
         {
-        //         LOG.info("Setting parameter $name=$value in ProjectId=$idString")
-            Service.SetProjectParameter(Id.stringId, name, value)
-                .GetAwaiter().GetResult();
+            //         LOG.info("Setting parameter $name=$value in ProjectId=$idString")
+            await Service.SetProjectParameter(Id.stringId, name, value).ConfigureAwait(false);
         }
 
         public override string ToString()
             => $"Project(id={IdString},name={Name})";
-
-        protected override async Task<ProjectDto> FetchFullDto()
-            => await Service.Project(Id.stringId);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
@@ -11,13 +10,12 @@ namespace TeamCityRestClientNet.Domain
 
         public Revision(RevisionDto dto)
         {
-            this._dto = dto;
+            _dto = dto;
         }
 
-        public string Version => this._dto.Version.SelfOrNullRef();
-        public string VcsBranchName 
-            => this._dto.VcsBranchName.SelfOrNullRef();
+        public string Version => _dto.Version.SelfOrNullRef();
+        public string VcsBranchName => _dto.VcsBranchName.SelfOrNullRef();
         public IVcsRootInstance VcsRootInstance 
-            => new VcsRootInstance(this._dto.VcsRootInstance.SelfOrNullRef());
+            => new VcsRootInstance(_dto.VcsRootInstance.SelfOrNullRef());
     }
 }

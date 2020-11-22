@@ -1,4 +1,5 @@
 using System;
+using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
@@ -8,28 +9,31 @@ namespace TeamCityRestClientNet.Domain
     class BuildCommentInfo : IBuildCommentInfo
     {
         private readonly BuildCommentDto _dto;
-        private readonly TeamCityInstance _instance;
 
         public BuildCommentInfo(BuildCommentDto dto, TeamCityInstance instance)
         {
             this._dto = dto;
-            this._instance = instance;
+            this.User = new AsyncLazy<IUser>(async ()
+                => {
+                    var user = (dto.User != null)
+                       ? await Domain.User.Create(dto.User.Id, instance).ConfigureAwait(false)
+                        : null;
+                    if (user != null)
+                        _username = user.Name;
+                    return user;
+                });
         }
 
-        public IUser User 
-            => this._dto.User != null
-                ? new User(this._dto.User, false, this._instance)
-                : null;
-
+        private string _username;
+        public AsyncLazy<IUser> User { get; }
         public DateTimeOffset Timestamp 
             => Utilities.ParseTeamCity(this._dto.Timestamp)
             ?? throw new NullReferenceException();
-
         public string Text => this._dto.Text ?? String.Empty;
 
         public override string ToString()
         {
-            return $"BuildCommentInfo(timestamp={Timestamp},user={User?.Username},text={Text})";
+            return $"BuildCommentInfo(timestamp={Timestamp},user={_username},text={Text})";
         }
     }
 }

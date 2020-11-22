@@ -3,6 +3,7 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
 {
+    [Obsolete("Delete if not needed once client library is done.")]
     class NameValueProperty {
         private readonly NameValuePropertyDto _dto;
 

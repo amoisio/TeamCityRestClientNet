@@ -60,6 +60,14 @@ namespace TeamCityRestClientNet.Extensions
             => (value == null || value is string s && String.IsNullOrEmpty(s))
                 ? throw new NullReferenceException()
                 : value;
+
+        /// <summary>
+        /// Throws nullRef is nullable is null. Otherwise, returns the value.
+        /// </summary>
+        public static T ValueOrNullRef<T>(this Nullable<T> value) where T : struct
+            => value.HasValue 
+                ? value.Value 
+                : throw new NullReferenceException();
         public static string RemovePrefix(this string str, string prefix)
         {
             if (string.IsNullOrWhiteSpace(str) || string.IsNullOrWhiteSpace(prefix))

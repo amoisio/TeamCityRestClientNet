@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Domain
                     ?? new List<IArtifactDependency>());
         }
 
-        public static async Task<BuildConfiguration> Create(string idString, TeamCityInstance instance)
+        public static async Task<IBuildConfiguration> Create(string idString, TeamCityInstance instance)
         {
             var dto = await instance.Service.BuildConfiguration(idString).ConfigureAwait(false);
             return new BuildConfiguration(dto, instance);

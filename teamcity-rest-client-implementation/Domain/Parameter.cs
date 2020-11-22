@@ -1,5 +1,6 @@
 using System;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
@@ -9,19 +10,11 @@ namespace TeamCityRestClientNet.Domain
 
         public Parameter(ParameterDto dto)
         {
-            this._dto = dto;
+            _dto = dto;
         }
 
-        public string Name 
-            => String.IsNullOrEmpty(this._dto.Name)
-                ? throw new NullReferenceException()
-                : this._dto.Name;
-
-        public string Value
-            => String.IsNullOrEmpty(this._dto.Value)
-                ? throw new NullReferenceException()
-                : this._dto.Value;
-
-        public bool Own => this._dto.Own ?? throw new NullReferenceException();
+        public string Name => _dto.Name.SelfOrNullRef();
+        public string Value => _dto.Name.SelfOrNullRef();
+        public bool Own => _dto.Own.ValueOrNullRef();
     }
 }

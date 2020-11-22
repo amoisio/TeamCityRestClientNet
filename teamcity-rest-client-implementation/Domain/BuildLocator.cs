@@ -33,140 +33,140 @@ namespace TeamCityRestClientNet.Domain
 
         BuildLocator(TeamCityInstance instance)
         {
-            this._instance = instance;
-            this._service = instance.Service;
+            _instance = instance;
+            _service = instance.Service;
         }
 
 
-        private DateTimeOffset? SinceUTC => this._since?.ToUniversalTime();
+        private DateTimeOffset? SinceUTC => _since?.ToUniversalTime();
         private string TeamCitySince => SinceUTC?.ToString(TeamCityInstance.TEAMCITY_DATETIME_FORMAT);
 
-        private DateTimeOffset? UntilUTC => this._until?.ToUniversalTime();
+        private DateTimeOffset? UntilUTC => _until?.ToUniversalTime();
         private string TeamCityUntil => UntilUTC?.ToString(TeamCityInstance.TEAMCITY_DATETIME_FORMAT);
 
 
         public IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId)
         {
-            this._buildConfigurationId = buildConfigurationId;
+            _buildConfigurationId = buildConfigurationId;
             return this;
         }
 
         public IBuildLocator SnapshotDependencyTo(BuildId buildId)
         {
-            this._snapshotDependencyTo = buildId;
+            _snapshotDependencyTo = buildId;
             return this;
         }
 
         public IBuildLocator WithNumber(string buildNumber)
         {
-            this._number = buildNumber;
+            _number = buildNumber;
             return this;
         }
 
         public IBuildLocator WithVcsRevision(string vcsRevision)
         {
-            this._vcsRevision = vcsRevision;
+            _vcsRevision = vcsRevision;
             return this;
         }
 
         public IBuildLocator IncludeFailed()
         {
-            this._status = null;
+            _status = null;
             return this;
         }
 
         public IBuildLocator WithStatus(BuildStatus status)
         {
-            this._status = status;
+            _status = status;
             return this;
         }
 
         public IBuildLocator IncludeRunning()
         {
-            this._running = "any";
+            _running = "any";
             return this;
         }
 
         public IBuildLocator OnlyRunning()
         {
-            this._running = "true";
+            _running = "true";
             return this;
         }
 
         public IBuildLocator IncludeCanceled()
         {
-            this._canceled = "any";
+            _canceled = "any";
             return this;
         }
 
         public IBuildLocator OnlyCanceled()
         {
-            this._canceled = "true";
+            _canceled = "true";
             return this;
         }
 
         public IBuildLocator WithTag(string tag)
         {
-            this._tags.Add(tag);
+            _tags.Add(tag);
             return this;
         }
 
         public IBuildLocator WithBranch(string branch)
         {
-            this._branch = branch;
+            _branch = branch;
             return this;
         }
 
         public IBuildLocator Since(DateTimeOffset date)
         {
-            this._since = date;
+            _since = date;
             return this;
         }
 
         public IBuildLocator Until(DateTimeOffset date)
         {
-            this._until = date;
+            _until = date;
             return this;
         }
 
         public IBuildLocator WithAllBranches()
         {
-            if (this._branch != null)
+            if (_branch != null)
             {
                 // LOG.warn("Branch is ignored because of #withAllBranches")
             }
 
-            this._includeAllBranches = true;
+            _includeAllBranches = true;
             return this;
         }
 
         public IBuildLocator PinnedOnly()
         {
-            this._pinnedOnly = true;
+            _pinnedOnly = true;
             return this;
         }
 
         public IBuildLocator IncludePersonal()
         {
-            this._personal = "any";
+            _personal = "any";
             return this;
         }
 
         public IBuildLocator OnlyPersonal()
         {
-            this._personal = "true";
+            _personal = "true";
             return this;
         }
 
         public IBuildLocator LimitResults(int count)
         {
-            this._limitResults = count;
+            _limitResults = count;
             return this;
         }
 
         public IBuildLocator PageSize(int pageSize)
         {
-            this._pageSize = pageSize;
+            _pageSize = pageSize;
             return this;
         }
 
@@ -174,7 +174,7 @@ namespace TeamCityRestClientNet.Domain
 
         public async Task<IBuild> Latest()
         {
-            return await this.LimitResults(1).All().FirstOrDefaultAsync();
+            return await LimitResults(1).All().FirstOrDefaultAsync();
         }
 
         public IAsyncEnumerable<IBuild> All()
@@ -182,20 +182,20 @@ namespace TeamCityRestClientNet.Domain
             int count = 0;//selectRestApiCountForPagedRequests(limitResults = limitResults, pageSize = pageSize)
 
             var parameters = Utilities.ListOfNotNull(
-                this._buildConfigurationId?.stringId.Let("buildType:{0}"),
-                this._snapshotDependencyTo?.stringId.Let("snapshotDependency:(to:(id:{0}))"),
-                this._number.Let("number:{0}"),
-                this._running.Let("running:{0}"),
-                this._canceled.Let("canceled:{0}"),
-                this._vcsRevision.Let("revision:{0}"),
-                this._status.Let("status:{0}"),
-                this._tags.IsNotEmpty() ? "tags:(" + string.Join(",", this._tags) + ")" : null,
-                this._pinnedOnly ? "pinned:true" : null,
+                _buildConfigurationId?.stringId.Let("buildType:{0}"),
+                _snapshotDependencyTo?.stringId.Let("snapshotDependency:(to:(id:{0}))"),
+                _number.Let("number:{0}"),
+                _running.Let("running:{0}"),
+                _canceled.Let("canceled:{0}"),
+                _vcsRevision.Let("revision:{0}"),
+                _status.Let("status:{0}"),
+                _tags.IsNotEmpty() ? "tags:(" + string.Join(",", _tags) + ")" : null,
+                _pinnedOnly ? "pinned:true" : null,
                 count.Let("count:{0}"),
-                this.TeamCitySince?.Let("sinceDate:{0}"),
-                this.TeamCityUntil?.Let("untilDate:{0}"),
-                !this._includeAllBranches ? this._branch?.Let("branch:{0}") : "branch:default:any",
-                this._personal?.Let("personal:{0}"),
+                TeamCitySince?.Let("sinceDate:{0}"),
+                TeamCityUntil?.Let("untilDate:{0}"),
+                !_includeAllBranches ? _branch?.Let("branch:{0}") : "branch:default:any",
+                _personal?.Let("personal:{0}"),
                 // Always use default filter since sometimes TC automatically switches between
                 // defaultFilter:true and defaultFilter:false
                 // See BuildPromotionFinder.java in rest-api, setLocatorDefaults method
@@ -208,12 +208,12 @@ namespace TeamCityRestClientNet.Domain
             }
 
             var sequence = new Paged<IBuild, BuildListDto>(
-                this._service,
+                _service,
                 async () =>
                 {
                     var query = String.Join(",", parameters);
                     // LOG.debug("Retrieving builds from ${instance.serverUrl} using query '$IBuildLocator'")
-                    return await this._service.Builds(query);
+                    return await _service.Builds(query);
                 },
                 async (list) => 
                 {
@@ -230,6 +230,6 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public async Task<List<IBuild>> List() 
-            => await this.All().ToListAsync();
+            => await All().ToListAsync();
     }
 }

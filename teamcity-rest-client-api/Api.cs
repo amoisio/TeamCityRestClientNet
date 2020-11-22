@@ -330,26 +330,26 @@ namespace TeamCityRestClientNet.Api
         string GetHomeUrl(string branch = null);
         string GetTestHomeUrl(TestId testId);
 
-        List<IProject> ChildProjects { get; }
-        List<IBuildConfiguration> BuildConfigurations { get; }
+        AsyncLazy<List<IProject>> ChildProjects { get; }
+        AsyncLazy<List<IBuildConfiguration>> BuildConfigurations { get; }
         List<IParameter> Parameters { get; }
 
-        void SetParameter(string name, string value);
+        Task SetParameter(string name, string value);
 
         /**
          * See properties example from existing VCS roots via inspection of the following url:
          * https://teamcity/app/rest/vcs-roots/id:YourVcsRootId
          */
-        IVcsRoot CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
+        Task<IVcsRoot> CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
 
-        IProject CreateProject(ProjectId id, string name);
+        Task<IProject> CreateProject(ProjectId id, string name);
 
         /**
          * XML in the same format as
          * https://teamcity/app/rest/buildTypes/YourBuildConfigurationId
          * returns
          */
-        IBuildConfiguration CreateBuildConfiguration(string buildConfigurationDescriptionXml);
+        Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml);
     }
 
 
@@ -664,7 +664,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IPinInfo
     {
-        IUser User { get; }
+        AsyncLazy<IUser> User { get; }
         DateTimeOffset DateTime { get; }
     }
 
@@ -719,8 +719,8 @@ namespace TeamCityRestClientNet.Api
 
     public interface ITriggeredInfo
     {
-        IUser User { get; }
-        IBuild Build { get; }
+        AsyncLazy<IUser> User { get; }
+        AsyncLazy<IBuild> Build { get; }
     }
 
     public interface IFinishBuildTrigger

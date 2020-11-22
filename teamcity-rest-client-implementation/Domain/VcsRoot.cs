@@ -1,45 +1,42 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
 {
     class VcsRoot : Base<VcsRootDto>, IVcsRoot
     {
-        public VcsRoot(VcsRootDto dto, bool isFullDto, TeamCityInstance instance)
-            : base(dto, isFullDto, instance)
+        private VcsRoot(VcsRootDto fullDto, TeamCityInstance instance)
+            : base(fullDto, instance)
         {
-
+            this.Properties = this.Dto.Properties
+                ?.Property
+                ?.ToDictionary(prop => prop.Name, prop => prop.Value)
+                ?? new Dictionary<string, string>();
         }
 
-        public List<NameValueProperty> Properties
-            => this.FullDtoSync.Properties
-                ?.Property
-                ?.Select(prop => new NameValueProperty(prop))
-                .ToList()
-                ?? throw new NullReferenceException();
-
-
+        public static async Task<VcsRoot> Create(VcsRootDto dto, bool isFullDto, TeamCityInstance instance)
+        {
+            var fullDto = isFullDto
+                ? dto
+                :await instance.Service.VcsRoot(dto.Id).ConfigureAwait(false);
+            
+            return new VcsRoot(fullDto, instance);
+        }
+        public Dictionary<string, string> Properties { get; }
         public VcsRootId Id => new VcsRootId(IdString);
-
-        public string Name
-            => NotNullSync(dto => dto.Name);
-
-        private string GetNameValueProperty(List<NameValueProperty> properties, string name)
-            => properties.SingleOrDefault((prop) => prop.Name == name)?.Value;
-
-        public string Url => GetNameValueProperty(this.Properties, "url");
-
-        public string DefaultBranch 
-            => GetNameValueProperty(this.Properties, "branch");
-
+        public string Name => Dto.Name.SelfOrNullRef();
+        public string Url => GetNameValueProperty("url");
+        public string DefaultBranch => GetNameValueProperty("branch");
+        private string GetNameValueProperty(string name)
+            => Properties.ContainsKey(name)
+                ? Properties[name]
+                : null;
         public override string ToString()
             => $"VcsRoot(id={Id}, name={Name}, url={Url})";
-
-        protected override async Task<VcsRootDto> FetchFullDto()
-            => await Service.VcsRoot(IdString);
     }
 }

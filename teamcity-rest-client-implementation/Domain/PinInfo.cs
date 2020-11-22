@@ -3,24 +3,22 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Tools;
+using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Domain
 {
     class PinInfo : IPinInfo
     {
         private readonly PinInfoDto _dto;
-        private readonly TeamCityInstance _instance;
-
         public PinInfo(PinInfoDto dto, TeamCityInstance instance)
         {
-            this._dto = dto;
-            this._instance = instance;
+            _dto = dto;
+            this.User = new AsyncLazy<IUser>(async () 
+                => await Domain.User.Create(dto.User.Id, instance).ConfigureAwait(false));
         }
 
-        public IUser User 
-            => new User(this._dto.User.SelfOrNullRef(), false, this._instance);
-
+        public AsyncLazy<IUser> User { get; }
         public DateTimeOffset DateTime 
-            => Utilities.ParseTeamCity(this._dto.Timestamp.SelfOrNullRef()).Value;
+            => Utilities.ParseTeamCity(_dto.Timestamp.SelfOrNullRef()).Value;
     }
 }

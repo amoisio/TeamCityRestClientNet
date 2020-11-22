@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Domain
                 => {
                     var tasks = this.Dto.Projects
                         ?.Project
-                        ?.Select(project => Project.Create(project.Id, Instance));
+                        ?.Select(project => Project.Create(project, false, Instance));
                     
                     return tasks != null
                         ? (await Task.WhenAll(tasks).ConfigureAwait(false)).ToList()

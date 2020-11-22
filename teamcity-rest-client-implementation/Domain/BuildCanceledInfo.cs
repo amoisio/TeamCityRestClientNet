@@ -1,4 +1,5 @@
 using System;
+using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
@@ -8,23 +9,20 @@ namespace TeamCityRestClientNet.Domain
     internal class BuildCanceledInfo : IBuildCanceledInfo
     {
         private readonly BuildCanceledDto _dto;
-        private readonly TeamCityInstance _instance;
-
         internal BuildCanceledInfo(BuildCanceledDto dto, TeamCityInstance instance)
         {
             this._dto = dto;
-            this._instance = instance;
+            this.User = new AsyncLazy<IUser>(async ()
+                => dto.User != null
+                    ? await Domain.User.Create(dto.User.Id, instance).ConfigureAwait(false)
+                    : null);
         }
 
-        public IUser User
-         => _dto.User != null
-            ? new User(_dto.User, false, _instance)
-            : null;
-
-        public DateTimeOffset CancelDateTime
+        public AsyncLazy<IUser> User { get; }
+        /*CancelDateTime*/
+        public DateTimeOffset Timestamp 
             => Utilities.ParseTeamCity(_dto.Timestamp)
             ?? throw new NullReferenceException();
-
         public string Text => _dto.Text ?? String.Empty;
     }
 }
