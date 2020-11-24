@@ -19,9 +19,11 @@ namespace TeamCityRestClientNet.Domain
                 => await Domain.User.Create(IdString, Instance).ConfigureAwait(false));
         }
 
-        public static async Task<Change> Create(string idString, TeamCityInstance instance)
+        public static async Task<IChange> Create(ChangeDto dto, bool isFullDto, TeamCityInstance instance)
         {
-            var dto = await instance.Service.Change(idString).ConfigureAwait(false);
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.Change(dto.Id).ConfigureAwait(false);
             return new Change(dto, instance);
         }
 
