@@ -157,7 +157,11 @@ namespace TeamCityRestClientNet.Domain
         //             .all()
         public IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
         {
-            throw new NotImplementedException();
+            var locator = Instance.TestRuns().ForBuild(Id);
+            if (status != null)
+                locator.WithStatus(status.Value);
+
+            return locator.All().ToAsyncEnumerable();
         }
 
         public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {
