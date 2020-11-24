@@ -29,8 +29,8 @@ namespace TeamCityRestClientNet.Service
         internal string FullName { get; set; }
         internal long? Size { get; set; }
         internal string ModificationTime { get; set; }
-
-        internal const string FIELDS = "${ArtifactFileBean::fullName.name},${ArtifactFileBean::name.name},${ArtifactFileBean::size.name},${ArtifactFileBean::modificationTime.name}";
+        internal static readonly string FIELDS 
+            = $"{nameof(FullName)},{nameof(Name)},${nameof(Size)},${nameof(ModificationTime)}";
     }
 
     class IdDto

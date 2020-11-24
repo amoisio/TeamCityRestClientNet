@@ -491,7 +491,7 @@ namespace TeamCityRestClientNet.Api
         void ReplaceTags(List<string> tags);
         void Pin(string comment = "pinned via REST API");
         void Unpin(string comment = "unpinned via REST API");
-        List<IBuildArtifact> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
+        Task<List<IBuildArtifact>> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
         IBuildArtifact FindArtifact(string pattern, string parentPath = "");
         IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
 
@@ -500,7 +500,7 @@ namespace TeamCityRestClientNet.Api
         Task DownloadArtifact(string artifactPath, FileInfo outputFile);
         Task DownloadArtifacts(string pattern, DirectoryInfo outputDir);
         Task DownloadBuildLog(FileInfo outputFile);
-        Stream OpenArtifactInputStream(string artifactPath);
+        Task<Stream> OpenArtifactStream(string artifactPath);
         
         
         List<IParameter> GetResultingParameters();
@@ -586,12 +586,10 @@ namespace TeamCityRestClientNet.Api
         string FullName { get; }
         long? Size { get; }
         DateTimeOffset ModificationDateTime { get; }
-
         IBuild Build { get; }
-
-        void Download(File output);
-        void Download(Stream output);
-        Stream OpenArtifactInputStream();
+        Task Download(FileInfo outputFile);
+        Task Download(Stream output);
+        Task<Stream> OpenArtifactInputStream();
     }
 
     public interface IVcsRoot

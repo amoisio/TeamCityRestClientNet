@@ -207,54 +207,56 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-        private async Task<Stream> OpenArtifactStream(string artifactPath)
+        public async Task<Stream> OpenArtifactStream(string artifactPath)
         {
             return await Service.ArtifactContent(Id.stringId, artifactPath).ConfigureAwait(false);
         }
 
-        //     override fun DownloadArtifact(artifactPath: String, output: File) {
-        //         LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()} to $output")
-        //         try
-        //         {
-        //             output.parentFile.mkdirs()
-        //             FileOutputStream(output).use {
-        //                 DownloadArtifactImpl(artifactPath, it)
-        //             }
-        //         }
-        //         catch (t: Throwable) {
-        //             output.delete()
-        //             throw t
-        //         } finally
-        //         {
-        //             LOG.debug("Artifact '$artifactPath' from build ${getHomeUrl()} downloaded to $output")
-        //         }
-        //     }
-
-        public Task DownloadArtifact(string artifactPath, FileInfo outputFile)
+        public async Task DownloadArtifact(string artifactPath, FileInfo outputFile)
         {
-            throw new NotImplementedException();
+            // LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()} to $output")
+            try
+            {
+                var stream = await OpenArtifactStream(artifactPath).ConfigureAwait(false);
+                using (var fileStream = outputFile.Open(FileMode.Create))
+                {
+                    await stream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
+                }
+            }
+            catch (Exception)
+            {
+                if (outputFile.Exists)
+                    outputFile.Delete();
+                throw;
+            }
+            finally
+            {
+                // LOG.debug("Artifact '$artifactPath' from build ${getHomeUrl()} downloaded to $output")
+            }
         }
 
 
         //     override fun DownloadArtifacts(pattern: String, outputDir: File) {
-        //         val list = GetArtifacts(recursive = true)
-        //         val regexp = ConvertToJavaRegexp(pattern)
-        //         val matched = list.filter { regexp.matches(it.fullName) }
-        //         if (matched.isEmpty())
-        //         {
-        //             val available = list.joinToString(",") { it.fullName }
-        //             throw TeamCityQueryException("No artifacts matching $pattern are found in build $buildNumber. Available artifacts: $available.")
-        //         }
-        //         outputDir.mkdirs()
-        //         matched.forEach {
-        //             it.download(File(outputDir, it.name))
-        //         }
         //     }
 
 
         public Task DownloadArtifacts(string pattern, DirectoryInfo outputDir)
         {
+
             throw new NotImplementedException();
+            //         val list = GetArtifacts(recursive = true)
+            //         val regexp = ConvertToJavaRegexp(pattern)
+            //         val matched = list.filter { regexp.matches(it.fullName) }
+            //         if (matched.isEmpty())
+            //         {
+            //             val available = list.joinToString(",") { it.fullName }
+            //             throw TeamCityQueryException("No artifacts matching $pattern are found in build $buildNumber. Available artifacts: $available.")
+            //         }
+            //         outputDir.mkdirs()
+            //         matched.forEach {
+            //             it.download(File(outputDir, it.name))
+            //         }
+
         }
 
 
@@ -302,19 +304,26 @@ namespace TeamCityRestClientNet.Domain
             throw new NotImplementedException();
         }
 
-
-
-
-        //     override fun GetArtifacts(parentPath: String, recursive: Boolean, hidden: Boolean): List<BuildArtifact> {
-        //         val locator = "recursive:$recursive,hidden:$hidden"
-        //         val fields = "file(${ArtifactFileBean.FIELDS})"
-        //         return instance.service.artifactChildren(id.stringId, parentPath, locator, fields).file
-        //                 .filter { it.fullName != null && it.modificationTime != null }
-        //                 .map { BuildArtifactImpl(this, it.name!!, it.fullName!!, it.size, ZonedDateTime.parse(it.modificationTime!!, teamCityServiceDateFormat)) }
-        //     }
-        public List<IBuildArtifact> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false)
+        public async Task<List<IBuildArtifact>> GetArtifacts(
+            string parentPath = "", 
+            bool recursive = false, 
+            bool hidden = false)
         {
-            throw new NotImplementedException();
+            var locator = $"recursive:{recursive},hidden:{hidden}";
+            var fields = $"file({ArtifactFileDto.FIELDS})";
+            var artifacts = await Service
+                .ArtifactChildren(Id.stringId, parentPath, locator, fields)
+                .ConfigureAwait(false);
+
+            return artifacts.File
+                .Where(file => !String.IsNullOrEmpty(file.FullName) && !String.IsNullOrEmpty(file.ModificationTime))
+                .Select(file => new BuildArtifact(
+                    this, 
+                    file.Name, 
+                    file.FullName, 
+                    file.Size, 
+                    Utilities.ParseTeamCity(file.ModificationTime).Value))
+                .ToList<IBuildArtifact>();
         }
 
         public string GetHomeUrl()

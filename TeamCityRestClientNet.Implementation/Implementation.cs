@@ -416,30 +416,6 @@
 //     override fun List(): List < VcsRoot > = Lll().toList()
 // }
 
-// private class BuildArtifactImpl(
-//         override val build: Build,
-//         override val name: String,
-//         override val fullName: String,
-//         override val size: Long ?,
-//         override val modificationDateTime: ZonedDateTime) : BuildArtifact
-// {
-
-//     override val modificationTime: Date
-//         Get() = Date.from(modificationDateTime.toInstant())
-
-//     override fun Download(output: File) {
-//         build.downloadArtifact(fullName, output)
-//     }
-
-//     override fun Download(output: OutputStream) {
-//         build.downloadArtifact(fullName, output)
-//     }
-
-//     override fun OpenArtifactInputStream(): InputStream {
-//         return build.openArtifactInputStream(fullName)
-//     }
-// }
-
 // private class BuildQueueImpl(private val instance: TeamCityInstanceImpl): BuildQueue
 // {
 //     override fun RemoveBuild(id: BuildId, comment: String, reAddIntoQueue: Boolean) {
