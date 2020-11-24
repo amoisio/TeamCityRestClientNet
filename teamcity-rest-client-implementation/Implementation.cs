@@ -416,36 +416,6 @@
 //     override fun List(): List < VcsRoot > = Lll().toList()
 // }
 
-// private class BuildProblemImpl(private val bean: BuildProblemBean) : BuildProblem
-// {
-//     override val id: BuildProblemId
-//         Get() = GuildProblemId(bean.id!!)
-//     override val type: BuildProblemType
-//         Get() = GuildProblemType(bean.type!!)
-//     override val identity: String
-//         Get() = bean.identity!!
-
-//     override fun ToString(): String =
-//         "BuildProblem(id=${id.stringId},type=$type,identity=$identity)"
-// }
-
-// private class BuildProblemOccurrenceImpl(private val bean: BuildProblemOccurrenceBean,
-//                                          private val instance: TeamCityInstanceImpl) : BuildProblemOccurrence
-// {
-//     override val buildProblem: BuildProblem
-//         Get() = GuildProblemImpl(bean.problem!!)
-//     override val build: Build
-//         Get() = GuildImpl(bean.build!!, false, instance)
-//     override val details: String
-//         Get() = bean.details ?: ""
-//     override val additionalData: String?
-//         Get() = bean.additionalData
-
-//     override fun ToString(): String =
-//         "BuildProblemOccurrence(build=${build.id},problem=$buildProblem,details=$details,additionalData=$additionalData)"
-// }
-
-
 // private class BuildArtifactImpl(
 //         override val build: Build,
 //         override val name: String,
