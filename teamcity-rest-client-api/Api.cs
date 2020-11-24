@@ -17,7 +17,8 @@ namespace TeamCityRestClientNet.Api
         public abstract IInvestigationLocator Investigations();
         public abstract Task<IBuild> Build(BuildId id);
         public abstract IBuild Build(BuildConfigurationId buildConfigurationId, string number);
-        public abstract IBuildConfiguration BuildConfiguration(BuildConfigurationId id);
+        public abstract Task<IBuildConfiguration> BuildConfiguration(string id);
+        public abstract Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id);
         public abstract IVcsRootLocator VcsRoots();
         public abstract IVcsRoot VcsRoot(VcsRootId id);
         public abstract IProject Project(ProjectId id);

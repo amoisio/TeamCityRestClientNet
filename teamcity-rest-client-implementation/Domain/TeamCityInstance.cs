@@ -60,7 +60,12 @@ namespace TeamCityRestClientNet.Domain
             throw new System.NotImplementedException();
         }
 
-        public override IBuildConfiguration BuildConfiguration(BuildConfigurationId id)
+        public override Task<IBuildConfiguration> BuildConfiguration(string id)
+        {
+            return BuildConfiguration(new BuildConfigurationId(id));
+        }
+
+        public override Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
         {
             throw new System.NotImplementedException();
         }
