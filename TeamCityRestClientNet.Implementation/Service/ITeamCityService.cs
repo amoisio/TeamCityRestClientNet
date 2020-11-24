@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 
 namespace TeamCityRestClientNet.Service
@@ -66,7 +67,7 @@ namespace TeamCityRestClientNet.Service
 
         // // @Streaming
         // // @GET("/app/rest/builds/id:{id}/artifacts/content/{path}")
-        Task ArtifactContent(/*@Path("id")*/string buildId,/*@Path("path", encode = false)*/string artifactPath);
+        Task<Stream> ArtifactContent(/*@Path("id")*/string buildId,/*@Path("path", encode = false)*/string artifactPath);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/builds/id:{id}/artifacts/children/{path}")

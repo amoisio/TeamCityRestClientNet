@@ -495,7 +495,7 @@ namespace TeamCityRestClientNet.Api
         IBuildArtifact FindArtifact(string pattern, string parentPath = "");
         IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
 
-        Task<Stream> DownloadArtifact(string artifactPath, Stream output);
+        Task DownloadArtifact(string artifactPath, Stream output);
         // void DownloadArtifact(string artifactPath, OutputStream output);
         Task DownloadArtifact(string artifactPath, FileInfo outputFile);
         Task DownloadArtifacts(string pattern, DirectoryInfo outputDir);

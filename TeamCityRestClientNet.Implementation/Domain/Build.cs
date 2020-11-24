@@ -192,42 +192,25 @@ namespace TeamCityRestClientNet.Domain
             await Service.CancelBuild(Id.stringId, request).ConfigureAwait(false);
         }
 
-
-
-        //         private fun downloadArtifactImpl(artifactPath: String, output: OutputStream)
-        //         {
-        //             openArtifactInputStreamImpl(artifactPath).use {
-        //                 input->
-        // output.use {
-        //                     input.copyTo(output, bufferSize = 512 * 1024)
-        //             }
-        //             }
-        //         }
-
-
-    //     private fun openArtifactInputStreamImpl(artifactPath: String) : InputStream {
-    //     val response = instance.service.artifactContent(id.stringId, artifactPath)
-    //     return response.body.`in`()
-    // }
-
-        //     override fun DownloadArtifact(artifactPath: String, output: OutputStream) {
-        //         LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()}")
-        //         try
-        //         {
-        //             DownloadArtifactImpl(artifactPath, output)
-        //         }
-        //         finally
-        //         {
-        //             LOG.debug("Artifact '$artifactPath' from build ${getHomeUrl()} downloaded")
-        //         }
-        //     }
-
-        public async Task<Stream> DownloadArtifact(string artifactPath, Stream output)
+        private const int ARTIFACT_BUFFER = 512 * 1024;
+        public async Task DownloadArtifact(string artifactPath, Stream output)
         {
-            
-            throw new NotImplementedException();
+            // LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()}")
+            try
+            {
+                var stream = await OpenArtifactStream(artifactPath).ConfigureAwait(false);
+                await stream.CopyToAsync(output, ARTIFACT_BUFFER).ConfigureAwait(false);
+            }
+            finally
+            {
+                // LOG.debug("Artifact '$artifactPath' from build ${getHomeUrl()} downloaded")
+            }
         }
 
+        private async Task<Stream> OpenArtifactStream(string artifactPath)
+        {
+            return await Service.ArtifactContent(Id.stringId, artifactPath).ConfigureAwait(false);
+        }
 
         //     override fun DownloadArtifact(artifactPath: String, output: File) {
         //         LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()} to $output")
@@ -247,14 +230,6 @@ namespace TeamCityRestClientNet.Domain
         //         }
         //     }
 
-        //     private fun DownloadArtifactImpl(artifactPath: String, output: OutputStream) {
-        //         OpenArtifactInputStreamImpl(artifactPath).use {
-        //             input->
-        // output.use {
-        //                 input.copyTo(output, bufferSize = 512 * 1024)
-        //             }
-        //         }
-        //     }
         public Task DownloadArtifact(string artifactPath, FileInfo outputFile)
         {
             throw new NotImplementedException();
