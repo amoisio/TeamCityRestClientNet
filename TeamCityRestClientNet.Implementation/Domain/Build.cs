@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
@@ -235,73 +236,77 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-
-        //     override fun DownloadArtifacts(pattern: String, outputDir: File) {
-        //     }
-
-
-        public Task DownloadArtifacts(string pattern, DirectoryInfo outputDir)
+        public async Task DownloadArtifacts(string pattern, DirectoryInfo outputDir)
         {
+            var artifacts = await GetArtifacts(recursive: true).ConfigureAwait(false);
+            var regex = ConvertToRegex(pattern);
+            var matches = artifacts.Where(art => regex.IsMatch(art.FullName));
+            if (!matches.Any()) 
+            {
+                var available = artifacts
+                    .Select(art => art.FullName)
+                    .Aggregate((a, b) => $"{a},{b}");
+                
+                throw new TeamCityQueryException($"No artifacts matching {pattern} are found in build {BuildNumber}. Available artifacts: {available}.");
+            }
 
-            throw new NotImplementedException();
-            //         val list = GetArtifacts(recursive = true)
-            //         val regexp = ConvertToJavaRegexp(pattern)
-            //         val matched = list.filter { regexp.matches(it.fullName) }
-            //         if (matched.isEmpty())
-            //         {
-            //             val available = list.joinToString(",") { it.fullName }
-            //             throw TeamCityQueryException("No artifacts matching $pattern are found in build $buildNumber. Available artifacts: $available.")
-            //         }
-            //         outputDir.mkdirs()
-            //         matched.forEach {
-            //             it.download(File(outputDir, it.name))
-            //         }
+            if (!outputDir.Exists)
+                outputDir.Create();
 
+            foreach(var match in matches) {
+                var path = Path.Join(outputDir.ToString(), match.Name);
+                await match.Download(new FileInfo(path)).ConfigureAwait(false);
+            }
         }
 
-
-        //     override fun DownloadBuildLog(output: File) {
-        //         LOG.info("Downloading build log from build ${getHomeUrl()} to $output")
-
-        //         val response = instance.service.buildLog(id.stringId)
-        //         SaveToFile(response, output)
-
-        //         LOG.debug("Build log from build ${getHomeUrl()} downloaded to $output")
-        //     }
-        public Task DownloadBuildLog(FileInfo outputFile)
+        private Regex ConvertToRegex(string pattern)
         {
-            throw new NotImplementedException();
+            return new Regex(pattern.Replace(".", "\\.").Replace("*", ".*").Replace("?", "."));
         }
 
-        //     override fun FindArtifact(pattern: String, parentPath: String): BuildArtifact {
-        //         return FindArtifact(pattern, parentPath, false)
-        //     }
-
-        public IBuildArtifact FindArtifact(string pattern, string parentPath = "")
+        public async Task DownloadBuildLog(FileInfo outputFile)
         {
-            throw new NotImplementedException();
+            // LOG.info("Downloading build log from build ${getHomeUrl()} to $output")
+            var logStream = await Service.BuildLog(Id.stringId).ConfigureAwait(false);
+            await SaveToFile(logStream, outputFile).ConfigureAwait(false);
+            // LOG.debug("Build log from build ${getHomeUrl()} downloaded to $output")
         }
 
-
-        //     override fun FindArtifact(pattern: String, parentPath: String, recursive: Boolean): BuildArtifact {
-        //         val list = GetArtifacts(parentPath, recursive)
-        //         val regexp = ConvertToJavaRegexp(pattern)
-        //         val result = list.filter { regexp.matches(it.name) }
-        //         if (result.isEmpty())
-        //         {
-        //             val available = list.joinToString(",") { it.name }
-        //             throw TeamCityQueryException("Artifact $pattern not found in build $buildNumber. Available artifacts: $available.")
-        //         }
-        //         if (result.size > 1)
-        //         {
-        //             val names = result.joinToString(",") { it.name }
-        //             throw TeamCityQueryException("Several artifacts matching $pattern are found in build $buildNumber: $names.")
-        //         }
-        //         return result.first()
-        //     }
-        public IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false)
+        private async Task SaveToFile(Stream logStream, FileInfo outputFile)
         {
-            throw new NotImplementedException();
+            using (var fileStream = outputFile.Open(FileMode.Create))
+            {
+                await logStream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
+            }
+        }
+
+        public async Task<IBuildArtifact> FindArtifact(string pattern, string parentPath = "")
+            => await FindArtifact(pattern, parentPath, false).ConfigureAwait(false);
+
+        public async Task<IBuildArtifact> FindArtifact(string pattern, string parentPath = "", bool recursive = false)
+        {
+            var artifacts = await GetArtifacts(parentPath, recursive).ConfigureAwait(false);
+            var regex = ConvertToRegex(pattern);
+            var matches = artifacts.Where(art => regex.IsMatch(art.Name));
+            if (!matches.Any())
+            {
+                var available = artifacts
+                    .Select(art => art.Name)
+                    .Aggregate((a, b) => $"{a},{b}");
+
+                throw new TeamCityQueryException($"Artifact {pattern} not found in build {BuildNumber}. Available artifacts: {available}.");
+            }
+
+            if (matches.Count() > 1) 
+            {
+                var names = matches
+                    .Select(art => art.Name)
+                    .Aggregate((a, b) => $"{a},{b}");
+
+                throw new TeamCityQueryException($"Several artifacts matching {pattern} are found in build {BuildNumber}: {names}.");
+            }
+
+            return matches.Single();
         }
 
         public async Task<List<IBuildArtifact>> GetArtifacts(
@@ -329,84 +334,44 @@ namespace TeamCityRestClientNet.Domain
         public string GetHomeUrl()
             => Instance.GetUserUrlPage("viewLog.html", buildId: Id);
 
-        //     override fun GetResultingParameters(): List<Parameter> {
-        //         return instance.service.resultingProperties(id.stringId).property!!.map { ParameterImpl(it) }
-        //     }
-        public List<IParameter> GetResultingParameters()
+        public async Task<List<IParameter>> GetResultingParameters()
         {
-            throw new NotImplementedException();
+            var props = await Service
+                .ResultingProperties(Id.stringId)
+                .ConfigureAwait(false);
+            return props.Property
+                .Select(prop => new Parameter(prop))
+                .ToList<IParameter>();
         }
 
-
-
-        //     override fun OpenArtifactInputStream(artifactPath: String): InputStream {
-        //         LOG.info("Opening artifact '$artifactPath' stream from build ${getHomeUrl()}")
-        //         return OpenArtifactInputStreamImpl(artifactPath)
-        //     }
-
-        public Stream OpenArtifactInputStream(string artifactPath)
+        public async Task Pin(string comment = "pinned via REST API")
         {
-            throw new NotImplementedException();
+            //         LOG.info("Pinning build ${getHomeUrl()}")
+            await Service.Pin(IdString, comment).ConfigureAwait(false);
         }
 
-
-        //     private fun OpenArtifactInputStreamImpl(artifactPath: String) : InputStream {
-        //         val response = instance.service.artifactContent(id.stringId, artifactPath)
-        //         return response.body.`in`()
-        //     }
-
-
-
-        //     override fun Pin(comment: String) {
-        //         LOG.info("Pinning build ${getHomeUrl()}")
-        //         instance.service.pin(idString, TypedString(comment))
-        //     }
-        public void Pin(string comment = "pinned via REST API")
+        public async Task ReplaceTags(List<string> tags)
         {
-            throw new NotImplementedException();
+            //         LOG.info("Replacing tags of build ${getHomeUrl()} with ${tags.joinToString(", ")}")
+            var tagDtos = tags.Select(tag => new TagDto { Name = tag }).ToList();
+            await Service
+                .ReplaceTags(IdString, new TagsDto { Tag = tagDtos })
+                .ConfigureAwait(false);
         }
 
-
-
-        //     override fun ReplaceTags(tags: List<String>) {
-        //         LOG.info("Replacing tags of build ${getHomeUrl()} with ${tags.joinToString(", ")}")
-        //         val tagBeans = tags.map { tag->TagBean().apply { name = tag } }
-        //         instance.service.replaceTags(idString, TagsBean().apply { tag = tagBeans })
-        //     }
-        public void ReplaceTags(List<string> tags)
+        public async Task SetComment(string comment)
         {
-            throw new NotImplementedException();
-        }
-
-        //     override fun SetComment(comment: String) {
         //         LOG.info("Adding comment $comment to build ${getHomeUrl()}")
-        //         instance.service.setComment(idString, TypedString(comment))
-        //     }
-
-        public void SetComment(string comment)
-        {
-            throw new NotImplementedException();
+            await Service.SetComment(IdString, comment).ConfigureAwait(false);
         }
 
-
-
-        //     override fun ToString(): String {
-        //         return "Build{id=$id, buildConfigurationId=$buildConfigurationId, buildNumber=$buildNumber, status=$status, branch=$branch}"
-        //     }
         public override string ToString()
+            => $"Build(id={Id}, buildConfigurationId={BuildConfigurationId}, buildNumber={BuildNumber}, status={Status}, branch={Branch})";
+
+        public async Task Unpin(string comment = "unpinned via REST API")
         {
-            throw new NotImplementedException();
-        }
-
-
-
-        //     override fun Unpin(comment: String) {
         //         LOG.info("Unpinning build ${getHomeUrl()}")
-        //         instance.service.unpin(idString, TypedString(comment))
-        //     }
-        public void Unpin(string comment = "unpinned via REST API")
-        {
-            throw new NotImplementedException();
+            await Service.Unpin(IdString, comment).ConfigureAwait(false);
         }
     }
 }

@@ -499,10 +499,7 @@
 
 // private class TestRunImpl(bean: TestOccurrenceBean) : TestRun, TestOccurrenceImpl(bean)
 
-// private fun ConvertToJavaRegexp(pattern: String): Regex
-// {
-//     return pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".").toRegex()
-// }
+
 
 
 

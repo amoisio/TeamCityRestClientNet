@@ -487,26 +487,21 @@ namespace TeamCityRestClientNet.Api
 
         Task AddTag(string tag);
         Task Cancel(string comment = "", bool reAddIntoQueue = false);
-        void SetComment(string comment);
-        void ReplaceTags(List<string> tags);
-        void Pin(string comment = "pinned via REST API");
-        void Unpin(string comment = "unpinned via REST API");
+        Task SetComment(string comment);
+        Task ReplaceTags(List<string> tags);
+        Task Pin(string comment = "pinned via REST API");
+        Task Unpin(string comment = "unpinned via REST API");
         Task<List<IBuildArtifact>> GetArtifacts(string parentPath = "", bool recursive = false, bool hidden = false);
-        IBuildArtifact FindArtifact(string pattern, string parentPath = "");
-        IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
-
+        Task<IBuildArtifact> FindArtifact(string pattern, string parentPath = "");
+        Task<IBuildArtifact> FindArtifact(string pattern, string parentPath = "", bool recursive = false);
         Task DownloadArtifact(string artifactPath, Stream output);
         // void DownloadArtifact(string artifactPath, OutputStream output);
         Task DownloadArtifact(string artifactPath, FileInfo outputFile);
         Task DownloadArtifacts(string pattern, DirectoryInfo outputDir);
         Task DownloadBuildLog(FileInfo outputFile);
         Task<Stream> OpenArtifactStream(string artifactPath);
-        
-        
-        List<IParameter> GetResultingParameters();
-
+        Task<List<IParameter>> GetResultingParameters();
     }
-
 
     public interface IInvestigation
     {

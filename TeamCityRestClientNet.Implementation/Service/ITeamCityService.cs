@@ -164,7 +164,7 @@ namespace TeamCityRestClientNet.Service
 
         // @Streaming
         // @GET("/downloadBuildLog.html")
-        Task BuildLog(/*@Query ("buildId")*/string id);
+        Task<Stream> BuildLog(/*@Query ("buildId")*/string id);
 
         // @Headers("Accept: application/json")
         // @GET("/app/rest/changes/buildType:{id},version:{version}")
