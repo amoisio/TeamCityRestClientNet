@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>TeamCityRestClientNet.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\teamcity-rest-client-api\teamcity-rest-client-api.csproj" />
+    <ProjectReference Include="..\TeamCityRestClientNet.Api\TeamCityRestClientNet.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\teamcity-rest-client-api\teamcity-rest-client-api.csproj" />
+    <ProjectReference Include="..\TeamCityRestClientNet.Api\TeamCityRestClientNet.Api.csproj" />
   </ItemGroup>
 
 </Project>
