@@ -394,7 +394,7 @@ namespace TeamCityRestClientNet.Api
     public interface IBuildProblemOccurrence
     {
         IBuildProblem BuildProblem { get; }
-        IBuild Build { get; }
+        AsyncLazy<IBuild> Build { get; }
         string Details { get; }
         string AdditionalData { get; }
     }
