@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
@@ -13,19 +14,60 @@ namespace TeamCityRestClientNet.Domain
     class Build : Base<BuildDto>, IBuild
     {
         private Build(BuildDto fullDto, TeamCityInstance instance)
-            : base(fullDto, instance) { }
+            : base(fullDto, instance)
+        {
+            this.Changes = new AsyncLazy<List<IChange>>(async () 
+                => {
+                var changes = await instance.Service.Changes(
+                    $"build:{IdString}",
+                    "change(id,version,username,user,date,comment,vcsRootInstance)").ConfigureAwait(false);
+
+                var tasks = changes.Change
+                    ?.Select(dto => Change.Create(dto, true, instance));
+
+                return (await Task.WhenAll(tasks).ConfigureAwait(false))
+                    .ToList() 
+                    ?? throw new NullReferenceException();
+            });
+
+            this.SnapshotDependencies = new AsyncLazy<List<IBuild>>(async () 
+                => {
+                    var tasks = fullDto.SnapshotDependencies
+                        ?.Build
+                        ?.Select(dto => Build.Create(dto.Id, instance));
+            
+                    return tasks != null 
+                        ? (await Task.WhenAll(tasks).ConfigureAwait(false))
+                            .ToList<IBuild>()
+                        : new List<IBuild>();
+            });
+
+            this.Agent = new AsyncLazy<IBuildAgent>(async () 
+                => (Dto.Agent?.Id == null)
+                    ? null
+                    : await BuildAgent.Create(Dto.Agent.Id, Instance).ConfigureAwait(false)
+                );
+        }
 
         public static async Task<IBuild> Create(string idString, TeamCityInstance instance)
         {
             var dto = await instance.Service.Build(idString).ConfigureAwait(false);
+
+            if (dto.BuildType == null)
+            {
+                dto.BuildType = new BuildTypeDto();
+            }
+
+            if (String.IsNullOrEmpty(dto.BuildType.Name))
+            {
+                dto.BuildType.Name = (await instance.BuildConfiguration(dto.BuildTypeId).ConfigureAwait(false)).Name;
+            }
+
             return new Build(dto, instance);
         }
 
         public BuildId Id => new BuildId(this.IdString);
-
-        public BuildConfigurationId BuildConfigurationId
-            => new BuildConfigurationId(this.Dto.BuildTypeId);
-
+        public BuildConfigurationId BuildConfigurationId => new BuildConfigurationId(this.Dto.BuildTypeId);
         public string BuildNumber => this.Dto.Number;
         public BuildStatus? Status => this.Dto.Status;
         public IBranch Branch
@@ -37,7 +79,6 @@ namespace TeamCityRestClientNet.Domain
                 return new Branch(branchName, isDefaultBranch ?? String.IsNullOrEmpty(branchName));
             }
         }
-
         public BuildState State
         {
             get
@@ -52,31 +93,12 @@ namespace TeamCityRestClientNet.Domain
                 }
             }
         }
-
         public bool Personal => this.Dto.Personal ?? false;
-
-        public string Name
-        {
-            get
-            {
-                var name = this.Dto.BuildType?.Name;
-                if (String.IsNullOrEmpty(name))
-                {
-                    // May be async
-                    return Instance.BuildConfiguration(this.BuildConfigurationId).Name;
-                }
-                else
-                {
-                    return name;
-                }
-            }
-        }
-
+        public string Name => Dto.BuildType.Name;
         public IBuildCanceledInfo CanceledInfo
             => this.Dto.CanceledInfo != null
                 ? new BuildCanceledInfo(this.Dto.CanceledInfo, Instance)
                 : null;
-
         public IBuildCommentInfo Comment
             => this.Dto.Comment != null
                 ? new BuildCommentInfo(this.Dto.Comment, Instance)
@@ -86,47 +108,24 @@ namespace TeamCityRestClientNet.Domain
         public DateTimeOffset QueuedDateTime
             => Utilities.ParseTeamCity(this.Dto.QueuedDate)
             ?? throw new NullReferenceException();
-
-        public DateTimeOffset? StartDateTime
-            => Utilities.ParseTeamCity(this.Dto.StartDate);
-
-        public DateTimeOffset? FinishDateTime
-            => Utilities.ParseTeamCity(this.Dto.FinishDate);
-
+        public DateTimeOffset? StartDateTime => Utilities.ParseTeamCity(this.Dto.StartDate);
+        public DateTimeOffset? FinishDateTime => Utilities.ParseTeamCity(this.Dto.FinishDate);
         public IBuildRunningInfo RunningInfo
             => this.Dto.RunningInfo != null
                 ? new BuildRunningInfo(this.Dto.RunningInfo)
                 : null;
-
         public List<IParameter> Parameters
             => this.Dto.Properties
                 ?.Property
                 ?.Select(prop => new Parameter(prop))
                 .ToList<IParameter>()
                 ?? throw new NullReferenceException();
-
         public List<string> Tags
-        {
-            //     override val tags: List<String>
-            //         Get() = fullBean.tags?.tag?.map { it.name!! } ?: GmptyList()
-            get
-            {
-                var tagNames = new List<string>();
-                var tags = this.Dto.Tags?.Tag;
-                if (tags != null)
-                {
-                    foreach (var tag in tags)
-                    {
-                        if (String.IsNullOrEmpty(tag.Name))
-                            throw new NullReferenceException();
-                        else
-                            tagNames.Add(tag.Name);
-                    }
-                }
-                return tagNames;
-            }
-        }
-
+            => Dto.Tags?.Tag
+                ?.Where(tag => !String.IsNullOrEmpty(tag.Name))
+                .Select(tag => tag.Name)
+                .ToList()
+                ?? new List<string>();
         public List<IRevision> Revisions
             => this.Dto.Revisions
                 ?.Revision
@@ -134,61 +133,48 @@ namespace TeamCityRestClientNet.Domain
                 .ToList<IRevision>()
                 ?? throw new NullReferenceException();
 
-        // Async
-        public List<IChange> Changes
-            => Service.Changes(
-                $"build:{IdString}",
-                "change(id,version,username,user,date,comment,vcsRootInstance)")
-                .GetAwaiter()
-                .GetResult()
-                .Change
-                ?.Select(c => new Change(c, true, Instance))
-                .ToList<IChange>() ?? throw new NullReferenceException();
+        public AsyncLazy<List<IChange>> Changes { get; }
+        public AsyncLazy<List<IBuild>> SnapshotDependencies { get; }
+        public IPinInfo PinInfo 
+            => Dto.PinInfo != null
+                ? new PinInfo(Dto.PinInfo, Instance)
+                : null;
+        public ITriggeredInfo TriggeredInfo 
+            => Dto.Triggered != null
+                ? new Triggered(Dto.Triggered, Instance)
+                : null;
 
 
-        // Async
-        public List<IBuild> SnapshotDependencies
-            => this.Dto.SnapshotDependencies
-                ?.Build
-                ?.Select(dto => new Build(dto, Instance))
-                .ToList<IBuild>()
-                ?? new List<IBuild>();
+        public AsyncLazy<IBuildAgent> Agent { get; }
 
-        // Async
-        public IPinInfo PinInfo
-            => this.Dto.PinInfo
-                .Let(dto => new PinInfo(dto, Instance));
 
-        // Async
-        public ITriggeredInfo TriggeredInfo
-            => this.Dto.Triggered
-                .Let(dto => new Triggered(dto, Instance));
+        //     override fun Tests(status: TestStatus ?): Sequence < TestRun > = TestRuns(status)
+        //     override fun TestRuns(status: TestStatus ?): Sequence < TestRun > = instance
+        //              .testRuns()
+        //              .forBuild(id)
+        //              .let { if (status == null) it else it.withStatus(status) }
+        //             .all()
+        public IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
+        {
+            throw new NotImplementedException();
+        }
 
-        //     override val agent: BuildAgent?
-        //         Get()
-        //     {
-        //         val agentBean = fullBean.agent
-
-        //             if (agentBean?.id == null)
-        //             return null
-
-        //             return BuildAgentImpl(agentBean, false, instance)
-        //         }
-        public IBuildAgent Agent => throw new NotImplementedException();
-
-        //     override val buildProblems: Sequence<BuildProblemOccurrence>
-        //         Get() = GazyPaging(instance, {
-        //         return @lazyPaging instance.service.problemOccurrences(
-        //                  locator = "build:(id:${id.stringId})",
-        //                  fields = "\$long,problemOccurrence(\$long)")
-        //         }) {
-        //         occurrencesBean->
-        //        Page(
-        //                data = occurrencesBean.problemOccurrence.map { BuildProblemOccurrenceImpl(it, instance) },
-        //                     nextHref = occurrencesBean.nextHref
-        //             )
-        //         }
-        public IEnumerable<IBuildProblemOccurrence> BuildProblems => throw new NotImplementedException();
+        public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {
+            var sequence = new Paged<IBuildProblemOccurrence, BuildProblemOccurrencesDto>(
+                Service,
+                async () => await Service.ProblemOccurrences(
+                    $"build:(id:{Id.stringId})",
+                    "$long,problemOccurrence($long)").ConfigureAwait(false)
+                ,
+                async (list) =>
+                {
+                    var occurrences = list.ProblemOccurrence.Select(dto => new BuildProblemOccurrence(dto, Instance));
+                    var page = new Page<IBuildProblemOccurrence>(occurrences.ToArray(), list.NextHref);
+                    return await Task.FromResult(page);
+                }
+            );
+            return sequence;
+        }
 
         public async Task AddTag(string tag)
         {
@@ -206,6 +192,24 @@ namespace TeamCityRestClientNet.Domain
             await Service.CancelBuild(Id.stringId, request).ConfigureAwait(false);
         }
 
+
+
+        //         private fun downloadArtifactImpl(artifactPath: String, output: OutputStream)
+        //         {
+        //             openArtifactInputStreamImpl(artifactPath).use {
+        //                 input->
+        // output.use {
+        //                     input.copyTo(output, bufferSize = 512 * 1024)
+        //             }
+        //             }
+        //         }
+
+
+    //     private fun openArtifactInputStreamImpl(artifactPath: String) : InputStream {
+    //     val response = instance.service.artifactContent(id.stringId, artifactPath)
+    //     return response.body.`in`()
+    // }
+
         //     override fun DownloadArtifact(artifactPath: String, output: OutputStream) {
         //         LOG.info("Downloading artifact '$artifactPath' from build ${getHomeUrl()}")
         //         try
@@ -218,8 +222,9 @@ namespace TeamCityRestClientNet.Domain
         //         }
         //     }
 
-        public void DownloadArtifact(string artifactPath, Stream output)
+        public async Task<Stream> DownloadArtifact(string artifactPath, Stream output)
         {
+            
             throw new NotImplementedException();
         }
 
@@ -250,7 +255,7 @@ namespace TeamCityRestClientNet.Domain
         //             }
         //         }
         //     }
-        public void DownloadArtifact(string artifactPath, FileInfo outputFile)
+        public Task DownloadArtifact(string artifactPath, FileInfo outputFile)
         {
             throw new NotImplementedException();
         }
@@ -272,7 +277,7 @@ namespace TeamCityRestClientNet.Domain
         //     }
 
 
-        public void DownloadArtifacts(string pattern, DirectoryInfo outputDir)
+        public Task DownloadArtifacts(string pattern, DirectoryInfo outputDir)
         {
             throw new NotImplementedException();
         }
@@ -286,7 +291,7 @@ namespace TeamCityRestClientNet.Domain
 
         //         LOG.debug("Build log from build ${getHomeUrl()} downloaded to $output")
         //     }
-        public void DownloadBuildLog(FileInfo outputFile)
+        public Task DownloadBuildLog(FileInfo outputFile)
         {
             throw new NotImplementedException();
         }
@@ -399,16 +404,6 @@ namespace TeamCityRestClientNet.Domain
             throw new NotImplementedException();
         }
 
-        //     override fun Tests(status: TestStatus ?): Sequence < TestRun > = TestRuns(status)
-        //     override fun TestRuns(status: TestStatus ?): Sequence < TestRun > = instance
-        //              .testRuns()
-        //              .forBuild(id)
-        //              .let { if (status == null) it else it.withStatus(status) }
-        //             .all()
-        public IEnumerable<ITestRun> TestRuns(TestStatus? status = null)
-        {
-            throw new NotImplementedException();
-        }
 
 
         //     override fun ToString(): String {

@@ -468,24 +468,25 @@ namespace TeamCityRestClientNet.Api
          * Changes is meant to represent changes the same way as displayed in the build's Changes in TeamCity UI.
          * In the most cases these are the commits between the current and previous build.
          */
-        List<IChange> Changes { get; }
+        AsyncLazy<List<IChange>> Changes { get; }
 
         /**
          * All snapshot-dependency-linked builds this build depends on
          */
-        List<IBuild> SnapshotDependencies { get; }
+        AsyncLazy<List<IBuild>> SnapshotDependencies { get; }
 
         IPinInfo PinInfo { get; }
 
         ITriggeredInfo TriggeredInfo { get; }
 
-        IBuildAgent Agent { get; }
+        AsyncLazy<IBuildAgent> Agent { get; }
 
-        IEnumerable<ITestRun> TestRuns(TestStatus? status = null);
+        IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null);
 
-        IEnumerable<IBuildProblemOccurrence> BuildProblems { get; }
+        IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems();
 
         Task AddTag(string tag);
+        Task Cancel(string comment = "", bool reAddIntoQueue = false);
         void SetComment(string comment);
         void ReplaceTags(List<string> tags);
         void Pin(string comment = "pinned via REST API");
@@ -494,13 +495,14 @@ namespace TeamCityRestClientNet.Api
         IBuildArtifact FindArtifact(string pattern, string parentPath = "");
         IBuildArtifact FindArtifact(string pattern, string parentPath = "", bool recursive = false);
 
-        void DownloadArtifact(string artifactPath, Stream output);
+        Task<Stream> DownloadArtifact(string artifactPath, Stream output);
         // void DownloadArtifact(string artifactPath, OutputStream output);
-        void DownloadArtifact(string artifactPath, FileInfo outputFile);
-        void DownloadArtifacts(string pattern, DirectoryInfo outputDir);
+        Task DownloadArtifact(string artifactPath, FileInfo outputFile);
+        Task DownloadArtifacts(string pattern, DirectoryInfo outputDir);
+        Task DownloadBuildLog(FileInfo outputFile);
         Stream OpenArtifactInputStream(string artifactPath);
-        void DownloadBuildLog(FileInfo outputFile);
-        Task Cancel(string comment = "", bool reAddIntoQueue = false);
+        
+        
         List<IParameter> GetResultingParameters();
 
     }
