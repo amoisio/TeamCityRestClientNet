@@ -40,97 +40,116 @@ namespace TeamCityRestClientNet.Domain
 
         public override string ServerUrl { get; }
 
-        public override Task<IBuild> Build(BuildId id)
+        //     override fun Build(id: BuildId): Build = BuildImpl(
+        //             BuildBean().also { it.id = id.stringId }, false, this)
+        public override async Task<IBuild> Build(BuildId id)
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun Build(buildConfigurationId: BuildConfigurationId, number: String): Build ? =
+        //             BuildLocatorImpl(this).fromConfiguration(buildConfigurationId).withNumber(number).latest()
+        public override async Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number)
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun BuildAgents(): BuildAgentLocator = BuildAgentLocatorImpl(this)
+        public override async Task<IBuildAgentLocator> BuildAgents()
         {
             throw new System.NotImplementedException();
         }
 
-        public override IBuild Build(BuildConfigurationId buildConfigurationId, string number)
+        //     override fun BuildAgentPools(): BuildAgentPoolLocator = BuildAgentPoolLocatorImpl(this)
+        public override async Task<IBuildAgentPoolLocator> BuildAgentPools()
+        {
+            throw new System.NotImplementedException();
+        }
+        
+        public override async Task<IBuildConfiguration> BuildConfiguration(string id)
+        {
+            return await BuildConfiguration(new BuildConfigurationId(id)).ConfigureAwait(false);
+        }
+        //     override fun BuildConfiguration(id: BuildConfigurationId): BuildConfiguration =
+        //             BuildConfigurationImpl(BuildTypeBean().also { it.id = id.stringId }, false, this)
+        public override async Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun BuildQueue(): BuildQueue = BuildQueueImpl(this)
+        public override async Task<IBuildQueue> BuildQueue()
+        {
+            throw new System.NotImplementedException();
+        }
+        //override fun builds(): BuildLocator = BuildLocatorImpl(this)
+        public override async Task<IBuildLocator> Builds()
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun Change(buildConfigurationId: BuildConfigurationId, vcsRevision: String): Change =
+        //             ChangeImpl(service.change(
+        //                     buildType = buildConfigurationId.stringId, version = vcsRevision), true, this)
+        public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun Change(id: ChangeId): Change =
+        //             ChangeImpl(ChangeBean().also { it.id = id.stringId }, false, this)
+        public override async Task<IChange> Change(ChangeId id)
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun Investigations(): InvestigationLocator = InvestigationLocatorImpl(this)
+        public override async Task<IInvestigationLocator> Investigations()
+        {
+            throw new System.NotImplementedException();
+        }
+        //     override fun Project(id: ProjectId): Project = ProjectImpl(ProjectBean().let { it.id = id.stringId; it }, false, this)
+        public override async Task<IProject> Project(ProjectId id)
         {
             throw new System.NotImplementedException();
         }
 
-        public override IBuildAgentPoolLocator BuildAgentPools()
+        //     override fun QueuedBuilds(projectId: ProjectId ?): List < Build > =
+        //              BuildQueue().queuedBuilds(projectId = projectId).toList()
+        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
+        {
+            throw new NotImplementedException();
+        }
+        //     override fun RootProject(): Project = Rroject(ProjectId("_Root"))
+        public override async Task<IProject> RootProject()
         {
             throw new System.NotImplementedException();
         }
 
-        public override IBuildAgentLocator BuildAgents()
+        public override async Task<ITestRunsLocator> TestRuns()
         {
             throw new System.NotImplementedException();
         }
-
-        public override Task<IBuildConfiguration> BuildConfiguration(string id)
-        {
-            return BuildConfiguration(new BuildConfigurationId(id));
-        }
-
-        public override Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
+        //     override fun User(id: UserId): User =
+        //             UserImpl(UserBean().also { it.id = id.stringId }, false, this)
+        public override async Task<IUser> User(UserId id)
         {
             throw new System.NotImplementedException();
         }
-
-        public override IBuildQueue BuildQueue()
+        //     override fun User(userName: String): User {
+        //         val bean = service.users("username:$userName")
+        //         return UserImpl(bean, true, this)
+        //     }
+        public override async Task<IUser> User(string userName)
         {
             throw new System.NotImplementedException();
         }
-
-        public override IBuildLocator Builds()
+        //     override fun Users(): UserLocator = UserLocatorImpl(this)
+        public override async Task<IUserLocator> Users()
         {
             throw new System.NotImplementedException();
         }
-
-        public override IChange Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
+        //     override fun VcsRoot(id: VcsRootId): VcsRoot = VcsRootImpl(service.vcsRoot(id.stringId), true, this)
+        public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {
             throw new System.NotImplementedException();
         }
-
-        public override IChange Change(ChangeId id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IInvestigationLocator Investigations()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IProject Project(ProjectId id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IProject RootProject()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override ITestRunsLocator TestRuns()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IUser User(UserId id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IUser User(string userName)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IUserLocator Users()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IVcsRoot VcsRoot(VcsRootId id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override IVcsRootLocator VcsRoots()
+        //     override fun VcsRoots(): VcsRootLocator = VcsRootLocatorImpl(this)
+        public override async Task<IVcsRootLocator> VcsRoots()
         {
             throw new System.NotImplementedException();
         }
@@ -140,93 +159,6 @@ namespace TeamCityRestClientNet.Domain
 
         public override TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit)
             => new TeamCityInstance(_serverUrl, _serverUrlBase, _authHeader, true, unit, timeout);
-
-
-        public ITeamCityService Service => throw new NotImplementedException();
-
-        //     override fun Investigations(): InvestigationLocator = InvestigationLocatorImpl(this)
-
-        //     override fun Build(id: BuildId): Build = BuildImpl(
-        //             BuildBean().also { it.id = id.stringId }, false, this)
-
-        //     override fun Build(buildConfigurationId: BuildConfigurationId, number: String): Build ? =
-        //             BuildLocatorImpl(this).fromConfiguration(buildConfigurationId).withNumber(number).latest()
-
-        //     override fun BuildConfiguration(id: BuildConfigurationId): BuildConfiguration =
-        //             BuildConfigurationImpl(BuildTypeBean().also { it.id = id.stringId }, false, this)
-
-        //     override fun VcsRoots(): VcsRootLocator = VcsRootLocatorImpl(this)
-
-        //     override fun VcsRoot(id: VcsRootId): VcsRoot = VcsRootImpl(service.vcsRoot(id.stringId), true, this)
-
-        //     override fun Project(id: ProjectId): Project = ProjectImpl(ProjectBean().let { it.id = id.stringId; it }, false, this)
-
-        //     override fun RootProject(): Project = Rroject(ProjectId("_Root"))
-
-        //     override fun User(id: UserId): User =
-        //             UserImpl(UserBean().also { it.id = id.stringId }, false, this)
-
-        //     override fun User(userName: String): User {
-        //         val bean = service.users("username:$userName")
-        //         return UserImpl(bean, true, this)
-        //     }
-
-        //     override fun Users(): UserLocator = UserLocatorImpl(this)
-
-        //     override fun Change(buildConfigurationId: BuildConfigurationId, vcsRevision: String): Change =
-        //             ChangeImpl(service.change(
-        //                     buildType = buildConfigurationId.stringId, version = vcsRevision), true, this)
-
-        //     override fun Change(id: ChangeId): Change =
-        //             ChangeImpl(ChangeBean().also { it.id = id.stringId }, false, this)
-
-        //     override fun BuildQueue(): BuildQueue = BuildQueueImpl(this)
-
-        //     override fun BuildAgents(): BuildAgentLocator = BuildAgentLocatorImpl(this)
-
-        //     override fun BuildAgentPools(): BuildAgentPoolLocator = BuildAgentPoolLocatorImpl(this)
-
-        //     override fun GetWebUrl(projectId: ProjectId, branch: String ?): String =
-        //              Project(projectId).getHomeUrl(branch = branch)
-
-        //     override fun GetWebUrl(buildConfigurationId: BuildConfigurationId, branch: String ?): String =
-        //              BuildConfiguration(buildConfigurationId).getHomeUrl(branch = branch)
-
-        //     override fun GetWebUrl(buildId: BuildId): String =
-        //             Build(buildId).getHomeUrl()
-
-        //     override fun GetWebUrl(changeId: ChangeId, specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
-        //               Change(changeId).getHomeUrl(
-        //                       specificBuildConfigurationId = specificBuildConfigurationId,
-        //                       includePersonalBuilds = includePersonalBuilds
-        //               )
-
-        //     override fun QueuedBuilds(projectId: ProjectId ?): List < Build > =
-        //              BuildQueue().queuedBuilds(projectId = projectId).toList()
-
-        //     override fun TestRuns(): TestRunsLocator = TestRunsLocatorImpl(this)
-
-
-        //     private var client = OkHttpClient.Builder()
-        //             .readTimeout(timeout, unit)
-        //             .writeTimeout(timeout, unit)
-        //             .connectTimeout(timeout, unit)
-        //             .addInterceptor(RetryInterceptor())
-        //             .dispatcher(Dispatcher(
-        //                     //by default non-daemon threads are used, and it blocks JVM from exit
-        //                     ThreadPoolExecutor(0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
-        //                             SynchronousQueue(),
-        //                             object: ThreadFactory {
-        //                                 private val count = AtomicInteger(0)
-        //                                 override fun NewThread(r: Runnable) = Nhread(
-        //                                         block = { r.run() },
-        //                                         isDaemon = true,
-        //                                         start = false,
-        //                                         name = "TeamCity-Rest-Client - OkHttp Dispatcher - ${count.incrementAndGet()}"
-        //                                 )
-        //                             }
-        //             )))
-        //             .build()
 
         //     internal val service = RestAdapter.Builder()
         //             .setClient(Ok3Client(client))
@@ -273,37 +205,52 @@ namespace TeamCityRestClientNet.Domain
         //     catchAll { client.connectionPool.evictAll() }
         //     catchAll { client.cache?.close() }
         //     }
+        public ITeamCityService Service => throw new NotImplementedException();
 
 
-        // private fun String.urlencode(): String = URLEncoder.encode(this, "UTF-8")
+        //     override fun GetWebUrl(projectId: ProjectId, branch: String ?): String =
+        //              Project(projectId).getHomeUrl(branch = branch)
 
-        // private fun GetUserUrlPage(serverUrl: String,
-        //                            pageName: String,
-        //                            tab: String ? = null,
-        //                            projectId: ProjectId ? = null,
-        //                            buildId: BuildId ? = null,
-        //                            testNameId: TestId ? = null,
-        //                            userId: UserId ? = null,
-        //                            modId: ChangeId ? = null,
-        //                            personal: Boolean ? = null,
-        //                            buildTypeId: BuildConfigurationId ? = null,
-        //                            branch: String ? = null): String
-        // {
-        //     val params = mutableListOf<String>()
+        //     override fun GetWebUrl(buildConfigurationId: BuildConfigurationId, branch: String ?): String =
+        //              BuildConfiguration(buildConfigurationId).getHomeUrl(branch = branch)
 
-        //     tab?.let { params.add("tab=" + tab.urlencode()) }
-        //     projectId?.let { params.add("projectId=" + projectId.stringId.urlencode()) }
-        //     buildId?.let { params.add("buildId=" + buildId.stringId.urlencode()) }
-        //     testNameId?.let { params.add("testNameId=" + testNameId.stringId.urlencode()) }
-        //     userId?.let { params.add("userId=" + userId.stringId.urlencode()) }
-        //     modId?.let { params.add("modId=" + modId.stringId.urlencode()) }
-        //     personal?.let { params.add("personal=" + if (personal) "true" else "false") }
-        //     buildTypeId?.let { params.add("buildTypeId=" + buildTypeId.stringId.urlencode()) }
-        //     branch?.let { params.add("branch=" + branch.urlencode()) }
+        //     override fun GetWebUrl(buildId: BuildId): String =
+        //             Build(buildId).getHomeUrl()
 
-        //     return "$serverUrl/$pageName" +
-        //             if (params.isNotEmpty()) "?${params.joinToString(" & ")}" else ""
-        // }
+        //     override fun GetWebUrl(changeId: ChangeId, specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
+        //               Change(changeId).getHomeUrl(
+        //                       specificBuildConfigurationId = specificBuildConfigurationId,
+        //                       includePersonalBuilds = includePersonalBuilds
+        //               )
+
+        
+
+        //     override fun TestRuns(): TestRunsLocator = TestRunsLocatorImpl(this)
+
+
+        //     private var client = OkHttpClient.Builder()
+        //             .readTimeout(timeout, unit)
+        //             .writeTimeout(timeout, unit)
+        //             .connectTimeout(timeout, unit)
+        //             .addInterceptor(RetryInterceptor())
+        //             .dispatcher(Dispatcher(
+        //                     //by default non-daemon threads are used, and it blocks JVM from exit
+        //                     ThreadPoolExecutor(0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
+        //                             SynchronousQueue(),
+        //                             object: ThreadFactory {
+        //                                 private val count = AtomicInteger(0)
+        //                                 override fun NewThread(r: Runnable) = Nhread(
+        //                                         block = { r.run() },
+        //                                         isDaemon = true,
+        //                                         start = false,
+        //                                         name = "TeamCity-Rest-Client - OkHttp Dispatcher - ${count.incrementAndGet()}"
+        //                                 )
+        //                             }
+        //             )))
+        //             .build()
+
+        
+
         internal string GetUserUrlPage(
             string pageName,
             string tab = null,

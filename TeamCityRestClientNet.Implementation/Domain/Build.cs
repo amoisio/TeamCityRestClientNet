@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
 
@@ -148,16 +147,10 @@ namespace TeamCityRestClientNet.Domain
 
         public AsyncLazy<IBuildAgent> Agent { get; }
 
-
-        //     override fun Tests(status: TestStatus ?): Sequence < TestRun > = TestRuns(status)
-        //     override fun TestRuns(status: TestStatus ?): Sequence < TestRun > = instance
-        //              .testRuns()
-        //              .forBuild(id)
-        //              .let { if (status == null) it else it.withStatus(status) }
-        //             .all()
-        public IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
+        // Maybe a task is still better...?
+        public async IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
         {
-            var locator = Instance.TestRuns().ForBuild(Id);
+            var locator = (await Instance.TestRuns().ConfigureAwait(false)).ForBuild(Id);
             if (status != null)
                 locator.WithStatus(status.Value);
 

@@ -9,31 +9,31 @@ namespace TeamCityRestClientNet.Api
 {
     public abstract class TeamCityInstanceBase : IDisposable
     {
+        private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
         private bool disposedValue;
         public abstract string ServerUrl { get; }
-        public abstract TeamCityInstanceBase WithLogResponses();
-        public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
-        public abstract IBuildLocator Builds();
-        public abstract IInvestigationLocator Investigations();
         public abstract Task<IBuild> Build(BuildId id);
-        public abstract IBuild Build(BuildConfigurationId buildConfigurationId, string number);
+        public abstract Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number);
+        public abstract Task<IBuildAgentLocator> BuildAgents();
+        public abstract Task<IBuildAgentPoolLocator> BuildAgentPools();
         public abstract Task<IBuildConfiguration> BuildConfiguration(string id);
         public abstract Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id);
-        public abstract IVcsRootLocator VcsRoots();
-        public abstract IVcsRoot VcsRoot(VcsRootId id);
-        public abstract IProject Project(ProjectId id);
-        public abstract IProject RootProject();
-        public abstract IBuildQueue BuildQueue();
-        public abstract IUser User(UserId id);
-        public abstract IUser User(string userName);
-        public abstract IUserLocator Users();
-        public abstract IBuildAgentLocator BuildAgents();
-        public abstract IBuildAgentPoolLocator BuildAgentPools();
-        public abstract ITestRunsLocator TestRuns();
-        public abstract IChange Change(BuildConfigurationId buildConfigurationId, string vcsRevision);
-        public abstract IChange Change(ChangeId id);
-
-        private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
+        public abstract Task<IBuildQueue> BuildQueue();
+        public abstract Task<IBuildLocator> Builds();
+        public abstract Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision);
+        public abstract Task<IChange> Change(ChangeId id);
+        public abstract Task<IInvestigationLocator> Investigations();
+        public abstract Task<IProject> Project(ProjectId id);
+        public abstract IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId);
+        public abstract Task<IProject> RootProject();
+        public abstract Task<ITestRunsLocator> TestRuns();
+        public abstract Task<IUser> User(UserId id);
+        public abstract Task<IUser> User(string userName);
+        public abstract Task<IUserLocator> Users();
+        public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
+        public abstract Task<IVcsRootLocator> VcsRoots();
+        public abstract TeamCityInstanceBase WithLogResponses();
+        public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
 
         protected virtual void Dispose(bool disposing)
         {
