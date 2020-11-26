@@ -54,16 +54,11 @@ namespace TeamCityRestClientNet.Domain
 
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
-        public override async Task<IBuildConfiguration> BuildConfiguration(string id)
-        {
-            return await BuildConfiguration(new BuildConfigurationId(id)).ConfigureAwait(false);
-        }
-        //     override fun BuildConfiguration(id: BuildConfigurationId): BuildConfiguration =
-        //             BuildConfigurationImpl(BuildTypeBean().also { it.id = id.stringId }, false, this)
+        public override async Task<IBuildConfiguration> BuildConfiguration(string id) 
+            => await Domain.BuildConfiguration.Create(id, this).ConfigureAwait(false);
+        
         public override async Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
-        {
-            throw new System.NotImplementedException();
-        }
+            => await BuildConfiguration(id.stringId).ConfigureAwait(false);
         //     override fun BuildQueue(): BuildQueue = BuildQueueImpl(this)
         public override async Task<IBuildQueue> BuildQueue()
         {
