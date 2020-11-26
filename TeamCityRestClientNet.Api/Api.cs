@@ -158,7 +158,7 @@ namespace TeamCityRestClientNet.Api
         IInvestigationLocator LimitResults(int count);
         IInvestigationLocator ForProject(ProjectId projectId);
         IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
-        IAsyncEnumerable<IInvestigation> All();
+        Task<IEnumerable<IInvestigation>> All();
     }
 
     public interface ITestRunsLocator

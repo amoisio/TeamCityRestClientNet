@@ -51,9 +51,11 @@ namespace TeamCityRestClientNet.Domain
             });
         }
 
-        public static async Task<IInvestigation> Create(string id, TeamCityInstance instance)
+        public static async Task<IInvestigation> Create(InvestigationDto dto, bool isFullDto, TeamCityInstance instance)
         {
-            var dto = await instance.Service.Investigation(id).ConfigureAwait(false);
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.Investigation(dto.Id).ConfigureAwait(false);
             return new Investigation(dto, instance);
         }
 
