@@ -68,8 +68,6 @@
 //     override fun Iterator(): Iterator < T > = this@toSequence.iterator()
 //   }
 
-
-
 // override fun WithUsername(name: String): UserLocator
 // {
 //     this.username = name

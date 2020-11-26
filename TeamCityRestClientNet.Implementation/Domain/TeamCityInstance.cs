@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
+using TeamCityRestClientNet.Locators;
 using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
@@ -48,18 +49,9 @@ namespace TeamCityRestClientNet.Domain
         {
             throw new System.NotImplementedException();
         }
-        //     override fun BuildAgents(): BuildAgentLocator = BuildAgentLocatorImpl(this)
-        public override async Task<IBuildAgentLocator> BuildAgents()
-        {
-            throw new System.NotImplementedException();
-        }
+        public override IBuildAgentLocator BuildAgents => new BuildAgentLocator(this);
+        public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
-        //     override fun BuildAgentPools(): BuildAgentPoolLocator = BuildAgentPoolLocatorImpl(this)
-        public override async Task<IBuildAgentPoolLocator> BuildAgentPools()
-        {
-            throw new System.NotImplementedException();
-        }
-        
         public override async Task<IBuildConfiguration> BuildConfiguration(string id)
         {
             return await BuildConfiguration(new BuildConfigurationId(id)).ConfigureAwait(false);

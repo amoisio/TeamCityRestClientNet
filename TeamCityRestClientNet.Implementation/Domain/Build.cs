@@ -147,7 +147,6 @@ namespace TeamCityRestClientNet.Domain
 
         public AsyncLazy<IBuildAgent> Agent { get; }
 
-        // Maybe a task is still better...?
         public async Task<IEnumerable<ITestRun>> TestRuns(TestStatus? status = null)
         {
             var locator = (await Instance.TestRuns().ConfigureAwait(false)).ForBuild(Id);
