@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tools;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Service;
-using System.Threading.Tasks;
+using TeamCityRestClientNet.Domain;
 
-namespace TeamCityRestClientNet.Domain
+namespace TeamCityRestClientNet.Locators
 {
-    class BuildLocator : IBuildLocator
+    class BuildLocator : Locator, IBuildLocator
     {
-        private readonly ITeamCityService _service;
-        private readonly TeamCityInstance _instance;
         private BuildConfigurationId? _buildConfigurationId;
         private BuildId? _snapshotDependencyTo;
         private string _number;
@@ -31,12 +30,7 @@ namespace TeamCityRestClientNet.Domain
         private string _running;
         private string _canceled;
 
-        BuildLocator(TeamCityInstance instance)
-        {
-            _instance = instance;
-            _service = instance.Service;
-        }
-
+        BuildLocator(TeamCityInstance instance) : base(instance) { }
 
         private DateTimeOffset? SinceUTC => _since?.ToUniversalTime();
         private string TeamCitySince => SinceUTC?.ToString(TeamCityInstance.TEAMCITY_DATETIME_FORMAT);
@@ -208,16 +202,16 @@ namespace TeamCityRestClientNet.Domain
             }
 
             var sequence = new Paged<IBuild, BuildListDto>(
-                _service,
+                Service,
                 async () =>
                 {
                     var query = String.Join(",", parameters);
                     // LOG.debug("Retrieving builds from ${instance.serverUrl} using query '$IBuildLocator'")
-                    return await _service.Builds(query);
+                    return await Service.Builds(query);
                 },
                 async (list) => 
                 {
-                    var tasks = list.Build.Select(IdDto => Build.Create(IdDto.Id, _instance));
+                    var tasks = list.Build.Select(IdDto => Build.Create(IdDto.Id, Instance));
                     var builds = await Task.WhenAll(tasks).ConfigureAwait(false);
                     return new Page<IBuild>(builds, list.NextHref);
                 }

@@ -1,15 +1,17 @@
 using TeamCityRestClientNet.Domain;
+using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
     abstract class Locator 
     {
-        protected readonly TeamCityInstance _instance;
-
         public Locator(TeamCityInstance instance)
         {
-            this._instance = instance;
+            this.Instance = instance;
         }
+
+        public TeamCityInstance Instance { get; }
+        public ITeamCityService Service => Instance.Service; 
     }
 
     // private class UserLocatorImpl(private val instance: TeamCityInstanceImpl): UserLocator
