@@ -68,28 +68,7 @@
 //     override fun Iterator(): Iterator < T > = this@toSequence.iterator()
 //   }
 
-// private class BuildAgentLocatorImpl(private val instance: TeamCityInstanceImpl): BuildAgentLocator
-// {
-//     override fun All(): Sequence < BuildAgent > =
-//         instance.service.agents().agent.map { BuildAgentImpl(it, false, instance) }.toSequence()
-// }
 
-// private class BuildAgentPoolLocatorImpl(private val instance: TeamCityInstanceImpl): BuildAgentPoolLocator
-// {
-//     override fun All(): Sequence < BuildAgentPool > =
-//         instance.service.agentPools().agentPool.map { BuildAgentPoolImpl(it, false, instance) }.toSequence()
-// }
-
-// private class UserLocatorImpl(private val instance: TeamCityInstanceImpl): UserLocator
-// {
-//     private var id: UserId ? = null
-//     private var username: String ? = null
-
-//     override fun WithId(id: UserId): UserLocator
-// {
-//     this.id = id
-//         return this
-//     }
 
 // override fun WithUsername(name: String): UserLocator
 // {
