@@ -30,7 +30,7 @@ namespace TeamCityRestClientNet.Locators
         private string _running;
         private string _canceled;
 
-        BuildLocator(TeamCityInstance instance) : base(instance) { }
+        public BuildLocator(TeamCityInstance instance) : base(instance) { }
 
         private DateTimeOffset? SinceUTC => _since?.ToUniversalTime();
         private string TeamCitySince => SinceUTC?.ToString(TeamCityInstance.TEAMCITY_DATETIME_FORMAT);

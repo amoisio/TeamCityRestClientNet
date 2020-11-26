@@ -43,13 +43,15 @@ namespace TeamCityRestClientNet.Domain
         public override async Task<IBuild> Build(BuildId id) 
             => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
 
-        //     override fun Build(buildConfigurationId: BuildConfigurationId, number: String): Build ? =
-        //             BuildLocatorImpl(this).fromConfiguration(buildConfigurationId).withNumber(number).latest()
         public override async Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number)
-        {
-            throw new System.NotImplementedException();
-        }
+            => await new BuildLocator(this)
+            .FromConfiguration(buildConfigurationId)
+            .WithNumber(number)
+            .Latest()
+            .ConfigureAwait(false);
+        
         public override IBuildAgentLocator BuildAgents => new BuildAgentLocator(this);
+
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
         public override async Task<IBuildConfiguration> BuildConfiguration(string id)
