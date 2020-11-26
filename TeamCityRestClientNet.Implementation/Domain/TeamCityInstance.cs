@@ -59,11 +59,9 @@ namespace TeamCityRestClientNet.Domain
         
         public override async Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
             => await BuildConfiguration(id.stringId).ConfigureAwait(false);
-        //     override fun BuildQueue(): BuildQueue = BuildQueueImpl(this)
-        public override async Task<IBuildQueue> BuildQueue()
-        {
-            throw new System.NotImplementedException();
-        }
+
+        public override IBuildQueue BuildQueue => new BuildQueue(this);
+
         //override fun builds(): BuildLocator = BuildLocatorImpl(this)
         public override async Task<IBuildLocator> Builds()
         {
