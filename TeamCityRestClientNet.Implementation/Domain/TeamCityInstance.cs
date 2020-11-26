@@ -74,18 +74,12 @@ namespace TeamCityRestClientNet.Domain
 
         public override IInvestigationLocator Investigations 
             => new InvestigationLocator(this);
-        //     override fun Project(id: ProjectId): Project = ProjectImpl(ProjectBean().let { it.id = id.stringId; it }, false, this)
-        public override async Task<IProject> Project(ProjectId id)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        //     override fun QueuedBuilds(projectId: ProjectId ?): List < Build > =
-        //              BuildQueue().queuedBuilds(projectId = projectId).toList()
-        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
-        {
-            throw new NotImplementedException();
-        }
+        public override async Task<IProject> Project(ProjectId id) 
+            => await Domain.Project.Create(new ProjectDto { Id = id.stringId }, false, this).ConfigureAwait(false);
+
+        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId) 
+            => new BuildQueue(this).QueuedBuilds(projectId);
         //     override fun RootProject(): Project = Rroject(ProjectId("_Root"))
         public override async Task<IProject> RootProject()
         {
