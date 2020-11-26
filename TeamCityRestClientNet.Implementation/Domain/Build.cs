@@ -148,13 +148,13 @@ namespace TeamCityRestClientNet.Domain
         public AsyncLazy<IBuildAgent> Agent { get; }
 
         // Maybe a task is still better...?
-        public async IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
+        public async Task<IEnumerable<ITestRun>> TestRuns(TestStatus? status = null)
         {
             var locator = (await Instance.TestRuns().ConfigureAwait(false)).ForBuild(Id);
             if (status != null)
                 locator.WithStatus(status.Value);
 
-            return locator.All().ToAsyncEnumerable();
+            return locator.All();
         }
 
         public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {
