@@ -80,13 +80,12 @@ namespace TeamCityRestClientNet.Domain
 
         public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId) 
             => new BuildQueue(this).QueuedBuilds(projectId);
-        //     override fun RootProject(): Project = Rroject(ProjectId("_Root"))
-        public override async Task<IProject> RootProject()
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public override async Task<ITestRunsLocator> TestRuns()
+        public override async Task<IProject> RootProject() 
+            => await Project(new ProjectId("_Root")).ConfigureAwait(false);
+
+        // TestRunsLocator = TestRunsLocatorImpl(this)
+        public override async Task<ITestRunsLocator> TestRuns() 
         {
             throw new System.NotImplementedException();
         }
