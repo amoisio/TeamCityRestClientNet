@@ -784,8 +784,8 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildQueue
     {
-        void RemoveBuild(BuildId id, string comment = "", bool reAddIntoQueue = false);
-        IEnumerable<IBuild> QueuedBuilds(ProjectId? projectId = null);
+        Task RemoveBuild(BuildId id, string comment = "", bool reAddIntoQueue = false);
+        IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId? projectId = null);
     }
 
     public enum InvestigationTargetType
