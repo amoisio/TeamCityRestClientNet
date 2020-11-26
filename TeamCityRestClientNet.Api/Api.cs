@@ -158,7 +158,7 @@ namespace TeamCityRestClientNet.Api
         IInvestigationLocator LimitResults(int count);
         IInvestigationLocator ForProject(ProjectId projectId);
         IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
-        IEnumerable<IInvestigation> All();
+        IAsyncEnumerable<IInvestigation> All();
     }
 
     public interface ITestRunsLocator
@@ -509,14 +509,14 @@ namespace TeamCityRestClientNet.Api
     {
         InvestigationId Id { get; }
         InvestigationState State { get; }
-        IUser Assignee { get; }
-        IUser Reporter { get; }
+        AsyncLazy<IUser> Assignee { get; }
+        AsyncLazy<IUser> Reporter { get; }
         string Comment { get; }
         InvestigationResolveMethod ResolveMethod { get; }
         InvestigationTargetType TargetType { get; }
         List<TestId> TestIds { get; }
         List<BuildProblemId> ProblemIds { get; }
-        IInvestigationScope Scope { get; }
+        AsyncLazy<IInvestigationScope> Scope { get; }
     }
 
     public interface IBuildRunningInfo
