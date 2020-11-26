@@ -70,13 +70,10 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public override async Task<IChange> Change(ChangeId id) 
-        => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
+            => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
 
-        //     override fun Investigations(): InvestigationLocator = InvestigationLocatorImpl(this)
-        public override async Task<IInvestigationLocator> Investigations()
-        {
-            throw new System.NotImplementedException();
-        }
+        public override IInvestigationLocator Investigations 
+            => new InvestigationLocator(this);
         //     override fun Project(id: ProjectId): Project = ProjectImpl(ProjectBean().let { it.id = id.stringId; it }, false, this)
         public override async Task<IProject> Project(ProjectId id)
         {
