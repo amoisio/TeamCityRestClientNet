@@ -68,13 +68,10 @@ namespace TeamCityRestClientNet.Domain
             var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
             return await Domain.Change.Create(dto, true, this).ConfigureAwait(false);
         }
-        
-        //     override fun Change(id: ChangeId): Change =
-        //             ChangeImpl(ChangeBean().also { it.id = id.stringId }, false, this)
-        public override async Task<IChange> Change(ChangeId id)
-        {
-            throw new System.NotImplementedException();
-        }
+
+        public override async Task<IChange> Change(ChangeId id) 
+        => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
+
         //     override fun Investigations(): InvestigationLocator = InvestigationLocatorImpl(this)
         public override async Task<IInvestigationLocator> Investigations()
         {
