@@ -63,13 +63,12 @@ namespace TeamCityRestClientNet.Domain
         public override IBuildQueue BuildQueue => new BuildQueue(this);
 
         public override IBuildLocator Builds => new BuildLocator(this);
-        //     override fun Change(buildConfigurationId: BuildConfigurationId, vcsRevision: String): Change =
-        //             ChangeImpl(service.change(
-        //                     buildType = buildConfigurationId.stringId, version = vcsRevision), true, this)
         public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
         {
-            throw new System.NotImplementedException();
+            var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
+            return await Domain.Change.Create(dto, true, this).ConfigureAwait(false);
         }
+        
         //     override fun Change(id: ChangeId): Change =
         //             ChangeImpl(ChangeBean().also { it.id = id.stringId }, false, this)
         public override async Task<IChange> Change(ChangeId id)
