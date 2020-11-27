@@ -10,26 +10,40 @@ using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Service
 {
-    class Paged<TType, TDto> : IAsyncEnumerable<TType>
+    /// <summary>
+    /// Asynchnorously enumerate pages of TeamCity entities.
+    /// </summary>
+    /// <typeparam name="TTeamCityEntity">TeamCity domain entity type whose instances are contained in each page.</typeparam>
+    /// <typeparam name="TTeamCityDto">TeamCity dto type used for communicating with the backing TeamCity server.</typeparam>
+    class Paged<TTeamCityEntity, TTeamCityDto> : IAsyncEnumerable<TTeamCityEntity> 
     {
+        /// <summary>
+        /// Service for communicating with the backing TeamCity server.
+        /// </summary>
         private readonly ITeamCityService _service;
-        private readonly Func<Task<TDto>> _getFirst;
-        private readonly Func<TDto, Task<Page<TType>>> _convertToPage;
+        /// <summary>
+        /// Method used for loading the first data item from the TeamCity server.
+        /// </summary>
+        private readonly Func<Task<TTeamCityDto>> _getFirst;
+        /// <summary>
+        /// Method used for converting loaded data items into pages of team city entities.
+        /// </summary>
+        private readonly Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> _convertToPage;
 
         public Paged(
             ITeamCityService service,
-            Func<Task<TDto>> getFirst,
-            Func<TDto, Task<Page<TType>>> convertToPage)
+            Func<Task<TTeamCityDto>> getFirst,
+            Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> convertToPage)
         {
             this._service = service;
             this._getFirst = getFirst;
             this._convertToPage = convertToPage;
         }
 
-        public async IAsyncEnumerator<TType> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public async IAsyncEnumerator<TTeamCityEntity> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            TDto dto = await this._getFirst();
-            var page = await this._convertToPage(dto);
+            TTeamCityDto dto = await this._getFirst().ConfigureAwait(false);
+            var page = await this._convertToPage(dto).ConfigureAwait(false);
             foreach (var item in page.ItemsNotNull)
             {
                 yield return item;
@@ -38,8 +52,8 @@ namespace TeamCityRestClientNet.Service
             while (!String.IsNullOrEmpty(page.NextHref))
             {
                 var path = page.NextHref.RemovePrefix($"{this._service.ServerUrlBase}/");
-                dto = await this._service.Root<TDto>(path);
-                page = await this._convertToPage(dto);
+                dto = await this._service.Root<TTeamCityDto>(path).ConfigureAwait(false);
+                page = await this._convertToPage(dto).ConfigureAwait(false);
                 foreach (var item in page.ItemsNotNull)
                 {
                     yield return item;
