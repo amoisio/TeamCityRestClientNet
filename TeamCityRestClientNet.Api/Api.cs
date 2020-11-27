@@ -79,7 +79,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IVcsRootLocator
     {
-        Task<IEnumerable<IVcsRoot>> All();
+        IAsyncEnumerable<IVcsRoot> All();
     }
 
     public interface IBuildAgentLocator
