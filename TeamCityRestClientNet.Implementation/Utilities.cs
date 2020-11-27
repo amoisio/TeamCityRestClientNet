@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using TeamCityRestClientNet.Domain;
+using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Tools
 {
@@ -12,15 +13,21 @@ namespace TeamCityRestClientNet.Tools
             => values.Where(val => val != null).ToList();
 
 
-        public static DateTimeOffset? ParseTeamCity(string teamCityDateTime) 
+        public static DateTimeOffset? ParseTeamCity(string teamCityDateTime)
         {
             if (String.IsNullOrEmpty(teamCityDateTime))
                 return null;
             else
                 return DateTimeOffset.ParseExact(
-                    teamCityDateTime, 
-                    TeamCityInstance.TEAMCITY_DATETIME_FORMAT, 
+                    teamCityDateTime,
+                    TeamCityInstance.TEAMCITY_DATETIME_FORMAT,
                     CultureInfo.CurrentCulture);
+        }
+
+        public static int? SelectRestApiCountForPagedRequests(int? limitResults, int? pageSize)
+        {
+            var reasonableMaxPageSize = 1024;
+            return pageSize ?? limitResults?.Let((val) => Math.Min(val, reasonableMaxPageSize));
         }
 
 
@@ -33,5 +40,5 @@ namespace TeamCityRestClientNet.Tools
         // }
     }
 
-    
+
 }

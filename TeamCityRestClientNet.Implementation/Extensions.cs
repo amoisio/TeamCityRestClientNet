@@ -62,6 +62,15 @@ namespace TeamCityRestClientNet.Extensions
                 : value;
 
         /// <summary>
+        /// Throws nullRef if value is null or (empty string). Otherwise, 
+        /// returns the value.
+        /// </summary>
+        public static T SelfOrNullRef<T>(this Nullable<T> value) where T : struct
+            => value.HasValue
+                ? value.Value
+                : throw new NullReferenceException();
+
+        /// <summary>
         /// Throws nullRef is nullable is null. Otherwise, returns the value.
         /// </summary>
         public static T ValueOrNullRef<T>(this Nullable<T> value) where T : struct
