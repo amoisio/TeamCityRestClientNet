@@ -175,7 +175,7 @@ namespace TeamCityRestClientNet.Api
          * of individual runs, and status will be SUCCESSFUL if and only if all runs are successful.
          */
         ITestRunsLocator ExpandMultipleInvocations();
-        IEnumerable<ITestRun> All();
+        IAsyncEnumerable<ITestRun> All();
     }
 
     public struct Name

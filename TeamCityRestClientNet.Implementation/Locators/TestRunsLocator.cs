@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
@@ -21,7 +22,7 @@ namespace TeamCityRestClientNet.Locators
 
         public TestRunsLocator(TeamCityInstance instance) : base(instance) { }
 
-        public async IAsyncEnumerable<ITestRun> All()
+        public IAsyncEnumerable<ITestRun> All()
         {
             var statusLocator = _testStatus switch
             {
@@ -40,39 +41,37 @@ namespace TeamCityRestClientNet.Locators
                 statusLocator
             );
 
-            if (parameters.IsEmpty()) {
+            if (parameters.IsEmpty())
+            {
                 throw new ArgumentException("At least one parameter should be specified");
 
             }
 
             var sequence = new Paged<ITestRun, TestOccurrencesDto>(
-                Instance,
-                async () => 
+                Service,
+                async () =>
                 {
                     var testOccurrencesLocator = String.Join(",", parameters);
-                // LOG.debug("Retrieving test occurrences from ${instance.serverUrl} using query '$testOccurrencesLocator'")
+                    // LOG.debug("Retrieving test occurrences from ${instance.serverUrl} using query '$testOccurrencesLocator'")
                     return await Service
                         .TestOccurrences(testOccurrencesLocator, TestOccurrenceDto.FILTER)
                         .ConfigureAwait(false);
                 },
                 async (list) =>
                 {
-                    var tasks = list.TestOccurrence.Select(test => new TestRu)
-                   Page(
-                           data = testOccurrencesBean.testOccurrence.map { TestRunImpl(it) },
-                                nextHref = testOccurrencesBean.nextHref
-                        )
-                    }
-
+                    return await Task.Run(() =>
+                    {
+                        var runs = list.TestOccurrence.Select(test => new TestRun(test)).ToArray();
+                        return new Page<ITestRun>(
+                            runs,
+                            list.NextHref
+                        );
+                    }).ConfigureAwait(false);
                 }
             );
-            //     val sequence = LazyPaging(instance, {
-            //         }) {
-
-            //     val limitResults1 = limitResults
-            //         return if (limitResults1 != null) sequence.take(limitResults1) else sequence
-            //     }
-            // }
+            return _limitResults.HasValue
+                ? sequence.Take(_limitResults.Value)
+                : sequence;
         }
 
         public ITestRunsLocator ExpandMultipleInvocations()
