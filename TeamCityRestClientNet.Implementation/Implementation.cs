@@ -1,9 +1,5 @@
 // private val LOG = LoggerFactory.getLogger("teamcity-rest-client")
 
-// private val teamCityServiceDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ", Locale.ENGLISH)
-
-
-
 // private class RetryInterceptor : Interceptor
 // {
 //     private fun Response.retryRequired(): Boolean {
@@ -58,190 +54,152 @@
 
 // private fun XMLStreamWriter.attribute(name: String, value: String) = WriteAttribute(name, value)
 
-// private fun SelectRestApiCountForPagedRequests(limitResults: Int ?, pageSize: Int ?): Int ? {
-//     val reasonableMaxPageSize = 1024
-//        return pageSize ?: limitResults?.let { Min(it, reasonableMaxPageSize) }
+
+// internal class TeamCityInstanceImpl(override val serverUrl: String,
+//                                     val serverUrlBase: String,
+//                                     private val authHeader: String ?,
+//                                     logResponses: Boolean,
+//                                     timeout: Long = 2,
+//                                     unit: TimeUnit = TimeUnit.MINUTES
+// ) : TeamCityInstance() {
+//     override fun withLogResponses() = TeamCityInstanceImpl(serverUrl, serverUrlBase, authHeader, true)
+//     override fun withTimeout(timeout: Long, unit: TimeUnit) = TeamCityInstanceImpl(serverUrl, serverUrlBase, authHeader, true, timeout, unit)
+
+//     private val restLog = LoggerFactory.getLogger(LOG.name + ".rest")
+
+//     private var client = OkHttpClient.Builder()
+//             .readTimeout(timeout, unit)
+//             .writeTimeout(timeout, unit)
+//             .connectTimeout(timeout, unit)
+//             .addInterceptor(RetryInterceptor())
+//             .dispatcher(Dispatcher(
+//                     //by default non-daemon threads are used, and it blocks JVM from exit
+//                     ThreadPoolExecutor(0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
+//                             SynchronousQueue(),
+//                             object: ThreadFactory {
+//                                 private val count = AtomicInteger(0)
+//                                 override fun newThread(r: Runnable) = thread(
+//                                         block = { r.run() },
+//                                         isDaemon = true,
+//                                         start = false,
+//                                         name = "TeamCity-Rest-Client - OkHttp Dispatcher - ${count.incrementAndGet()}"
+//                                 )
+//                             }
+//             )))
+//             .build()
+
+//     internal val service = RestAdapter.Builder()
+//             .setClient(Ok3Client(client))
+//             .setEndpoint("$serverUrl$serverUrlBase")
+//             .setLog { restLog.debug(if (authHeader != null) it.replace(authHeader, "[REDACTED]") else it) }
+//             .setLogLevel(if (logResponses) RestAdapter.LogLevel.FULL else RestAdapter.LogLevel.HEADERS_AND_ARGS)
+//             .setRequestInterceptor
+// {
+//     request->
+//                 if (authHeader != null)
+//     {
+//         request.addHeader("Authorization", authHeader)
+//                 }
+// }
+//             .setErrorHandler
+// {
+//     retrofitError->
+// val responseText = try
+//     {
+//         retrofitError.response.body.`in`().reader().use { it.readText() }
+//     }
+//     catch (t: Throwable) {
+//         LOG.warn("Exception while reading error response text: ${t.message}", t)
+//                     ""
+//                 }
+
+//     throw TeamCityConversationException("Failed to connect to ${retrofitError.url}: ${retrofitError.message} $responseText", retrofitError)
+//             }
+//             .build()
+//             .create(TeamCityService::class.java)
+
+//     override fun close()
+// {
+//     fun catchAll(action: ()->Unit): Unit = try
+//     {
+//         action()
+//         }
+//     catch (t: Throwable) {
+//         LOG.warn("Failed to close connection. ${t.message}", t)
+//         }
+
+//     catchAll { client.dispatcher.cancelAll() }
+//     catchAll { client.dispatcher.executorService.shutdown() }
+//     catchAll { client.connectionPool.evictAll() }
+//     catchAll { client.cache?.close() }
+//     }
+
+//     override fun builds(): BuildLocator = BuildLocatorImpl(this)
+
+//     override fun investigations(): InvestigationLocator = InvestigationLocatorImpl(this)
+
+//     override fun build(id: BuildId): Build = BuildImpl(
+//             BuildBean().also { it.id = id.stringId }, false, this)
+
+//     override fun build(buildConfigurationId: BuildConfigurationId, number: String): Build ? =
+//             BuildLocatorImpl(this).fromConfiguration(buildConfigurationId).withNumber(number).latest()
+
+//     override fun buildConfiguration(id: BuildConfigurationId): BuildConfiguration =
+//             BuildConfigurationImpl(BuildTypeBean().also { it.id = id.stringId }, false, this)
+
+//     override fun vcsRoots(): VcsRootLocator = VcsRootLocatorImpl(this)
+
+//     override fun vcsRoot(id: VcsRootId): VcsRoot = VcsRootImpl(service.vcsRoot(id.stringId), true, this)
+
+//     override fun project(id: ProjectId): Project = ProjectImpl(ProjectBean().let { it.id = id.stringId; it }, false, this)
+
+//     override fun rootProject(): Project = project(ProjectId("_Root"))
+
+//     override fun user(id: UserId): User =
+//             UserImpl(UserBean().also { it.id = id.stringId }, false, this)
+
+//     override fun user(userName: String): User {
+//         val bean = service.users("username:$userName")
+//         return UserImpl(bean, true, this)
+//     }
+
+//     override fun users(): UserLocator = UserLocatorImpl(this)
+
+//     override fun change(buildConfigurationId: BuildConfigurationId, vcsRevision: String): Change =
+//             ChangeImpl(service.change(
+//                     buildType = buildConfigurationId.stringId, version = vcsRevision), true, this)
+
+//     override fun change(id: ChangeId): Change =
+//             ChangeImpl(ChangeBean().also { it.id = id.stringId }, false, this)
+
+//     override fun buildQueue(): BuildQueue = BuildQueueImpl(this)
+
+//     override fun buildAgents(): BuildAgentLocator = BuildAgentLocatorImpl(this)
+
+//     override fun buildAgentPools(): BuildAgentPoolLocator = BuildAgentPoolLocatorImpl(this)
+
+//     override fun getWebUrl(projectId: ProjectId, branch: String ?): String =
+//              project(projectId).getHomeUrl(branch = branch)
+
+//     override fun getWebUrl(buildConfigurationId: BuildConfigurationId, branch: String ?): String =
+//              buildConfiguration(buildConfigurationId).getHomeUrl(branch = branch)
+
+//     override fun getWebUrl(buildId: BuildId): String =
+//             build(buildId).getHomeUrl()
+
+//     override fun getWebUrl(changeId: ChangeId, specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
+//               change(changeId).getHomeUrl(
+//                       specificBuildConfigurationId = specificBuildConfigurationId,
+//                       includePersonalBuilds = includePersonalBuilds
+//               )
+
+//     override fun queuedBuilds(projectId: ProjectId ?): List < Build > =
+//              buildQueue().queuedBuilds(projectId = projectId).toList()
+
+//     override fun testRuns(): TestRunsLocator = TestRunsLocatorImpl(this)
 // }
 
-// c}
-// private fun<T> List<T>.toSequence(): Sequence < T > = object : Sequence<T> {
-//     override fun Iterator(): Iterator < T > = this@toSequence.iterator()
-//   }
 
-// override fun WithUsername(name: String): UserLocator
-// {
-//     this.username = name
-//         return this
-//     }
-
-// override fun All(): Sequence<User> {
-//     val idCopy = id
-//         val usernameCopy = username
-
-//         if (idCopy != null && usernameCopy != null)
-//     {
-//         throw IllegalArgumentException("UserLocator accepts only id or username, not both")
-//         }
-
-//     val locator = when {
-//         idCopy != null-> "id:${idCopy.stringId}"
-//             usernameCopy != null-> "username:$usernameCopy"
-//             else -> ""
-//         }
-
-//     return if (idCopy == null && usernameCopy == null)
-//     {
-//         instance.service.users().user.map { UserImpl(it, false, instance) }.toSequence()
-//         }
-//     else
-//     {
-//         val bean = instance.service.users(locator)
-//             ListOf(UserImpl(bean, true, instance)).toSequence()
-//         }
-// }
-
-// override fun List(): List < User > = Lll().toList()
-// }
-
-
-// private class TestRunsLocatorImpl(private val instance: TeamCityInstanceImpl) : TestRunsLocator
-// {
-//     private var limitResults: Int ? = null
-//     private var pageSize: Int ? = null
-//     private var buildId: BuildId ? = null
-//     private var testId: TestId ? = null
-//     private var affectedProjectId: ProjectId ? = null
-//     private var testStatus: TestStatus ? = null
-//     private var expandMultipleInvocations = false
-
-//     override fun LimitResults(count: Int): TestRunsLocator
-// {
-//     this.limitResults = count
-//         return this
-//     }
-
-// override fun PageSize(pageSize: Int): TestRunsLocator
-// {
-//     this.pageSize = pageSize
-//         return this
-//     }
-
-// override fun ForProject(projectId: ProjectId): TestRunsLocator
-// {
-//     this.affectedProjectId = projectId
-//         return this
-//     }
-
-// override fun ForBuild(buildId: BuildId): TestRunsLocator
-// {
-//     this.buildId = buildId
-//         return this
-//     }
-
-// override fun ForTest(testId: TestId): TestRunsLocator
-// {
-//     this.testId = testId
-//         return this
-//     }
-
-// override fun WithStatus(testStatus: TestStatus): TestRunsLocator
-// {
-//     this.testStatus = testStatus
-//         return this
-//     }
-
-// override fun ExpandMultipleInvocations(): TestRunsLocator
-// {
-//     this.expandMultipleInvocations = true
-//         return this
-//     }
-
-// override fun All(): Sequence<TestRun> {
-//     val statusLocator = When(testStatus) {
-//         null-> null
-//             TestStatus.FAILED-> "status:FAILURE"
-//             TestStatus.SUCCESSFUL-> "status:SUCCESS"
-//             TestStatus.IGNORED-> "ignored:true"
-//             TestStatus.UNKNOWN->error("Unsupported filter by test status UNKNOWN")
-//         }
-
-//     val count = SelectRestApiCountForPagedRequests(limitResults = limitResults, pageSize = pageSize)
-//         val parameters = ListOfNotNull(
-//                 count?.let { "count:$it" },
-//                 affectedProjectId?.let { "affectedProject:$it" },
-//                 buildId?.let { "build:$it" },
-//                 testId?.let { "test:$it" },
-//                 expandMultipleInvocations.let { "expandInvocations:$it" },
-//                 statusLocator
-//         )
-
-//         if (parameters.isEmpty())
-//     {
-//         throw IllegalArgumentException("At least one parameter should be specified")
-//         }
-
-//     val sequence = LazyPaging(instance, {
-//         val testOccurrencesLocator = parameters.joinToString(",")
-//             LOG.debug("Retrieving test occurrences from ${instance.serverUrl} using query '$testOccurrencesLocator'")
-
-//             return @lazyPaging instance.service.testOccurrences(locator = testOccurrencesLocator, fields = TestOccurrenceBean.filter)
-//         }) {
-//         testOccurrencesBean->
-//        Page(
-//                data = testOccurrencesBean.testOccurrence.map { TestRunImpl(it) },
-//                     nextHref = testOccurrencesBean.nextHref
-//             )
-//         }
-
-//     val limitResults1 = limitResults
-//         return if (limitResults1 != null) sequence.take(limitResults1) else sequence
-//     }
-// }
-
-// private abstract class BaseImpl<TBean : IdBean>(
-//         private var bean: TBean,
-//         private var isFullBean: Boolean,
-//         protected val instance: TeamCityInstanceImpl) {
-//     init {
-//         if (bean.id == null)
-//         {
-//             throw IllegalStateException("bean.id should not be null")
-//         }
-//     }
-
-//     protected inline val idString
-//         Get() = bean.id!!
-
-//     protected inline fun<T> NotNull(getter: (TBean)->T ?): T =
-//           Getter(bean) ?: Getter(fullBean)!!
-
-//     protected inline fun<T> Nullable(getter: (TBean)->T ?): T ? =
-//           Getter(bean) ?: Getter(fullBean)
-
-
-//   val fullBean: TBean by lazy
-// {
-//     if (!isFullBean)
-//     {
-//         bean = FetchFullBean()
-//             isFullBean = true
-//         }
-//     bean
-//     }
-
-// abstract fun FetchFullBean(): TBean
-//     abstract override fun ToString(): String
-
-//     override fun Equals(other: Any?): Boolean
-// {
-//     if (this === other) return true
-//         if (javaClass != other?.javaClass) return false
-
-//         return idString == (other as BaseImpl<*>).idString && instance === other.instance
-//     }
-
-// override fun HashCode(): Int = idString.hashCode()
-// }
 
 // private class VcsRootLocatorImpl(private val instance: TeamCityInstanceImpl) : VcsRootLocator
 // {
@@ -260,91 +218,3 @@
 
 //     override fun List(): List < VcsRoot > = Lll().toList()
 // }
-
-// private class BuildQueueImpl(private val instance: TeamCityInstanceImpl): BuildQueue
-// {
-//     override fun RemoveBuild(id: BuildId, comment: String, reAddIntoQueue: Boolean) {
-//         val request = BuildCancelRequestBean()
-//         request.comment = comment
-//         request.readdIntoQueue = reAddIntoQueue
-//         instance.service.removeQueuedBuild(id.stringId, request)
-//     }
-
-//     override fun QueuedBuilds(projectId: ProjectId ?): Sequence<Build> {
-//         val parameters = if (projectId == null) EmptyList() else EistOf("project:${projectId.stringId}")
-
-//         return LazyPaging(instance, {
-//             val buildLocator = if (parameters.isNotEmpty()) parameters.joinToString(",") else null
-//             LOG.debug("Retrieving queued builds from ${instance.serverUrl} using query '$buildLocator'")
-//             return @lazyPaging instance.service.queuedBuilds(locator = buildLocator)
-//         }) {
-//             buildsBean->
-//            Page(
-//                    data = buildsBean.build.map { BuildImpl(it, false, instance) },
-//                     nextHref = buildsBean.nextHref
-//             )
-//         }
-//     }
-// }
-
-// private fun GetNameValueProperty(properties: List<NameValueProperty>, name: String): String ? = properties.singleOrNull { it.name == name}?.value
-
-//  @Suppress("DEPRECATION")
-// private open class TestOccurrenceImpl(private val bean: TestOccurrenceBean): TestOccurrence
-// {
-//     override val name = bean.name!!
-
-//     final override val status = when {
-//         bean.ignored == true->TestStatus.IGNORED
-//         bean.status == "FAILURE"->TestStatus.FAILED
-//         bean.status == "SUCCESS"->TestStatus.SUCCESSFUL
-//         else ->TestStatus.UNKNOWN
-//     }
-
-//     override val duration = Duration.ofMillis(bean.duration ?: 0L)!!
-
-//     override val details = When(status) {
-//         TestStatus.IGNORED->bean.ignoreDetails
-//         TestStatus.FAILED->bean.details
-//         else -> null
-//     } ?: ""
-
-//     override val ignored: Boolean = bean.ignored ?: false
-
-//     override val currentlyMuted: Boolean = bean.currentlyMuted ?: false
-
-//     override val muted: Boolean = bean.muted ?: false
-
-//     override val newFailure: Boolean = bean.newFailure ?: false
-
-//     override val buildId: BuildId = BuildId(bean.build!!.id!!)
-
-//     override val fixedIn: BuildId?
-//         Get()
-//     {
-//         if (bean.nextFixed?.id == null)
-//             return null
-
-//             return BuildId(bean.nextFixed!!.id!!)
-//         }
-
-//     override val firstFailedIn : BuildId?
-//         Get()
-//     {
-//         if (bean.firstFailed?.id == null)
-//             return null
-
-//             return BuildId(bean.firstFailed!!.id!!)
-//         }
-
-//     override val testId: TestId = TestId(bean.test!!.id!!)
-
-//     override fun ToString() = "Test(name=$name, status=$status, duration=$duration, details=$details)"
-// }
-
-// private class TestRunImpl(bean: TestOccurrenceBean) : TestRun, TestOccurrenceImpl(bean)
-
-
-
-
-
