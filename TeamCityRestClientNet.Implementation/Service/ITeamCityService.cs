@@ -6,8 +6,6 @@ namespace TeamCityRestClientNet.Service
 {
     interface ITeamCityService
     {
-        string ServerUrlBase { get; }
-
         // @Streaming
         [Headers("Accept: application/json")]
         [Get("/{**path}")]

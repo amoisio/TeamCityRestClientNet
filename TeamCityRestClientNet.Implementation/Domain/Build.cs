@@ -161,7 +161,7 @@ namespace TeamCityRestClientNet.Domain
 
         public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {
             var sequence = new Paged<IBuildProblemOccurrence, BuildProblemOccurrencesDto>(
-                Service,
+                Instance,
                 async () => await Service.ProblemOccurrences(
                     $"build:(id:{Id.stringId})",
                     "$long,problemOccurrence($long)").ConfigureAwait(false)

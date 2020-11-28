@@ -14,7 +14,6 @@ namespace TeamCityRestClientNet.Domain
     {
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
-        private readonly string _serverUrlBase;
         private readonly string _authHeader;
         private readonly bool _logResponses;
         private readonly TimeUnit _unit;
@@ -31,7 +30,7 @@ namespace TeamCityRestClientNet.Domain
 
             //     private val restLog = LoggerFactory.getLogger(LOG.name + ".rest")
             this.ServerUrl = serverUrl;
-            this._serverUrlBase = serverUrlBase;
+            this.ServerUrlBase = serverUrlBase;
             this._authHeader = authHeader;
             this._logResponses = logResponses;
             this._unit = unit;
@@ -39,6 +38,8 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public string ServerUrl { get; }
+
+        public string ServerUrlBase { get; }
 
         public override async Task<IBuild> Build(BuildId id) 
             => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
@@ -120,10 +121,10 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public override TeamCity WithLogResponses()
-            => new TeamCityInstance(ServerUrl, _serverUrlBase, _authHeader, true, TimeUnit.MINUTES);
+            => new TeamCityInstance(ServerUrl, ServerUrlBase, _authHeader, true, TimeUnit.MINUTES);
 
         public override TeamCity WithTimeout(long timeout, TimeUnit unit)
-            => new TeamCityInstance(ServerUrl, _serverUrlBase, _authHeader, true, unit, timeout);
+            => new TeamCityInstance(ServerUrl, ServerUrlBase, _authHeader, true, unit, timeout);
 
         //     internal val service = RestAdapter.Builder()
         //             .setClient(Ok3Client(client))

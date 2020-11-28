@@ -23,7 +23,7 @@ namespace TeamCityRestClientNet.Domain
                 : new List<string>();
 
             var sequence = new Paged<IBuild, BuildListDto>(
-                _instance.Service,
+                _instance,
                 async () => {
                     var buildLocator = parameters.IsNotEmpty()
                         ? string.Join(",", parameters)

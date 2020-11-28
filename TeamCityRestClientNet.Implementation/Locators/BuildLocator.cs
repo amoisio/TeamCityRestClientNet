@@ -202,7 +202,7 @@ namespace TeamCityRestClientNet.Locators
             }
 
             var sequence = new Paged<IBuild, BuildListDto>(
-                Service,
+                Instance,
                 async () =>
                 {
                     var query = String.Join(",", parameters);

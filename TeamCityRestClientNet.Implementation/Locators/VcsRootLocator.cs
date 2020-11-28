@@ -7,10 +7,6 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
-
-    // private class VcsRootLocatorImpl(private val instance: TeamCityInstanceImpl) : VcsRootLocator
-    // {
-    // }
     class VcsRootLocator : IVcsRootLocator
     {
         private readonly TeamCityInstance _instance;
@@ -25,7 +21,7 @@ namespace TeamCityRestClientNet.Locators
         public IAsyncEnumerable<IVcsRoot> All()
         {
             var sequence = new Paged<IVcsRoot, VcsRootListDto>(
-                _instance.Service,
+                _instance,
                 async () =>
                 {
                     // LOG.debug("Retrieving vcs roots from ${instance.serverUrl}")

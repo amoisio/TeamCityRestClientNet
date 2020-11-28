@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using TeamCityRestClientNet.Extensions;
+using TeamCityRestClientNet.Domain;
 
 namespace TeamCityRestClientNet.Service
 {
@@ -17,6 +18,7 @@ namespace TeamCityRestClientNet.Service
     /// <typeparam name="TTeamCityDto">TeamCity dto type used for communicating with the backing TeamCity server.</typeparam>
     class Paged<TTeamCityEntity, TTeamCityDto> : IAsyncEnumerable<TTeamCityEntity> 
     {
+        private readonly TeamCityInstance _instance;
         /// <summary>
         /// Service for communicating with the backing TeamCity server.
         /// </summary>
@@ -31,11 +33,12 @@ namespace TeamCityRestClientNet.Service
         private readonly Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> _convertToPage;
 
         public Paged(
-            ITeamCityService service,
+            TeamCityInstance instance,
             Func<Task<TTeamCityDto>> getFirst,
             Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> convertToPage)
         {
-            this._service = service;
+            this._instance = instance;
+            this._service = instance.Service;
             this._getFirst = getFirst;
             this._convertToPage = convertToPage;
         }
@@ -51,7 +54,7 @@ namespace TeamCityRestClientNet.Service
 
             while (!String.IsNullOrEmpty(page.NextHref))
             {
-                var path = page.NextHref.RemovePrefix($"{this._service.ServerUrlBase}/");
+                var path = page.NextHref.RemovePrefix($"{this._instance.ServerUrlBase}/");
                 dto = await this._service.Root<TTeamCityDto>(path).ConfigureAwait(false);
                 page = await this._convertToPage(dto).ConfigureAwait(false);
                 foreach (var item in page.ItemsNotNull)

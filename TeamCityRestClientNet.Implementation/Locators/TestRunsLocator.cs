@@ -48,7 +48,7 @@ namespace TeamCityRestClientNet.Locators
             }
 
             var sequence = new Paged<ITestRun, TestOccurrencesDto>(
-                Service,
+                Instance,
                 async () =>
                 {
                     var testOccurrencesLocator = String.Join(",", parameters);
