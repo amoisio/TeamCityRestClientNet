@@ -7,11 +7,13 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public abstract class TeamCityInstanceBase : IDisposable
+    /// <summary>
+    /// Represents the TeamCity CI/CD system by JetBrains.
+    /// </summary>
+    public abstract class TeamCity : IDisposable
     {
         private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
         private bool disposedValue;
-        public abstract string ServerUrl { get; }
         public abstract Task<IBuild> Build(BuildId id);
         public abstract Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number);
         public abstract IBuildAgentLocator BuildAgents { get; }
@@ -32,8 +34,8 @@ namespace TeamCityRestClientNet.Api
         public abstract Task<IUserLocator> Users();
         public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
         public abstract Task<IVcsRootLocator> VcsRoots();
-        public abstract TeamCityInstanceBase WithLogResponses();
-        public abstract TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit);
+        public abstract TeamCity WithLogResponses();
+        public abstract TeamCity WithTimeout(long timeout, TimeUnit unit);
 
         protected virtual void Dispose(bool disposing)
         {

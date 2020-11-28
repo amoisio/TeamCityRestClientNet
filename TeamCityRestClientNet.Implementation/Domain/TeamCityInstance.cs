@@ -10,7 +10,7 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
 {
-    class TeamCityInstance : TeamCityInstanceBase
+    class TeamCityInstance : TeamCity
     {
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Domain
             this._timeout = timeout;
         }
 
-        public override string ServerUrl { get; }
+        public string ServerUrl { get; }
 
         public override async Task<IBuild> Build(BuildId id) 
             => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
@@ -119,10 +119,10 @@ namespace TeamCityRestClientNet.Domain
             throw new System.NotImplementedException();
         }
 
-        public override TeamCityInstanceBase WithLogResponses()
+        public override TeamCity WithLogResponses()
             => new TeamCityInstance(ServerUrl, _serverUrlBase, _authHeader, true, TimeUnit.MINUTES);
 
-        public override TeamCityInstanceBase WithTimeout(long timeout, TimeUnit unit)
+        public override TeamCity WithTimeout(long timeout, TimeUnit unit)
             => new TeamCityInstance(ServerUrl, _serverUrlBase, _authHeader, true, unit, timeout);
 
         //     internal val service = RestAdapter.Builder()
