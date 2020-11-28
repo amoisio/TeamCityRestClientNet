@@ -147,13 +147,16 @@ namespace TeamCityRestClientNet.Domain
 
         public AsyncLazy<IBuildAgent> Agent { get; }
 
-        public async Task<IEnumerable<ITestRun>> TestRuns(TestStatus? status = null)
+        public async IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
         {
             var locator = (await Instance.TestRuns().ConfigureAwait(false)).ForBuild(Id);
             if (status != null)
                 locator.WithStatus(status.Value);
 
-            return locator.All();
+            await foreach (var testRun in locator.All())
+            {
+                yield return testRun;
+            } 
         }
 
         public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {

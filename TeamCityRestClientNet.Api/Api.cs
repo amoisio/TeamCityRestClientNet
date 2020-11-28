@@ -481,7 +481,7 @@ namespace TeamCityRestClientNet.Api
 
         AsyncLazy<IBuildAgent> Agent { get; }
 
-        Task<IEnumerable<ITestRun>> TestRuns(TestStatus? status = null);
+        IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null);
 
         IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems();
 
