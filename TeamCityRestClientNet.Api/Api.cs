@@ -2,163 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using BAMCIS.Util.Concurrent;
 using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    /// <summary>
-    /// Represents the TeamCity CI/CD system by JetBrains.
-    /// </summary>
-    public abstract class TeamCity : IDisposable
-    {
-        private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
-        private bool disposedValue;
-        public abstract Task<IBuild> Build(BuildId id);
-        public abstract Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number);
-        public abstract IBuildAgentLocator BuildAgents { get; }
-        public abstract IBuildAgentPoolLocator BuildAgentPools { get; }
-        public abstract Task<IBuildConfiguration> BuildConfiguration(string id);
-        public abstract Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id);
-        public abstract IBuildQueue BuildQueue { get; }
-        public abstract IBuildLocator Builds { get; }
-        public abstract Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision);
-        public abstract Task<IChange> Change(ChangeId id);
-        public abstract IInvestigationLocator Investigations { get; }
-        public abstract Task<IProject> Project(ProjectId id);
-        public abstract IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId);
-        public abstract Task<IProject> RootProject();
-        public abstract Task<ITestRunsLocator> TestRuns();
-        public abstract Task<IUser> User(UserId id);
-        public abstract Task<IUser> User(string userName);
-        public abstract Task<IUserLocator> Users();
-        public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
-        public abstract Task<IVcsRootLocator> VcsRoots();
-        public abstract TeamCity WithLogResponses();
-        public abstract TeamCity WithTimeout(long timeout, TimeUnit unit);
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~TeamCityInstance()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(false disposing);
-        // }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-    }
-
-
-    public struct VcsRootType
-    {
-        public VcsRootType(string stringType)
-        {
-            this.stringType = stringType;
-        }
-
-        public readonly static VcsRootType GIT = new VcsRootType("jetbrains.git");
-        public readonly string stringType;
-    }
-
-    public interface IVcsRootLocator
-    {
-        IAsyncEnumerable<IVcsRoot> All();
-    }
-
-    public interface IBuildAgentLocator
-    {
-        Task<IEnumerable<IBuildAgent>> All();
-    }
-
-    public interface IBuildAgentPoolLocator
-    {
-        Task<IEnumerable<IBuildAgentPool>> All();
-    }
-
     public interface IUserLocator
     {
         Task<IEnumerable<IUser>> All();
-    }
-
-    public interface IBuildLocator
-    {
-        IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId);
-
-        IBuildLocator WithNumber(string buildNumber);
-
-        /**
-         * Filters builds to include only ones which are built on top of the specified revision.
-         */
-        IBuildLocator WithVcsRevision(string vcsRevision);
-
-        IBuildLocator SnapshotDependencyTo(BuildId buildId);
-
-        /**
-         * By default only successful builds are returned, call this method to include failed builds as well.
-         */
-        IBuildLocator IncludeFailed();
-
-        /**
-         * By default only finished builds are returned
-         */
-        IBuildLocator IncludeRunning();
-        IBuildLocator OnlyRunning();
-
-        /**
-         * By default canceled builds are not returned
-         */
-        IBuildLocator IncludeCanceled();
-        IBuildLocator OnlyCanceled();
-
-        IBuildLocator WithStatus(BuildStatus status);
-        IBuildLocator WithTag(string tag);
-
-        IBuildLocator WithBranch(string branch);
-
-        /**
-         * By default only builds from the default branch are returned, call this method to include builds from all branches.
-         */
-        IBuildLocator WithAllBranches();
-
-        IBuildLocator PinnedOnly();
-
-        IBuildLocator IncludePersonal();
-        IBuildLocator OnlyPersonal();
-
-        IBuildLocator LimitResults(int count);
-        IBuildLocator PageSize(int pageSize);
-        IBuildLocator Since(DateTimeOffset date);
-        IBuildLocator Until(DateTimeOffset date);
-
-        Task<IBuild> Latest();
-        IAsyncEnumerable<IBuild> All();
-    }
-
-    public interface IInvestigationLocator
-    {
-        IInvestigationLocator LimitResults(int count);
-        IInvestigationLocator ForProject(ProjectId projectId);
-        IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
-        Task<IEnumerable<IInvestigation>> All();
     }
 
     public interface ITestRunsLocator
@@ -202,17 +52,6 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
-    public struct BuildId
-    {
-        public BuildId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
     public struct TestId
     {
         public TestId(string stringId)
@@ -245,79 +84,6 @@ namespace TeamCityRestClientNet.Api
 
         public readonly string stringId;
         public override string ToString() => this.stringId;
-    }
-
-
-    public struct VcsRootId
-    {
-        public VcsRootId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public struct BuildProblemId
-    {
-        public BuildProblemId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public struct BuildAgentPoolId
-    {
-        public BuildAgentPoolId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public struct BuildAgentId
-    {
-        public BuildAgentId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public struct InvestigationId
-    {
-        public InvestigationId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public struct BuildProblemType
-    {
-        public BuildProblemType(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-
-        public bool isSnapshotDependencyError
-            => this.stringId == "SNAPSHOT_DEPENDENCY_ERROR_BUILD_PROCEEDS_TYPE"
-            || this.stringId == "SNAPSHOT_DEPENDENCY_ERROR";
-        
-        public readonly static BuildProblemType FAILED_TESTS = new BuildProblemType("TC_FAILED_TESTS");
     }
 
     public interface IProject
@@ -385,22 +151,7 @@ namespace TeamCityRestClientNet.Api
             bool personal = false);
     }
 
-    public interface IBuildProblem
-    {
-        BuildProblemId Id { get; }
-        BuildProblemType Type { get; }
-        string Identity { get; }
-    }
-
-
-
-    public interface IBuildProblemOccurrence
-    {
-        IBuildProblem BuildProblem { get; }
-        AsyncLazy<IBuild> Build { get; }
-        string Details { get; }
-        string AdditionalData { get; }
-    }
+    
 
     public interface IParameter
     {
@@ -424,9 +175,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildCommentInfo : IInfo { }
 
-    public interface IBuildAgentEnabledInfo : IInfo { }
-
-    public interface IBuildAgentAuthorizedInfo : IInfo { }
+    
 
     public interface IBuildCanceledInfo : IInfo { }
 
@@ -505,19 +254,7 @@ namespace TeamCityRestClientNet.Api
         Task<List<IParameter>> GetResultingParameters();
     }
 
-    public interface IInvestigation
-    {
-        InvestigationId Id { get; }
-        InvestigationState State { get; }
-        AsyncLazy<IUser> Assignee { get; }
-        AsyncLazy<IUser> Reporter { get; }
-        string Comment { get; }
-        InvestigationResolveMethod ResolveMethod { get; }
-        InvestigationTargetType TargetType { get; }
-        List<TestId> TestIds { get; }
-        List<BuildProblemId> ProblemIds { get; }
-        AsyncLazy<IInvestigationScope> Scope { get; }
-    }
+    
 
     public interface IBuildRunningInfo
     {
@@ -589,46 +326,6 @@ namespace TeamCityRestClientNet.Api
         Task<Stream> OpenArtifactInputStream();
     }
 
-    public interface IVcsRoot
-    {
-        VcsRootId Id { get; }
-        string Name { get; }
-
-        string Url { get; }
-        string DefaultBranch { get; }
-    }
-
-    public interface IBuildAgent
-    {
-        BuildAgentId Id { get; }
-        string Name { get; }
-        AsyncLazy<IBuildAgentPool> Pool { get; }
-        bool Connected { get; }
-        bool Enabled { get; }
-        bool Authorized { get; }
-        bool Outdated { get; }
-        string IpAddress { get; }
-        List<IParameter> Parameters { get; }
-        IInfo EnabledInfo { get; }
-        IInfo AuthorizedInfo { get; }
-        AsyncLazy<IBuild> CurrentBuild { get; }
-        string GetHomeUrl();
-    }
-
-    public interface IBuildAgentPool
-    {
-        BuildAgentPoolId Id { get; }
-        string Name { get; }
-        AsyncLazy<List<IProject>> Projects { get; }
-        AsyncLazy<List<IBuildAgent>> Agents { get; }
-    }
-
-    public interface IVcsRootInstance
-    {
-        VcsRootId VcsRootId { get; }
-        string Name { get; }
-    }
-
     public enum BuildStatus
     {
         SUCCESS,
@@ -646,32 +343,13 @@ namespace TeamCityRestClientNet.Api
         UNKNOWN
     }
 
-    public enum InvestigationState
-    {
-        TAKEN,
-        FIXED,
-        GIVEN_UP
-    }
-
-    public enum InvestigationResolveMethod
-    {
-        MANUALLY,
-        WHEN_FIXED
-    }
-
-
     public interface IPinInfo
     {
         AsyncLazy<IUser> User { get; }
         DateTimeOffset DateTime { get; }
     }
 
-    public interface IRevision
-    {
-        string Version { get; }
-        string VcsBranchName { get; }
-        IVcsRootInstance VcsRootInstance { get; }
-    }
+   
 
     public enum TestStatus
     {
@@ -787,37 +465,5 @@ namespace TeamCityRestClientNet.Api
     {
         Task RemoveBuild(BuildId id, string comment = "", bool reAddIntoQueue = false);
         IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId? projectId = null);
-    }
-
-    public enum InvestigationTargetType
-    {
-        TEST,
-        BUILD_PROBLEM,
-        BUILD_CONFIGURATION
-    }
-
-
-    public interface IInvestigationScope
-    {
-
-    }
-
-    public class InProject : IInvestigationScope
-    {
-        private readonly IProject project;
-        public InProject(IProject project)
-        {
-            this.project = project;
-        }
-
-
-    }
-    public class InBuildConfiguration : IInvestigationScope
-    {
-        private readonly IBuildConfiguration configuration;
-        public InBuildConfiguration(IBuildConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
     }
 }
