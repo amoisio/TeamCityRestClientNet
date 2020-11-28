@@ -64,4 +64,33 @@ namespace TeamCityRestClientNet.Api
             GC.SuppressFinalize(this);
         }
     }
+
+    public class TeamCityRestException : Exception
+    {
+
+        public TeamCityRestException(string message = null, Exception cause = null)
+        : base(message, cause)
+        {
+
+        }
+    }
+
+    public class TeamCityQueryException : TeamCityRestException
+    {
+        public TeamCityQueryException(string message = null, Exception cause = null)
+        : base(message, cause)
+        {
+
+        }
+    }
+
+    public class TeamCityConversationException : TeamCityRestException
+    {
+        public TeamCityConversationException(string message = null, Exception cause = null)
+        : base(message, cause)
+        {
+
+        }
+    }
+
 }
