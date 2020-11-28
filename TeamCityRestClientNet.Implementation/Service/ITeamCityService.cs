@@ -1,181 +1,185 @@
 using System.IO;
 using System.Threading.Tasks;
+using Refit;
 
 namespace TeamCityRestClientNet.Service
 {
-    internal interface ITeamCityService 
+    interface ITeamCityService 
     {
         string ServerUrlBase { get; }
 
         // @Streaming
         // @Headers("Accept: application/json")
-        // @GET("/{path}")
-        Task<T> Root<T>(/*@Path("path", encode = false)*/string path);
+        [Get("/{**path}")]
+        Task<T> Root<T>(string path);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/builds")
-        Task<BuildListDto> Builds(/*@Query("locator")*/string buildLocator);
+        [Get("/app/rest/builds")]
+        Task<BuildListDto> Builds([AliasAs("locator")]string buildLocator);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/buildQueue")
-        Task<BuildListDto> QueuedBuilds(/*@Query("locator")*/string locator);
+        [Get("/app/rest/buildQueue")]
+        Task<BuildListDto> QueuedBuilds(string locator);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/builds/id:{id}")
-        Task<BuildDto> Build(/*@Path("id")*/string id);
+        [Get("/app/rest/builds/{id}")]
+        Task<BuildDto> Build(string id);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/investigations")
-        Task<InvestigationListDto> Investigations(/*@Query("locator")*/string investigationLocator);
+        [Get("/app/rest/investigations")]
+        Task<InvestigationListDto> Investigations([AliasAs("locator")] string investigationLocator);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/investigations/id:{id}")
-        Task<InvestigationDto> Investigation(/*@Path("id")*/string id);
+        [Get("/app/rest/investigations/{id}")]
+        Task<InvestigationDto> Investigation(string id);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/changes")
-        Task<ChangesDto> Changes(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        [Get("/app/rest/changes")]
+        Task<ChangesDto> Changes(string locator, string fields);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/testOccurrences/")
-        Task<TestOccurrencesDto> TestOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        [Get("/app/rest/testOccurrences/")]
+        Task<TestOccurrencesDto> TestOccurrences(string locator, string fields);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/vcs-roots")
-        Task<VcsRootListDto> VcsRoots(/*@Query("locator")*/string locator = null);
+        [Get("/app/rest/vcs-roots")]
+        Task<VcsRootListDto> VcsRoots(string locator = null);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/vcs-roots/id:{id}")
-        Task<VcsRootDto> VcsRoot(/*@Path("id")*/string id);
+        [Get("/app/rest/vcs-roots/{id}")]
+        Task<VcsRootDto> VcsRoot(string id);
 
-        // @POST("/app/rest/builds/id:{id}/tags/")
-        Task AddTag(/*@Path("id")*/string buildId,/*@Body*/string tag);
+        [Post("/app/rest/builds/{id}/tags/")]
+        Task AddTag([AliasAs("id")] string buildId,/*@Body*/string tag);
 
-        // // @PUT("/app/rest/builds/id:{id}/comment/")
-        Task SetComment(/*@Path("id")*/string buildId,/*@Body*/string comment);
+        [Put("/app/rest/builds/{id}/comment/")]
+        Task SetComment([AliasAs("id")] string buildId,/*@Body*/string comment);
 
-        // // @PUT("/app/rest/builds/id:{id}/tags/")
-        Task ReplaceTags(/*@Path("id")*/string buildId,/*@Body*/ TagsDto tags);
+        [Put("/app/rest/builds/{id}/tags/")]
+        Task ReplaceTags([AliasAs("id")] string buildId,/*@Body*/ TagsDto tags);
 
-        // // @PUT("/app/rest/builds/id:{id}/pin/")
-        Task Pin(/*@Path("id")*/string buildId,/*@Body*/ string comment);
+        [Put("/app/rest/builds/{id}/pin/")]
+        Task Pin([AliasAs("id")] string buildId,/*@Body*/ string comment);
 
         // //The standard DELETE annotation doesn't allow to include a body, so we need to use our own.
         // //Probably it would be better to change Rest API here (https://youtrack.jetbrains.com/issue/TW-49178).
-        // // @DELETE_WITH_BODY("/app/rest/builds/id:{id}/pin/")
-        Task Unpin(/*@Path("id")*/string buildId,/*@Body*/string comment);
+        // // @DELETE_WITH_BODY("/app/rest/builds/{id}/pin/")
+        [Delete("/app/rest/builds/{id}/pin/")]
+        Task Unpin([AliasAs("id")] string buildId,/*@Body*/string comment);
 
         // // @Streaming
-        // // @GET("/app/rest/builds/id:{id}/artifacts/content/{path}")
-        Task<Stream> ArtifactContent(/*@Path("id")*/string buildId,/*@Path("path", encode = false)*/string artifactPath);
+        [Get("/app/rest/builds/{id}/artifacts/content/{**path}")]
+        Task<Stream> ArtifactContent(
+            [AliasAs("id")] string buildId, 
+            [AliasAs("path")] string artifactPath);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/builds/id:{id}/artifacts/children/{path}")
+        [Get("/app/rest/builds/{id}/artifacts/children/{**path}")]
         Task<ArtifactFileListDto> ArtifactChildren(
-            /*@Path("id")*/string buildId,
-            /*@Path("path", encode = false)*/string artifactPath,
-            /*@Query("locator")*/string locator,
-            /*@Query("fields")*/string fields);
+            [AliasAs("id")] string buildId,
+            [AliasAs("path")] string artifactPath,
+            string locator,
+            string fields);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/builds/id:{id}/resulting-properties")
-        Task<ParametersDto> ResultingProperties(/*@Path("id")*/string buildId);
+        [Get("/app/rest/builds/{id}/resulting-properties")]
+        Task<ParametersDto> ResultingProperties([AliasAs("id")] string buildId);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/projects/id:{id}")
-        Task<ProjectDto> Project(/*@Path("id")*/string id);
+        [Get("/app/rest/projects/{id}")]
+        Task<ProjectDto> Project(string id);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/buildTypes/id:{id}")
-        Task<BuildTypeDto> BuildConfiguration(/*@Path("id")*/string buildTypeId);
+        [Get("/app/rest/buildTypes/{id}")]
+        Task<BuildTypeDto> BuildConfiguration([AliasAs("id")] string buildTypeId);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/buildTypes/id:{id}/buildTags")
-        Task<TagsDto> BuildTypeTags(/*@Path("id")*/string buildTypeId);
+        [Get("/app/rest/buildTypes/{id}/buildTags")]
+        Task<TagsDto> BuildTypeTags([AliasAs("id")] string buildTypeId);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/buildTypes/id:{id}/triggers")
-        Task<TriggersDto> BuildTypeTriggers(/*@Path("id")*/string buildTypeId);
+        [Get("/app/rest/buildTypes/{id}/triggers")]
+        Task<TriggersDto> BuildTypeTriggers([AliasAs("id")] string buildTypeId);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/buildTypes/id:{id}/artifact-dependencies")
-        Task<ArtifactDependenciesDto> BuildTypeArtifactDependencies(/*@Path("id")*/string buildTypeId);
+        [Get("/app/rest/buildTypes/{id}/artifact-dependencies")]
+        Task<ArtifactDependenciesDto> BuildTypeArtifactDependencies([AliasAs("id")] string buildTypeId);
 
-        // @PUT("/app/rest/projects/id:{id}/parameters/{name}")
-        Task SetProjectParameter(/*@Path("id")*/string projectId,/*@Path("name")*/string name,/*@Body*/string value);
+        [Put("/app/rest/projects/{id}/parameters/{name}")]
+        Task SetProjectParameter([AliasAs("id")] string projectId, string name,/*@Body*/string value);
 
-        // // @PUT("/app/rest/buildTypes/id:{id}/parameters/{name}")
-        Task SetBuildTypeParameter(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
+        [Put("/app/rest/buildTypes/{id}/parameters/{name}")]
+        Task SetBuildTypeParameter([AliasAs("id")] string buildTypeId, string name,/*@Body*/string value);
 
-        // // @PUT("/app/rest/buildTypes/id:{id}/settings/{name}")
-        Task SetBuildTypeSettings(/*@Path("id")*/string buildTypeId,/*@Path("name")*/string name,/*@Body*/string value);
+        [Put("/app/rest/buildTypes/{id}/settings/{name}")]
+        Task SetBuildTypeSettings([AliasAs("id")] string buildTypeId, string name,/*@Body*/string value);
 
         // @Headers("Accept: application/json")
-        // @POST("/app/rest/buildQueue")
+        [Post("/app/rest/buildQueue")]
         Task<TriggeredBuildDto> TriggerBuild(/*@Body*/TriggerBuildRequestDto value);
 
         // @Headers("Accept: application/json")
-        // @POST("/app/rest/builds/id:{id}")
-        Task CancelBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestDto value);
-
-        // // @Headers("Accept: application/json")
-        // // @POST("/app/rest/buildQueue/id:{id}")
-        Task RemoveQueuedBuild(/*@Path("id")*/string buildId,/*@Body*/BuildCancelRequestDto value);
+        [Post("/app/rest/builds/{id}")]
+        Task CancelBuild([AliasAs("id")] string buildId,/*@Body*/BuildCancelRequestDto value);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/users")
+        [Post("/app/rest/buildQueue/{id}")]
+        Task RemoveQueuedBuild([AliasAs("id")] string buildId,/*@Body*/BuildCancelRequestDto value);
+
+        // @Headers("Accept: application/json")
+        [Get("/app/rest/users")]
         Task<UserListDto> Users();
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/users/{userLocator}")
-        Task<UserDto> Users(/*@Path("userLocator")*/string userLocator);
+        [Get("/app/rest/users/{locator}")]
+        Task<UserDto> Users([AliasAs("locator")] string userLocator);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/agents")
+        [Get("/app/rest/agents")]
         Task<BuildAgentsDto> Agents();
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/agentPools")
+        [Get("/app/rest/agentPools")]
         Task<BuildAgentPoolsDto> AgentPools();
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/agents/{locator}")
-        Task<BuildAgentDto> Agents(/*@Path("locator")*/string agentLocator = null);
+        [Get("/app/rest/agents/{locator}")]
+        Task<BuildAgentDto> Agents([AliasAs("locator")] string agentLocator = null);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/agentPools/{locator}")
-        Task<BuildAgentPoolDto> AgentPools(/*@Path("locator")*/string agentLocator = null);
+        [Get("/app/rest/agentPools/{locator}")]
+        Task<BuildAgentPoolDto> AgentPools([AliasAs("locator")] string agentLocator = null);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/problemOccurrences")
-        Task<BuildProblemOccurrencesDto> ProblemOccurrences(/*@Query("locator")*/string locator,/*@Query("fields")*/string fields);
+        [Get("/app/rest/problemOccurrences")]
+        Task<BuildProblemOccurrencesDto> ProblemOccurrences(string locator, string fields);
 
-        // @POST("/app/rest/projects")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
+        [Post("/app/rest/projects")]
         Task<ProjectDto> CreateProject(/*@Body*/string projectDescriptionXml);
 
-        // @POST("/app/rest/vcs-roots")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
+        [Post("/app/rest/vcs-roots")]
         Task<VcsRootDto> CreateVcsRoot(/*@Body*/string vcsRootXml);
 
-        // @POST("/app/rest/buildTypes")
         // @Headers("Accept: application/json", "Content-Type: application/xml")
+        [Post("/app/rest/buildTypes")]
         Task<BuildTypeDto> CreateBuildType(/*@Body*/string buildTypeXml);
 
         // @Streaming
-        // @GET("/downloadBuildLog.html")
-        Task<Stream> BuildLog(/*@Query ("buildId")*/string id);
+        [Get("/downloadBuildLog.html")]
+        Task<Stream> BuildLog([AliasAs("buildId")] string id);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/changes/buildType:{id},version:{version}")
-        Task<ChangeDto> Change(/*@Path("id")*/string buildType,/*@Path("version")*/string version);
+        [Get("/app/rest/changes/{id},{version}")]
+        Task<ChangeDto> Change([AliasAs("id")] string buildType, [AliasAs("version")] string version);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/changes/id:{id}")
-        Task<ChangeDto> Change(/*@Path("id")*/string changeId);
+        [Get("/app/rest/changes/{id}")]
+        Task<ChangeDto> Change([AliasAs("id")] string changeId);
 
         // @Headers("Accept: application/json")
-        // @GET("/app/rest/changes/{id}/firstBuilds")
-        Task<BuildListDto> ChangeFirstBuilds(/*@Path("id")*/string id);
+        [Get("/app/rest/changes/{id}/firstBuilds")]
+        Task<BuildListDto> ChangeFirstBuilds([AliasAs("id")] string id);
     }
 }
