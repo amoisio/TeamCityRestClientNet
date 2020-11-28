@@ -34,22 +34,3 @@
 //     return response
 //     }
 // }
-
-// private fun Xml(init: XMLStreamWriter.()->Unit): String
-// {
-//     val stringWriter = StringWriter()
-//     val xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(stringWriter)
-//     Init(xmlStreamWriter)
-//     xmlStreamWriter.flush()
-//     return stringWriter.toString()
-// }
-
-// private fun XMLStreamWriter.element(name: String, init: XMLStreamWriter.() -> Unit): XMLStreamWriter
-// {
-//     this.writeStartElement(name)
-//     this.init()
-//     this.writeEndElement()
-//     return this
-// }
-
-// private fun XMLStreamWriter.attribute(name: String, value: String) = WriteAttribute(name, value)
