@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.Domain
     internal class BuildCanceledInfo : IBuildCanceledInfo
     {
         private readonly BuildCanceledDto _dto;
-        internal BuildCanceledInfo(BuildCanceledDto dto, TeamCityInstance instance)
+        internal BuildCanceledInfo(BuildCanceledDto dto, TeamCityServer instance)
         {
             this._dto = dto;
             this.User = new AsyncLazy<IUser>(async ()

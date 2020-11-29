@@ -11,7 +11,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildAgentPool : Base<BuildAgentPoolDto>, IBuildAgentPool
     {
-        private BuildAgentPool(BuildAgentPoolDto fullDto, TeamCityInstance instance)
+        private BuildAgentPool(BuildAgentPoolDto fullDto, TeamCityServer instance)
             : base(fullDto, instance)
         {
             this.Projects = new AsyncLazy<List<IProject>>(async ()
@@ -37,7 +37,7 @@ namespace TeamCityRestClientNet.Domain
                 });
         }
 
-        public static async Task<BuildAgentPool> Create(string idString, TeamCityInstance instance)
+        public static async Task<BuildAgentPool> Create(string idString, TeamCityServer instance)
         {
             var dto = await instance.Service.AgentPools($"id:{idString}").ConfigureAwait(false);
             return new BuildAgentPool(dto, instance);

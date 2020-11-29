@@ -8,7 +8,7 @@ namespace TeamCityRestClientNet.Locators
 {
     class BuildAgentPoolLocator : Locator, IBuildAgentPoolLocator
     {
-        public BuildAgentPoolLocator(TeamCityInstance instance) : base(instance) { }
+        public BuildAgentPoolLocator(TeamCityServer instance) : base(instance) { }
 
         public async Task<IEnumerable<IBuildAgentPool>> All()
         {

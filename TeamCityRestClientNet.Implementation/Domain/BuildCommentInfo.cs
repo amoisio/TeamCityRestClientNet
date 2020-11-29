@@ -10,7 +10,7 @@ namespace TeamCityRestClientNet.Domain
     {
         private readonly BuildCommentDto _dto;
 
-        public BuildCommentInfo(BuildCommentDto dto, TeamCityInstance instance)
+        public BuildCommentInfo(BuildCommentDto dto, TeamCityServer instance)
         {
             this._dto = dto;
             this.User = new AsyncLazy<IUser>(async ()

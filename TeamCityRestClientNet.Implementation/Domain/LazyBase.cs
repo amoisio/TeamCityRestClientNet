@@ -8,7 +8,7 @@ namespace TeamCityRestClientNet.Domain
 {
     abstract class LazyBase<TDto> where TDto : IdDto
     {
-        protected LazyBase(TDto dto, bool isFullDto, TeamCityInstance instance)
+        protected LazyBase(TDto dto, bool isFullDto, TeamCityServer instance)
         {
             this.Dto = dto ?? throw new ArgumentNullException("dto must not be null.");
 
@@ -32,7 +32,7 @@ namespace TeamCityRestClientNet.Domain
         /// <summary>
         /// The backing TeamCity instance.
         /// </summary>
-        protected TeamCityInstance Instance { get; }
+        protected TeamCityServer Instance { get; }
         /// <summary>
         /// The service used for communicating with the backing TeamCity instance.
         /// </summary>

@@ -6,7 +6,7 @@ namespace TeamCityRestClientNet.Domain
 {
     abstract class Base<TDto> where TDto : IdDto
     {
-        protected Base(TDto fullDto, TeamCityInstance instance)
+        protected Base(TDto fullDto, TeamCityServer instance)
         {
             this.Dto = fullDto ?? throw new ArgumentNullException($"{nameof(fullDto)} must not be null.");
 
@@ -19,7 +19,7 @@ namespace TeamCityRestClientNet.Domain
         /// <summary>
         /// The backing TeamCity instance.
         /// </summary>
-        protected TeamCityInstance Instance { get; }
+        protected TeamCityServer Instance { get; }
         /// <summary>
         /// The service used for communicating with the backing TeamCity instance.
         /// </summary>

@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet.Tools
             else
                 return DateTimeOffset.ParseExact(
                     teamCityDateTime,
-                    TeamCityInstance.TEAMCITY_DATETIME_FORMAT,
+                    TeamCityServer.TEAMCITY_DATETIME_FORMAT,
                     CultureInfo.CurrentCulture);
         }
 

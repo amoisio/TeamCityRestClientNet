@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Service
     /// <typeparam name="TTeamCityDto">TeamCity dto type used for communicating with the backing TeamCity server.</typeparam>
     class Paged<TTeamCityEntity, TTeamCityDto> : IAsyncEnumerable<TTeamCityEntity> 
     {
-        private readonly TeamCityInstance _instance;
+        private readonly TeamCityServer _instance;
         /// <summary>
         /// Service for communicating with the backing TeamCity server.
         /// </summary>
@@ -33,7 +33,7 @@ namespace TeamCityRestClientNet.Service
         private readonly Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> _convertToPage;
 
         public Paged(
-            TeamCityInstance instance,
+            TeamCityServer instance,
             Func<Task<TTeamCityDto>> getFirst,
             Func<TTeamCityDto, Task<Page<TTeamCityEntity>>> convertToPage)
         {

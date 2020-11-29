@@ -9,9 +9,9 @@ namespace TeamCityRestClientNet.Locators
 {
     class VcsRootLocator : IVcsRootLocator
     {
-        private readonly TeamCityInstance _instance;
+        private readonly TeamCityServer _instance;
 
-        public VcsRootLocator(TeamCityInstance instance)
+        public VcsRootLocator(TeamCityServer instance)
         {
             _instance = instance;
         }

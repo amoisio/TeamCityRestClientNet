@@ -10,7 +10,7 @@ namespace TeamCityRestClientNet.Domain
     class PinInfo : IPinInfo
     {
         private readonly PinInfoDto _dto;
-        public PinInfo(PinInfoDto dto, TeamCityInstance instance)
+        public PinInfo(PinInfoDto dto, TeamCityServer instance)
         {
             _dto = dto;
             this.User = new AsyncLazy<IUser>(async () 

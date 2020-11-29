@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet.Locators
         private TestStatus? _testStatus;
         private bool _expandMultipleInvocations = false;
 
-        public TestRunsLocator(TeamCityInstance instance) : base(instance) { }
+        public TestRunsLocator(TeamCityServer instance) : base(instance) { }
 
         public IAsyncEnumerable<ITestRun> All()
         {

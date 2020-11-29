@@ -10,7 +10,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class VcsRoot : Base<VcsRootDto>, IVcsRoot
     {
-        private VcsRoot(VcsRootDto fullDto, TeamCityInstance instance)
+        private VcsRoot(VcsRootDto fullDto, TeamCityServer instance)
             : base(fullDto, instance)
         {
             this.Properties = this.Dto.Properties
@@ -19,7 +19,7 @@ namespace TeamCityRestClientNet.Domain
                 ?? new Dictionary<string, string>();
         }
 
-        public static async Task<VcsRoot> Create(VcsRootDto dto, bool isFullDto, TeamCityInstance instance)
+        public static async Task<VcsRoot> Create(VcsRootDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
                 ? dto

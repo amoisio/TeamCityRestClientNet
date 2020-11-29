@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class ArtifactDependency : Base<ArtifactDependencyDto>, IArtifactDependency
     {
-        public ArtifactDependency(ArtifactDependencyDto fullDto, TeamCityInstance instance)
+        public ArtifactDependency(ArtifactDependencyDto fullDto, TeamCityServer instance)
             : base(fullDto, instance) 
         { 
             this.DependsOnBuildConfiguration = new AsyncLazy<IBuildConfiguration>(async () 

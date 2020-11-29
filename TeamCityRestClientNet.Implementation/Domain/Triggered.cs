@@ -7,7 +7,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class Triggered : ITriggeredInfo
     {
-        public Triggered(TriggeredDto dto, TeamCityInstance instance)
+        public Triggered(TriggeredDto dto, TeamCityServer instance)
         {
             this.User = new AsyncLazy<IUser>(async () 
                 => await Domain.User.Create(dto.User.Id, instance).ConfigureAwait(false));

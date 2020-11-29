@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class Build : Base<BuildDto>, IBuild
     {
-        private Build(BuildDto fullDto, TeamCityInstance instance)
+        private Build(BuildDto fullDto, TeamCityServer instance)
             : base(fullDto, instance)
         {
             this.Changes = new AsyncLazy<List<IChange>>(async () 
@@ -49,7 +49,7 @@ namespace TeamCityRestClientNet.Domain
                 );
         }
 
-        public static async Task<IBuild> Create(string idString, TeamCityInstance instance)
+        public static async Task<IBuild> Create(string idString, TeamCityServer instance)
         {
             var dto = await instance.Service.Build(idString).ConfigureAwait(false);
 

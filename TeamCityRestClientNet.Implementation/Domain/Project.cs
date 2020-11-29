@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class Project : Base<ProjectDto>, IProject
     {
-        private Project(ProjectDto dto, TeamCityInstance instance)
+        private Project(ProjectDto dto, TeamCityServer instance)
             : base(dto, instance)
         {
             this.ChildProjects = new AsyncLazy<List<IProject>>(async () 
@@ -34,7 +34,7 @@ namespace TeamCityRestClientNet.Domain
 
         }
 
-        public static async Task<IProject> Create(ProjectDto dto, bool isFullDto, TeamCityInstance instance)
+        public static async Task<IProject> Create(ProjectDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
                 ? dto

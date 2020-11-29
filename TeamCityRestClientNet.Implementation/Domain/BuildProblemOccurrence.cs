@@ -7,9 +7,9 @@ namespace TeamCityRestClientNet.Domain
     class BuildProblemOccurrence : IBuildProblemOccurrence
     {
         private readonly BuildProblemOccurrenceDto _dto;
-        private readonly TeamCityInstance _instance;
+        private readonly TeamCityServer _instance;
 
-        public BuildProblemOccurrence(BuildProblemOccurrenceDto dto, TeamCityInstance instance)
+        public BuildProblemOccurrence(BuildProblemOccurrenceDto dto, TeamCityServer instance)
         {
             this.Build = new AsyncLazy<IBuild>(async () 
                 => await Domain.Build.Create(dto.Build.Id, instance).ConfigureAwait(false));

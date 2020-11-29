@@ -12,7 +12,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildConfiguration : Base<BuildTypeDto>, IBuildConfiguration
     {
-        private BuildConfiguration(BuildTypeDto dto, TeamCityInstance instance)
+        private BuildConfiguration(BuildTypeDto dto, TeamCityServer instance)
             : base(dto, instance)
         {
             this.BuildTags = new AsyncLazy<List<string>>(async ()
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Domain
                     ?? new List<IArtifactDependency>());
         }
 
-        public static async Task<IBuildConfiguration> Create(string idString, TeamCityInstance instance)
+        public static async Task<IBuildConfiguration> Create(string idString, TeamCityServer instance)
         {
             var dto = await instance.Service.BuildConfiguration(idString).ConfigureAwait(false);
             return new BuildConfiguration(dto, instance);

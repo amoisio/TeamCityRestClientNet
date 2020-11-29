@@ -12,14 +12,14 @@ namespace TeamCityRestClientNet.Domain
 {
     class Change : Base<ChangeDto>, IChange
     {
-        private Change(ChangeDto fullDto, TeamCityInstance instance)
+        private Change(ChangeDto fullDto, TeamCityServer instance)
             : base(fullDto, instance)
         {
             this.User = new AsyncLazy<IUser>(async ()
                 => await Domain.User.Create(IdString, Instance).ConfigureAwait(false));
         }
 
-        public static async Task<IChange> Create(ChangeDto dto, bool isFullDto, TeamCityInstance instance)
+        public static async Task<IChange> Create(ChangeDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
                 ? dto

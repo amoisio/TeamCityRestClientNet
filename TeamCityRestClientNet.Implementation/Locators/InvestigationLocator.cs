@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Locators
         private InvestigationTargetType? targetType;
         private ProjectId? affectedProjectId;
 
-        public InvestigationLocator(TeamCityInstance instance) : base(instance) 
+        public InvestigationLocator(TeamCityServer instance) : base(instance) 
         {
 
         }

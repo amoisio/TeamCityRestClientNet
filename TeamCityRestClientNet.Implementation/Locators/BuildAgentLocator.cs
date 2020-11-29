@@ -8,7 +8,7 @@ namespace TeamCityRestClientNet.Locators
 {
     class BuildAgentLocator : Locator, IBuildAgentLocator
     {
-        public BuildAgentLocator(TeamCityInstance instance) : base(instance) { }
+        public BuildAgentLocator(TeamCityServer instance) : base(instance) { }
 
         public async Task<IEnumerable<IBuildAgent>> All()
         {

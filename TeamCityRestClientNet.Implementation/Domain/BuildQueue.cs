@@ -9,9 +9,9 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildQueue : IBuildQueue
     {
-        private readonly TeamCityInstance _instance;
+        private readonly TeamCityServer _instance;
 
-        public BuildQueue(TeamCityInstance instance)
+        public BuildQueue(TeamCityServer instance)
         {
             this._instance = instance;
         }

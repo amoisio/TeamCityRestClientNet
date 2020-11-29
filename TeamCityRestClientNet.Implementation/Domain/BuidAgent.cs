@@ -14,7 +14,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class BuildAgent : Base<BuildAgentDto>, IBuildAgent
     {
-        private BuildAgent(BuildAgentDto fullDto, TeamCityInstance instance) 
+        private BuildAgent(BuildAgentDto fullDto, TeamCityServer instance) 
             : base(fullDto, instance)
         {
             this.Pool = new AsyncLazy<IBuildAgentPool>(async ()
@@ -26,7 +26,7 @@ namespace TeamCityRestClientNet.Domain
                     : await Build.Create(this.Dto.Build.Id, Instance).ConfigureAwait(false));
         }
 
-        public static async Task<IBuildAgent> Create(string idString, TeamCityInstance instance)
+        public static async Task<IBuildAgent> Create(string idString, TeamCityServer instance)
         {
             var dto = await instance.Service.Agents($"id:{idString}").ConfigureAwait(false);
             return new BuildAgent(dto, instance);
@@ -73,7 +73,7 @@ namespace TeamCityRestClientNet.Domain
 
         private class BuildAgentInfo : IInfo
         {
-            public BuildAgentInfo(string userId, DateTimeOffset timestamp, string text, TeamCityInstance instance)
+            public BuildAgentInfo(string userId, DateTimeOffset timestamp, string text, TeamCityServer instance)
             {
                 this.User = new AsyncLazy<IUser>(async () 
                     => await Domain.User.Create(userId, instance).ConfigureAwait(false));

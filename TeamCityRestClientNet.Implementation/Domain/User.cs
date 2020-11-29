@@ -6,10 +6,10 @@ namespace TeamCityRestClientNet.Domain
 {
     class User : Base<UserDto>, IUser
     {
-        private User(UserDto dto, TeamCityInstance instance)
+        private User(UserDto dto, TeamCityServer instance)
             : base(dto, instance) { }
 
-        public static async Task<IUser> Create(string idString, TeamCityInstance instance)
+        public static async Task<IUser> Create(string idString, TeamCityServer instance)
         {
             var dto = await instance.Service.Users($"id:{idString}").ConfigureAwait(false);
             return new User(dto, instance);

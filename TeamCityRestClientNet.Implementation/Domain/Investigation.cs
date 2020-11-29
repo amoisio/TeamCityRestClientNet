@@ -10,7 +10,7 @@ namespace TeamCityRestClientNet.Domain
 {
     class Investigation : Base<InvestigationDto>, IInvestigation
     {
-        private Investigation(InvestigationDto fullDto, TeamCityInstance instance)
+        private Investigation(InvestigationDto fullDto, TeamCityServer instance)
             : base(fullDto, instance)
         {
             Assignee = new AsyncLazy<IUser>(async () =>
@@ -51,7 +51,7 @@ namespace TeamCityRestClientNet.Domain
             });
         }
 
-        public static async Task<IInvestigation> Create(InvestigationDto dto, bool isFullDto, TeamCityInstance instance)
+        public static async Task<IInvestigation> Create(InvestigationDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
                 ? dto

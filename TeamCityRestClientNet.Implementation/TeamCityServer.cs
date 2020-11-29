@@ -10,7 +10,7 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
 {
-    class TeamCityInstance : TeamCity
+    class TeamCityServer : TeamCity
     {
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
@@ -19,7 +19,7 @@ namespace TeamCityRestClientNet.Domain
         private readonly TimeUnit _unit;
         private readonly long _timeout;
 
-        internal TeamCityInstance(
+        internal TeamCityServer(
             string serverUrl,
             string serverUrlBase,
             string authHeader,
@@ -121,10 +121,10 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public override TeamCity WithLogResponses()
-            => new TeamCityInstance(ServerUrl, ServerUrlBase, _authHeader, true, TimeUnit.MINUTES);
+            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, TimeUnit.MINUTES);
 
         public override TeamCity WithTimeout(long timeout, TimeUnit unit)
-            => new TeamCityInstance(ServerUrl, ServerUrlBase, _authHeader, true, unit, timeout);
+            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, unit, timeout);
 
         //     internal val service = RestAdapter.Builder()
         //             .setClient(Ok3Client(client))

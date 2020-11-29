@@ -5,12 +5,12 @@ namespace TeamCityRestClientNet.Locators
 {
     abstract class Locator 
     {
-        public Locator(TeamCityInstance instance)
+        public Locator(TeamCityServer instance)
         {
             this.Instance = instance;
         }
 
-        public TeamCityInstance Instance { get; }
+        public TeamCityServer Instance { get; }
         public ITeamCityService Service => Instance.Service; 
     }
 

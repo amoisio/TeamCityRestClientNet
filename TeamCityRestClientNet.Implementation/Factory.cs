@@ -21,8 +21,8 @@ namespace TeamCityRestClientNet.Domain
         public static TeamCity GuestAuth(string serverUrl)
           => CreateGuestAuthInstance(serverUrl);
 
-        internal static TeamCityInstance CreateGuestAuthInstance(string serverUrl)
-          => new TeamCityInstance(serverUrl.TrimEnd('/'), "/guestAuth", null, false, TimeUnit.MINUTES);
+        internal static TeamCityServer CreateGuestAuthInstance(string serverUrl)
+          => new TeamCityServer(serverUrl.TrimEnd('/'), "/guestAuth", null, false, TimeUnit.MINUTES);
 
         /**
         * Creates username/password authenticated accessor
@@ -36,11 +36,11 @@ namespace TeamCityRestClientNet.Domain
         public static TeamCity HttpAuth(string serverUrl, string username, string password)
           => CreateHttpAuthInstance(serverUrl, username, password);
 
-        internal static TeamCityInstance CreateHttpAuthInstance(string serverUrl, string username, string password)
+        internal static TeamCityServer CreateHttpAuthInstance(string serverUrl, string username, string password)
         {
             var bytes = Encoding.UTF8.GetBytes($"{username}:{password}");
             var authorization = Convert.ToBase64String(bytes);
-            return new TeamCityInstance(serverUrl.TrimEnd('/'), "/httpAuth", $"Basic {authorization}", false, TimeUnit.MINUTES);
+            return new TeamCityServer(serverUrl.TrimEnd('/'), "/httpAuth", $"Basic {authorization}", false, TimeUnit.MINUTES);
         }
 
         /**
@@ -55,7 +55,7 @@ namespace TeamCityRestClientNet.Domain
         public static TeamCity TokenAuth(string serverUrl, string token)
           => CreateTokenAuthInstance(serverUrl, token);
 
-        internal static TeamCityInstance CreateTokenAuthInstance(string serverUrl, string token)
-          => new TeamCityInstance(serverUrl.TrimEnd('/'), "", $"Bearer {token}", false, TimeUnit.MINUTES);
+        internal static TeamCityServer CreateTokenAuthInstance(string serverUrl, string token)
+          => new TeamCityServer(serverUrl.TrimEnd('/'), "", $"Bearer {token}", false, TimeUnit.MINUTES);
     }
 }
