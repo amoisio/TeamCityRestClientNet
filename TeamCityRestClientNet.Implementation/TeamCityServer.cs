@@ -86,11 +86,7 @@ namespace TeamCityRestClientNet
         public override async Task<IProject> RootProject() 
             => await Project(new ProjectId("_Root")).ConfigureAwait(false);
 
-        // TestRunsLocator = TestRunsLocatorImpl(this)
-        public override async Task<ITestRunsLocator> TestRuns() 
-        {
-            throw new System.NotImplementedException();
-        }
+        public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
         //     override fun User(id: UserId): User =
         //             UserImpl(UserBean().also { it.id = id.stringId }, false, this)
         public override async Task<IUser> User(UserId id)

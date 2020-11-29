@@ -149,7 +149,7 @@ namespace TeamCityRestClientNet.Domain
 
         public async IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null)
         {
-            var locator = (await Instance.TestRuns().ConfigureAwait(false)).ForBuild(Id);
+            var locator = Instance.TestRuns.ForBuild(Id);
             if (status != null)
                 locator.WithStatus(status.Value);
 
