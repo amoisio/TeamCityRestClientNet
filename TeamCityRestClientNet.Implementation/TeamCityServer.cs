@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
+using Refit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
@@ -19,7 +20,8 @@ namespace TeamCityRestClientNet
         private readonly bool _logResponses;
         private readonly TimeUnit _unit;
         private readonly long _timeout;
-
+        private readonly Lazy<ITeamCityService> _service;
+        public ITeamCityService Service => _service.Value;
         internal TeamCityServer(
             string serverUrl,
             string serverUrlBase,
@@ -36,13 +38,14 @@ namespace TeamCityRestClientNet
             this._logResponses = logResponses;
             this._unit = unit;
             this._timeout = timeout;
+            this._service = ServiceFactory(serverUrl, serverUrlBase);
         }
 
         public string ServerUrl { get; }
 
         public string ServerUrlBase { get; }
 
-        public override async Task<IBuild> Build(BuildId id) 
+        public override async Task<IBuild> Build(BuildId id)
             => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
 
         public override async Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number)
@@ -51,14 +54,14 @@ namespace TeamCityRestClientNet
             .WithNumber(number)
             .Latest()
             .ConfigureAwait(false);
-        
+
         public override IBuildAgentLocator BuildAgents => new BuildAgentLocator(this);
 
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
-        public override async Task<IBuildConfiguration> BuildConfiguration(string id) 
+        public override async Task<IBuildConfiguration> BuildConfiguration(string id)
             => await Domain.BuildConfiguration.Create(id, this).ConfigureAwait(false);
-        
+
         public override async Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
             => await BuildConfiguration(id.stringId).ConfigureAwait(false);
 
@@ -71,19 +74,19 @@ namespace TeamCityRestClientNet
             return await Domain.Change.Create(dto, true, this).ConfigureAwait(false);
         }
 
-        public override async Task<IChange> Change(ChangeId id) 
+        public override async Task<IChange> Change(ChangeId id)
             => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
 
-        public override IInvestigationLocator Investigations 
+        public override IInvestigationLocator Investigations
             => new InvestigationLocator(this);
 
-        public override async Task<IProject> Project(ProjectId id) 
+        public override async Task<IProject> Project(ProjectId id)
             => await Domain.Project.Create(new ProjectDto { Id = id.stringId }, false, this).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId) 
+        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
             => new BuildQueue(this).QueuedBuilds(projectId);
 
-        public override async Task<IProject> RootProject() 
+        public override async Task<IProject> RootProject()
             => await Project(new ProjectId("_Root")).ConfigureAwait(false);
 
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
@@ -113,96 +116,17 @@ namespace TeamCityRestClientNet
         public override TeamCity WithTimeout(long timeout, TimeUnit unit)
             => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, unit, timeout);
 
-        //     internal val service = RestAdapter.Builder()
-        //             .setClient(Ok3Client(client))
-        //             .setEndpoint("$serverUrl$serverUrlBase")
-        //             .setLog { restLog.debug(if (authHeader != null) it.replace(authHeader, "[REDACTED]") else it) }
-        //             .setLogLevel(if (logResponses) RestAdapter.LogLevel.FULL else RestAdapter.LogLevel.HEADERS_AND_ARGS)
-        //             .setRequestInterceptor
-        // {
-        //     request->
-        //                 if (authHeader != null)
-        //     {
-        //         request.addHeader("Authorization", authHeader)
-        //                 }
-        // }
-        //             .setErrorHandler
-        // {
-        //     retrofitError->
-        // val responseText = try
-        //     {
-        //         retrofitError.response.body.`in`().reader().use { it.readText() }
-        //     }
-        //     catch (t: Throwable) {
-        //         LOG.warn("Exception while reading error response text: ${t.message}", t)
-        //                     ""
-        //                 }
+        private Lazy<ITeamCityService> ServiceFactory(string serverUrl, string serverUrlBase)
+        {
+            return new Lazy<ITeamCityService>(() =>
+            {
+                var hostUrl = $"{serverUrl}{serverUrlBase}";
+                var settings = new RefitSettings {
 
-        //     throw TeamCityConversationException("Failed to connect to ${retrofitError.url}: ${retrofitError.message} $responseText", retrofitError)
-        //             }
-        //             .build()
-        //             .create(TeamCityService::class.java)
-
-        //     override fun Close()
-        // {
-        //     fun CatchAll(action: ()->Unit): Unit = try
-        //     {
-        //         Action()
-        //         }
-        //     catch (t: Throwable) {
-        //         LOG.warn("Failed to close connection. ${t.message}", t)
-        //         }
-
-        //     catchAll { client.dispatcher.cancelAll() }
-        //     catchAll { client.dispatcher.executorService.shutdown() }
-        //     catchAll { client.connectionPool.evictAll() }
-        //     catchAll { client.cache?.close() }
-        //     }
-        public ITeamCityService Service => throw new NotImplementedException();
-
-
-        //     override fun GetWebUrl(projectId: ProjectId, branch: String ?): String =
-        //              Project(projectId).getHomeUrl(branch = branch)
-
-        //     override fun GetWebUrl(buildConfigurationId: BuildConfigurationId, branch: String ?): String =
-        //              BuildConfiguration(buildConfigurationId).getHomeUrl(branch = branch)
-
-        //     override fun GetWebUrl(buildId: BuildId): String =
-        //             Build(buildId).getHomeUrl()
-
-        //     override fun GetWebUrl(changeId: ChangeId, specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
-        //               Change(changeId).getHomeUrl(
-        //                       specificBuildConfigurationId = specificBuildConfigurationId,
-        //                       includePersonalBuilds = includePersonalBuilds
-        //               )
-
-        
-
-        //     override fun TestRuns(): TestRunsLocator = TestRunsLocatorImpl(this)
-
-
-        //     private var client = OkHttpClient.Builder()
-        //             .readTimeout(timeout, unit)
-        //             .writeTimeout(timeout, unit)
-        //             .connectTimeout(timeout, unit)
-        //             .addInterceptor(RetryInterceptor())
-        //             .dispatcher(Dispatcher(
-        //                     //by default non-daemon threads are used, and it blocks JVM from exit
-        //                     ThreadPoolExecutor(0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
-        //                             SynchronousQueue(),
-        //                             object: ThreadFactory {
-        //                                 private val count = AtomicInteger(0)
-        //                                 override fun NewThread(r: Runnable) = Nhread(
-        //                                         block = { r.run() },
-        //                                         isDaemon = true,
-        //                                         start = false,
-        //                                         name = "TeamCity-Rest-Client - OkHttp Dispatcher - ${count.incrementAndGet()}"
-        //                                 )
-        //                             }
-        //             )))
-        //             .build()
-
-        
+                };
+                return RestService.For<ITeamCityService>(hostUrl,settings);
+            });
+        }
 
         internal string GetUserUrlPage(
             string pageName,
@@ -217,7 +141,7 @@ namespace TeamCityRestClientNet
             string branch = null)
         {
             var param = new List<string>();
-            
+
             if (tab != null)
                 param.Add($"tab={WebUtility.UrlEncode(tab)}");
             if (projectId.HasValue)
