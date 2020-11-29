@@ -65,28 +65,9 @@ namespace TeamCityRestClientNet.Api
         }
     }
 
-    public class TeamCityRestException : Exception
+    public class TeamCityException : Exception
     {
-
-        public TeamCityRestException(string message = null, Exception cause = null)
-            : base(message, cause)
-        {
-
-        }
-    }
-
-    public class TeamCityQueryException : TeamCityRestException
-    {
-        public TeamCityQueryException(string message = null, Exception cause = null)
-            : base(message, cause)
-        {
-
-        }
-    }
-
-    public class TeamCityConversationException : TeamCityRestException
-    {
-        public TeamCityConversationException(string message = null, Exception cause = null)
+        public TeamCityException(string message = null, Exception cause = null)
             : base(message, cause)
         {
 
