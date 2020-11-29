@@ -15,14 +15,6 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
-    public interface IInvestigationLocator
-    {
-        IInvestigationLocator LimitResults(int count);
-        IInvestigationLocator ForProject(ProjectId projectId);
-        IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
-        Task<IEnumerable<IInvestigation>> All();
-    }
-
     public interface IInvestigation
     {
         InvestigationId Id { get; }
@@ -35,6 +27,14 @@ namespace TeamCityRestClientNet.Api
         List<TestId> TestIds { get; }
         List<BuildProblemId> ProblemIds { get; }
         AsyncLazy<IInvestigationScope> Scope { get; }
+    }
+
+    public interface IInvestigationLocator
+    {
+        IInvestigationLocator LimitResults(int count);
+        IInvestigationLocator ForProject(ProjectId projectId);
+        IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
+        Task<IEnumerable<IInvestigation>> All();
     }
 
     public enum InvestigationState

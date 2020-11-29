@@ -69,7 +69,7 @@ namespace TeamCityRestClientNet.Api
     {
 
         public TeamCityRestException(string message = null, Exception cause = null)
-        : base(message, cause)
+            : base(message, cause)
         {
 
         }
@@ -78,7 +78,7 @@ namespace TeamCityRestClientNet.Api
     public class TeamCityQueryException : TeamCityRestException
     {
         public TeamCityQueryException(string message = null, Exception cause = null)
-        : base(message, cause)
+            : base(message, cause)
         {
 
         }
@@ -87,10 +87,9 @@ namespace TeamCityRestClientNet.Api
     public class TeamCityConversationException : TeamCityRestException
     {
         public TeamCityConversationException(string message = null, Exception cause = null)
-        : base(message, cause)
+            : base(message, cause)
         {
 
         }
     }
-
 }

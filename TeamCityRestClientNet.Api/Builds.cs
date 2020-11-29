@@ -17,10 +17,6 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
-    public interface IBuildCommentInfo : IInfo { }
-
-    public interface IBuildCanceledInfo : IInfo { }
-
     public interface IBuild
     {
         BuildId Id { get; }
@@ -38,46 +34,33 @@ namespace TeamCityRestClientNet.Api
          * Web UI URL for user, especially useful for error and log messages
          */
         string GetHomeUrl();
-
         string StatusText { get; }
         DateTimeOffset QueuedDateTime { get; }
         DateTimeOffset? StartDateTime { get; }
         DateTimeOffset? FinishDateTime { get; }
-
         IBuildRunningInfo RunningInfo { get; }
-
         List<IParameter> Parameters { get; }
-
         List<string> Tags { get; }
-
         /**
          * The same as revisions table on the build's Changes tab in TeamCity UI:
          * it lists the revisions of all of the VCS repositories associated with this build
          * that will be checked out by the build on the agent.
          */
         List<IRevision> Revisions { get; }
-
         /**
          * Changes is meant to represent changes the same way as displayed in the build's Changes in TeamCity UI.
          * In the most cases these are the commits between the current and previous build.
          */
         AsyncLazy<List<IChange>> Changes { get; }
-
         /**
          * All snapshot-dependency-linked builds this build depends on
          */
         AsyncLazy<List<IBuild>> SnapshotDependencies { get; }
-
         IPinInfo PinInfo { get; }
-
         ITriggeredInfo TriggeredInfo { get; }
-
         AsyncLazy<IBuildAgent> Agent { get; }
-
         IAsyncEnumerable<ITestRun> TestRuns(TestStatus? status = null);
-
         IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems();
-
         Task AddTag(string tag);
         Task Cancel(string comment = "", bool reAddIntoQueue = false);
         Task SetComment(string comment);
@@ -96,6 +79,51 @@ namespace TeamCityRestClientNet.Api
         Task<List<IParameter>> GetResultingParameters();
     }
 
+    public interface IBuildLocator
+    {
+        IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId);
+        IBuildLocator WithNumber(string buildNumber);
+        /**
+         * Filters builds to include only ones which are built on top of the specified revision.
+         */
+        IBuildLocator WithVcsRevision(string vcsRevision);
+        IBuildLocator SnapshotDependencyTo(BuildId buildId);
+        /**
+         * By default only successful builds are returned, call this method to include failed builds as well.
+         */
+        IBuildLocator IncludeFailed();
+        /**
+         * By default only finished builds are returned
+         */
+        IBuildLocator IncludeRunning();
+        IBuildLocator OnlyRunning();
+        /**
+         * By default canceled builds are not returned
+         */
+        IBuildLocator IncludeCanceled();
+        IBuildLocator OnlyCanceled();
+        IBuildLocator WithStatus(BuildStatus status);
+        IBuildLocator WithTag(string tag);
+        IBuildLocator WithBranch(string branch);
+        /**
+         * By default only builds from the default branch are returned, call this method to include builds from all branches.
+         */
+        IBuildLocator WithAllBranches();
+        IBuildLocator PinnedOnly();
+        IBuildLocator IncludePersonal();
+        IBuildLocator OnlyPersonal();
+        IBuildLocator LimitResults(int count);
+        IBuildLocator PageSize(int pageSize);
+        IBuildLocator Since(DateTimeOffset date);
+        IBuildLocator Until(DateTimeOffset date);
+        Task<IBuild> Latest();
+        IAsyncEnumerable<IBuild> All();
+    }
+
+    public interface IBuildCommentInfo : IInfo { }
+
+    public interface IBuildCanceledInfo : IInfo { }
+
     public interface IBuildRunningInfo
     {
         int PercentageComplete { get; }
@@ -103,60 +131,6 @@ namespace TeamCityRestClientNet.Api
         long EstimatedTotalSeconds { get; }
         bool Outdated { get; }
         bool ProbablyHanging { get; }
-    }
-
-    public interface IBuildLocator
-    {
-        IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId);
-
-        IBuildLocator WithNumber(string buildNumber);
-
-        /**
-         * Filters builds to include only ones which are built on top of the specified revision.
-         */
-        IBuildLocator WithVcsRevision(string vcsRevision);
-
-        IBuildLocator SnapshotDependencyTo(BuildId buildId);
-
-        /**
-         * By default only successful builds are returned, call this method to include failed builds as well.
-         */
-        IBuildLocator IncludeFailed();
-
-        /**
-         * By default only finished builds are returned
-         */
-        IBuildLocator IncludeRunning();
-        IBuildLocator OnlyRunning();
-
-        /**
-         * By default canceled builds are not returned
-         */
-        IBuildLocator IncludeCanceled();
-        IBuildLocator OnlyCanceled();
-
-        IBuildLocator WithStatus(BuildStatus status);
-        IBuildLocator WithTag(string tag);
-
-        IBuildLocator WithBranch(string branch);
-
-        /**
-         * By default only builds from the default branch are returned, call this method to include builds from all branches.
-         */
-        IBuildLocator WithAllBranches();
-
-        IBuildLocator PinnedOnly();
-
-        IBuildLocator IncludePersonal();
-        IBuildLocator OnlyPersonal();
-
-        IBuildLocator LimitResults(int count);
-        IBuildLocator PageSize(int pageSize);
-        IBuildLocator Since(DateTimeOffset date);
-        IBuildLocator Until(DateTimeOffset date);
-
-        Task<IBuild> Latest();
-        IAsyncEnumerable<IBuild> All();
     }
 
     public enum BuildStatus

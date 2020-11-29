@@ -15,14 +15,12 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
-
     public interface IBuildConfiguration
     {
         BuildConfigurationId Id { get; }
         string Name { get; }
         ProjectId ProjectId { get; }
         bool Paused { get; }
-
         /**
          * Web UI URL for user, especially useful for error and log messages
          */

@@ -20,7 +20,6 @@ namespace TeamCityRestClientNet.Api
         Task<Stream> OpenArtifactInputStream();
     }
 
-
     public interface IArtifactDependency
     {
         AsyncLazy<IBuildConfiguration> DependsOnBuildConfiguration { get; }

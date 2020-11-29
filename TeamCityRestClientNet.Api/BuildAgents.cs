@@ -4,6 +4,17 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
+    public struct BuildAgentId
+    {
+        public BuildAgentId(string stringId)
+        {
+            this.stringId = stringId;
+        }
+
+        public readonly string stringId;
+        public override string ToString() => this.stringId;
+    }
+
     public interface IBuildAgent
     {
         BuildAgentId Id { get; }
@@ -20,24 +31,15 @@ namespace TeamCityRestClientNet.Api
         AsyncLazy<IBuild> CurrentBuild { get; }
         string GetHomeUrl();
     }
-
-    public interface IBuildAgentPool
-    {
-        BuildAgentPoolId Id { get; }
-        string Name { get; }
-        AsyncLazy<List<IProject>> Projects { get; }
-        AsyncLazy<List<IBuildAgent>> Agents { get; }
-    }
     
     public interface IBuildAgentLocator
     {
         Task<IEnumerable<IBuildAgent>> All();
     }
 
-    public interface IBuildAgentPoolLocator
-    {
-        Task<IEnumerable<IBuildAgentPool>> All();
-    }
+    public interface IBuildAgentEnabledInfo : IInfo { }
+
+    public interface IBuildAgentAuthorizedInfo : IInfo { }
 
     public struct BuildAgentPoolId
     {
@@ -50,18 +52,16 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
-    public struct BuildAgentId
+    public interface IBuildAgentPool
     {
-        public BuildAgentId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
+        BuildAgentPoolId Id { get; }
+        string Name { get; }
+        AsyncLazy<List<IProject>> Projects { get; }
+        AsyncLazy<List<IBuildAgent>> Agents { get; }
     }
 
-    public interface IBuildAgentEnabledInfo : IInfo { }
-
-    public interface IBuildAgentAuthorizedInfo : IInfo { }
+    public interface IBuildAgentPoolLocator
+    {
+        Task<IEnumerable<IBuildAgentPool>> All();
+    }
 }

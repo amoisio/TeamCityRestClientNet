@@ -5,7 +5,6 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-
     public struct UserId
     {
         public UserId(string stringId)
@@ -23,7 +22,6 @@ namespace TeamCityRestClientNet.Api
         string Username { get; }
         string Name { get; }
         string Email { get; }
-
         /**
          * Web UI URL for user, especially useful for error and log messages
          */

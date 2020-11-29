@@ -13,6 +13,35 @@ namespace TeamCityRestClientNet.Api
         public readonly string stringId;
         public override string ToString() => this.stringId;
     }
+
+    public interface ITestRun
+    {
+        string Name { get; }
+        TestStatus Status { get; }
+
+        /**
+         * Test run duration. It may be ZERO if a test finished too fast (<1ms)
+         */
+        TimeSpan Duration { get; }
+        string Details { get; }
+        bool Ignored { get; }
+        /**
+         * Current 'muted' status of this test on TeamCity
+         */
+        bool CurrentlyMuted { get; }
+        /**
+         * Muted at the moment of running tests
+         */
+        bool Muted { get; }
+        /**
+         * Newly failed test or not
+         */
+        bool NewFailure { get; }
+        BuildId BuildId { get; }
+        BuildId? FixedIn { get; }
+        BuildId? FirstFailedIn { get; }
+        TestId TestId { get; }
+    }
     
     public interface ITestRunsLocator
     {
@@ -22,7 +51,6 @@ namespace TeamCityRestClientNet.Api
         ITestRunsLocator ForTest(TestId testId);
         ITestRunsLocator ForProject(ProjectId projectId);
         ITestRunsLocator WithStatus(TestStatus testStatus);
-
         /**
          * If expandMultipleInvocations is enabled, individual runs of tests, which were executed several
          * times in same build, are returned as separate entries.
@@ -39,39 +67,5 @@ namespace TeamCityRestClientNet.Api
         IGNORED,
         FAILED,
         UNKNOWN
-    }
-
-    public interface ITestRun
-    {
-        string Name { get; }
-        TestStatus Status { get; }
-
-        /**
-         * Test run duration. It may be ZERO if a test finished too fast (<1ms)
-         */
-        TimeSpan Duration { get; }
-
-        string Details { get; }
-        bool Ignored { get; }
-
-        /**
-         * Current 'muted' status of this test on TeamCity
-         */
-        bool CurrentlyMuted { get; }
-
-        /**
-         * Muted at the moment of running tests
-         */
-        bool Muted { get; }
-
-        /**
-         * Newly failed test or not
-         */
-        bool NewFailure { get; }
-
-        BuildId BuildId { get; }
-        BuildId? FixedIn { get; }
-        BuildId? FirstFailedIn { get; }
-        TestId TestId { get; }
     }
 }
