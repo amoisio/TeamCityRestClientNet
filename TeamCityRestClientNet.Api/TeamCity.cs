@@ -31,7 +31,7 @@ namespace TeamCityRestClientNet.Api
         public abstract Task<IUser> User(string userName);
         public abstract IUserLocator Users { get; }
         public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
-        public abstract Task<IVcsRootLocator> VcsRoots();
+        public abstract IVcsRootLocator VcsRoots { get; }
         public abstract TeamCity WithLogResponses();
         public abstract TeamCity WithTimeout(long timeout, TimeUnit unit);
 

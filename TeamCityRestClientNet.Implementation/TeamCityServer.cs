@@ -96,17 +96,16 @@ namespace TeamCityRestClientNet
             var fullDto = await Service.Users($"username:{userName}").ConfigureAwait(false);
             return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
         }
+
         public override IUserLocator Users => new UserLocator(this);
-        //     override fun VcsRoot(id: VcsRootId): VcsRoot = VcsRootImpl(service.vcsRoot(id.stringId), true, this)
+
         public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {
-            throw new System.NotImplementedException();
+            var fullDto = await Service.VcsRoot(id.stringId).ConfigureAwait(false);
+            return await Domain.VcsRoot.Create(fullDto, true, this).ConfigureAwait(false);
         }
-        //     override fun VcsRoots(): VcsRootLocator = VcsRootLocatorImpl(this)
-        public override async Task<IVcsRootLocator> VcsRoots()
-        {
-            throw new System.NotImplementedException();
-        }
+
+        public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
 
         public override TeamCity WithLogResponses()
             => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, TimeUnit.MINUTES);
