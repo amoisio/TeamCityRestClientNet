@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 
 using TeamCityRestClientNet.Extensions;
-using TeamCityRestClientNet.Domain;
 
 namespace TeamCityRestClientNet.Service
 {
