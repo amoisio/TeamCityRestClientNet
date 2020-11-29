@@ -4,11 +4,12 @@ using System.Net;
 using System.Threading.Tasks;
 using BAMCIS.Util.Concurrent;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Locators;
 using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Domain
+namespace TeamCityRestClientNet
 {
     class TeamCityServer : TeamCity
     {
