@@ -30,7 +30,16 @@ namespace TeamCityRestClientNet.Api
 
     public interface IUserLocator
     {
-        Task<IEnumerable<IUser>> All();
+        IAsyncEnumerable<IUser> All();
+
+        [Obsolete("use instance.user(id)")]
+        IUserLocator WithId(UserId id);
+
+        [Obsolete("use instance.user(userName)")]
+        IUserLocator WithUsername(string name);
+
+        [Obsolete("Use all() method which returns lazy sequence. Replace with all().toList().")]
+        Task<List<IUser>> ToList();
     }
 
     public interface IInfo

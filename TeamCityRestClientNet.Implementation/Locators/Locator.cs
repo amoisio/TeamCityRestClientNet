@@ -13,15 +13,4 @@ namespace TeamCityRestClientNet.Locators
         public TeamCityServer Instance { get; }
         public ITeamCityService Service => Instance.Service; 
     }
-
-    // private class UserLocatorImpl(private val instance: TeamCityInstanceImpl): UserLocator
-    // {
-    //     private var id: UserId ? = null
-    //     private var username: String ? = null
-
-    //     override fun WithId(id: UserId): UserLocator
-    // {
-    //     this.id = id
-    //         return this
-    //     }
 }

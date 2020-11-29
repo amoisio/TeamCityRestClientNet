@@ -96,11 +96,7 @@ namespace TeamCityRestClientNet
             var fullDto = await Service.Users($"username:{userName}").ConfigureAwait(false);
             return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
         }
-        //     override fun Users(): UserLocator = UserLocatorImpl(this)
-        public override async Task<IUserLocator> Users()
-        {
-            throw new System.NotImplementedException();
-        }
+        public override IUserLocator Users => new UserLocator(this);
         //     override fun VcsRoot(id: VcsRootId): VcsRoot = VcsRootImpl(service.vcsRoot(id.stringId), true, this)
         public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {
