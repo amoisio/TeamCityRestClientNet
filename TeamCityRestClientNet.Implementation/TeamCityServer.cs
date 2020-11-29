@@ -87,19 +87,14 @@ namespace TeamCityRestClientNet
             => await Project(new ProjectId("_Root")).ConfigureAwait(false);
 
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
-        //     override fun User(id: UserId): User =
-        //             UserImpl(UserBean().also { it.id = id.stringId }, false, this)
+
         public override async Task<IUser> User(UserId id)
-        {
-            throw new System.NotImplementedException();
-        }
-        //     override fun User(userName: String): User {
-        //         val bean = service.users("username:$userName")
-        //         return UserImpl(bean, true, this)
-        //     }
+            => await Domain.User.Create(id.stringId, this).ConfigureAwait(false);
+
         public override async Task<IUser> User(string userName)
         {
-            throw new System.NotImplementedException();
+            var fullDto = await Service.Users($"username:{userName}").ConfigureAwait(false);
+            return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
         }
         //     override fun Users(): UserLocator = UserLocatorImpl(this)
         public override async Task<IUserLocator> Users()

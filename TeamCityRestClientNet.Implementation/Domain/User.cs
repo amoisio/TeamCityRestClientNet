@@ -10,9 +10,14 @@ namespace TeamCityRestClientNet.Domain
             : base(dto, instance) { }
 
         public static async Task<IUser> Create(string idString, TeamCityServer instance)
+            => await Create(new UserDto { Id = idString }, false, instance).ConfigureAwait(false);
+
+        public static async Task<IUser> Create(UserDto dto, bool isFullDto, TeamCityServer instance)
         {
-            var dto = await instance.Service.Users($"id:{idString}").ConfigureAwait(false);
-            return new User(dto, instance);
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.Users($"id:{dto.Id}").ConfigureAwait(false);
+            return new User(fullDto, instance);
         }
 
         public UserId Id => new UserId(IdString);
