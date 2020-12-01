@@ -3,6 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>TeamCityRestClientNet.Api</RootNamespace>
+    <PackageId>TeamCityRestClient.NET.Api</PackageId>
+    <Title>TeamCity REST client for .NET Api</Title>
+    <Product>TeamCity REST client for .NET Api</Product>
+    <Description>TeamCity REST client for .NET Api</Description>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0</FileVersion>
+    <Authors>Aleksi Moisio</Authors>
+    <Company>-</Company>
+    <Copyright>Copyright (c) 2020 Aleksi Moisio</Copyright> 
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>TeamCity;.NET;REST;API</PackageTags>
+    <PackageIcon></PackageIcon>
+    <RepositoryUrl>https://bitbucket.org/amoisio/teamcityrestclientnet/</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
   </PropertyGroup>
 
   <ItemGroup>
