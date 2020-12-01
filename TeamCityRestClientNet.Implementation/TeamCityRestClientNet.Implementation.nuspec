@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>TeamCityRestClient.NET</id>
+    <version>1.0.0</version>
+    <title>TeamCity REST client for .NET</title>
+    <authors>Aleksi Moisio</authors>
+    <owners>Aleksi Moisio</owners>
+    <projectUrl>https://bitbucket.org/amoisio/teamcityrestclientnet/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>TeamCity REST client for .NET</description>
+    <releaseNotes>Initial version of the client.</releaseNotes>
+    <copyright>Copyright (c) 2020 Aleksi Moisio</copyright>
+    <tags>TeamCity;.NET;REST</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.1\*.*" target="lib\netstandard2.1" />
+  </files>
+</package>
