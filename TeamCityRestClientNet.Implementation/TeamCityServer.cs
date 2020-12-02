@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using BAMCIS.Util.Concurrent;
 using Refit;
 using TeamCityRestClientNet.Api;
@@ -9,6 +10,7 @@ using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Locators;
 using TeamCityRestClientNet.Service;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace TeamCityRestClientNet
 {
@@ -22,16 +24,21 @@ namespace TeamCityRestClientNet
         private readonly long _timeout;
         private readonly Lazy<ITeamCityService> _service;
         public ITeamCityService Service => _service.Value;
+        private readonly ILogger _logger;
         internal TeamCityServer(
             string serverUrl,
             string serverUrlBase,
             string authHeader,
-            bool logResponses,
             TimeUnit unit,
-            long timeout = 2)
+            long timeout,
+            bool logResponses,
+            ILoggerFactory loggerFactory = null)
         {
 
-            //     private val restLog = LoggerFactory.getLogger(LOG.name + ".rest")
+            _logger = (logResponses)
+                ? loggerFactory.CreateLogger("TeamCityServer")
+                : NullLogger.Instance;
+
             this.ServerUrl = serverUrl;
             this.ServerUrlBase = serverUrlBase;
             this._authHeader = authHeader;
@@ -111,10 +118,10 @@ namespace TeamCityRestClientNet
         public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
 
         public override TeamCity WithLogResponses()
-            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, TimeUnit.MINUTES);
+            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, TimeUnit.MINUTES, _timeout, _logResponses);
 
         public override TeamCity WithTimeout(long timeout, TimeUnit unit)
-            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, true, unit, timeout);
+            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, unit, timeout, _logResponses);
 
         private Lazy<ITeamCityService> ServiceFactory(string serverUrl, string serverUrlBase)
         {
@@ -124,6 +131,7 @@ namespace TeamCityRestClientNet
                 var settings = new RefitSettings {
 
                 };
+                _logger.LogInformation($"Building REST service to {hostUrl}.");
                 return RestService.For<ITeamCityService>(hostUrl,settings);
             });
         }

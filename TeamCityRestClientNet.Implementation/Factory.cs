@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using BAMCIS.Util.Concurrent;
+using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
 
 namespace TeamCityRestClientNet.Domain
@@ -18,11 +19,11 @@ namespace TeamCityRestClientNet.Domain
         *
         * Used via reflection for backward compatibility for deprecated methods
         */
-        public static TeamCity GuestAuth(string serverUrl)
-          => CreateGuestAuthInstance(serverUrl);
+        public static TeamCity GuestAuth(string serverUrl, ILoggerFactory loggerFactory)
+          => CreateGuestAuthInstance(serverUrl, loggerFactory);
 
-        internal static TeamCityServer CreateGuestAuthInstance(string serverUrl)
-          => new TeamCityServer(serverUrl.TrimEnd('/'), "/guestAuth", null, false, TimeUnit.MINUTES);
+        internal static TeamCityServer CreateGuestAuthInstance(string serverUrl, ILoggerFactory loggerFactory)
+          => new TeamCityServer(serverUrl.TrimEnd('/'), "/guestAuth", null, TimeUnit.MINUTES, 2, true, loggerFactory);
 
         /**
         * Creates username/password authenticated accessor
@@ -40,7 +41,7 @@ namespace TeamCityRestClientNet.Domain
         {
             var bytes = Encoding.UTF8.GetBytes($"{username}:{password}");
             var authorization = Convert.ToBase64String(bytes);
-            return new TeamCityServer(serverUrl.TrimEnd('/'), "/httpAuth", $"Basic {authorization}", false, TimeUnit.MINUTES);
+            return new TeamCityServer(serverUrl.TrimEnd('/'), "/httpAuth", $"Basic {authorization}", TimeUnit.MINUTES, 2, true);
         }
 
         /**
@@ -56,6 +57,6 @@ namespace TeamCityRestClientNet.Domain
           => CreateTokenAuthInstance(serverUrl, token);
 
         internal static TeamCityServer CreateTokenAuthInstance(string serverUrl, string token)
-          => new TeamCityServer(serverUrl.TrimEnd('/'), "", $"Bearer {token}", false, TimeUnit.MINUTES);
+          => new TeamCityServer(serverUrl.TrimEnd('/'), "", $"Bearer {token}", TimeUnit.MINUTES, 2, true);
     }
 }
