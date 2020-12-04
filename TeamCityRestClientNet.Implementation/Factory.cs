@@ -53,10 +53,10 @@ namespace TeamCityRestClientNet.Domain
         *
         * see https://www.jetbrains.com/help/teamcity/rest-api.html#RESTAPI-RESTAuthentication
         */
-        public static TeamCity TokenAuth(string serverUrl, string token)
-          => CreateTokenAuthInstance(serverUrl, token);
+        public static TeamCity TokenAuth(string serverUrl, string token, ILoggerFactory loggerFactory)
+          => CreateTokenAuthInstance(serverUrl, token, loggerFactory);
 
-        internal static TeamCityServer CreateTokenAuthInstance(string serverUrl, string token)
-          => new TeamCityServer(serverUrl.TrimEnd('/'), "", $"Bearer {token}", TimeUnit.MINUTES, 2, true);
+        internal static TeamCityServer CreateTokenAuthInstance(string serverUrl, string token, ILoggerFactory loggerFactory)
+          => new TeamCityServer(serverUrl.TrimEnd('/'), "", $"Bearer {token}", TimeUnit.MINUTES, 2, true, loggerFactory);
     }
 }
