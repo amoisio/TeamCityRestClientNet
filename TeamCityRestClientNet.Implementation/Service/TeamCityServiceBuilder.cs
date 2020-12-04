@@ -23,7 +23,7 @@ namespace TeamCityRestClientNet.Service
         }
 
         public string ServerUrl => _serverUrl;
-        public string ServerUrlBase => _serverUrlBase;
+        public string ServerUrlBase => _serverUrlBase ?? "";
         public TeamCityServiceBuilder SetServerUrl(string serverUrl, string serverUrlBase)
         {
             _serverUrl = serverUrl;
@@ -48,7 +48,7 @@ namespace TeamCityRestClientNet.Service
         {
             ValidateProperties();
 
-            var hostUrl = $"{_serverUrl}{_serverUrlBase}";
+            var hostUrl = $"{_serverUrl}{ServerUrlBase}";
             var settings = new RefitSettings { };
 
             _logger.LogInformation($"Building REST service to {hostUrl}.");
@@ -64,9 +64,6 @@ namespace TeamCityRestClientNet.Service
         {
             if (String.IsNullOrWhiteSpace(_serverUrl))
                 throw new ArgumentException("ServerUrl must be provided.");
-
-            if (String.IsNullOrWhiteSpace(_serverUrlBase))
-                throw new ArgumentException("ServerUrlBase must be provided.");
 
             if (_tokenStore == null)
                 throw new ArgumentException("TokenStore must be provided.");
