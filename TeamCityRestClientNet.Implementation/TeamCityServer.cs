@@ -18,34 +18,18 @@ namespace TeamCityRestClientNet
     {
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
-        private readonly string _authHeader;
-        private readonly bool _logResponses;
-        private readonly TimeUnit _unit;
-        private readonly long _timeout;
         private readonly Lazy<ITeamCityService> _service;
         public ITeamCityService Service => _service.Value;
         private readonly ILogger _logger;
-        internal TeamCityServer(
-            string serverUrl,
-            string serverUrlBase,
-            string authHeader,
-            TimeUnit unit,
-            long timeout,
-            bool logResponses,
-            ILoggerFactory loggerFactory = null)
+        internal TeamCityServer(TeamCityServiceBuilder serviceBuilder, ILogger logger = null)
         {
+            if (serviceBuilder == null)
+                throw new ArgumentNullException(nameof(serviceBuilder));
 
-            _logger = (logResponses)
-                ? loggerFactory.CreateLogger("TeamCityServer")
-                : NullLogger.Instance;
-
-            this.ServerUrl = serverUrl;
-            this.ServerUrlBase = serverUrlBase;
-            this._authHeader = authHeader;
-            this._logResponses = logResponses;
-            this._unit = unit;
-            this._timeout = timeout;
-            this._service = ServiceFactory(serverUrl, serverUrlBase);
+            this.ServerUrl = serviceBuilder.ServerUrl;
+            this.ServerUrlBase = serviceBuilder.ServerUrlBase;
+            this._service = new Lazy<ITeamCityService>(() => serviceBuilder.Build());
+            this._logger = logger ?? NullLogger.Instance; 
         }
 
         public string ServerUrl { get; }
@@ -117,24 +101,10 @@ namespace TeamCityRestClientNet
 
         public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
 
-        public override TeamCity WithLogResponses()
-            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, TimeUnit.MINUTES, _timeout, _logResponses);
-
-        public override TeamCity WithTimeout(long timeout, TimeUnit unit)
-            => new TeamCityServer(ServerUrl, ServerUrlBase, _authHeader, unit, timeout, _logResponses);
-
-        private Lazy<ITeamCityService> ServiceFactory(string serverUrl, string serverUrlBase)
-        {
-            return new Lazy<ITeamCityService>(() =>
-            {
-                var hostUrl = $"{serverUrl}{serverUrlBase}";
-                var settings = new RefitSettings {
-
-                };
-                _logger.LogInformation($"Building REST service to {hostUrl}.");
-                return RestService.For<ITeamCityService>(hostUrl,settings);
-            });
-        }
+        // private Lazy<ITeamCityService> ServiceFactory(string serverUrl, string serverUrlBase)
+        // {
+        
+        // }
 
         internal string GetUserUrlPage(
             string pageName,
