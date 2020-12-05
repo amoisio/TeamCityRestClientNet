@@ -6,7 +6,6 @@ namespace TeamCityRestClientNet.Service
 {
     interface ITeamCityService
     {
-        // @Streaming
         [Headers("Accept: application/json")]
         [Get("/{**path}")]
         Task<T> Root<T>(string path);
@@ -65,7 +64,6 @@ namespace TeamCityRestClientNet.Service
         [Delete("/app/rest/builds/{id}/pin/")]
         Task Unpin([AliasAs("id")] string buildId, [Body] string comment);
 
-        // @Streaming
         [Get("/app/rest/builds/{id}/artifacts/content/{**path}")]
         Task<Stream> ArtifactContent(
             [AliasAs("id")] string buildId,
@@ -164,7 +162,6 @@ namespace TeamCityRestClientNet.Service
         [Post("/app/rest/buildTypes")]
         Task<BuildTypeDto> CreateBuildType([Body] string buildTypeXml);
 
-        // @Streaming
         [Get("/downloadBuildLog.html")]
         Task<Stream> BuildLog([AliasAs("buildId")] string id);
 

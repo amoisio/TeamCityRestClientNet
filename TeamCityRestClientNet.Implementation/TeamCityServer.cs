@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using BAMCIS.Util.Concurrent;
-using Refit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
@@ -100,11 +98,6 @@ namespace TeamCityRestClientNet
         }
 
         public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
-
-        // private Lazy<ITeamCityService> ServiceFactory(string serverUrl, string serverUrlBase)
-        // {
-        
-        // }
 
         internal string GetUserUrlPage(
             string pageName,
