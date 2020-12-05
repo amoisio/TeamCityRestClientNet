@@ -5,170 +5,161 @@ namespace TeamCityRestClientNet.Service
 {
     class ProjectsDto
     {
-        internal List<ProjectDto> Project { get; set; } = new List<ProjectDto>();
+        public List<ProjectDto> Project { get; set; } = new List<ProjectDto>();
     }
 
     class BuildAgentsDto
     {
-        internal List<BuildAgentDto> Agent { get; set; } = new List<BuildAgentDto>();
+        public List<BuildAgentDto> Agent { get; set; } = new List<BuildAgentDto>();
     }
 
     class BuildAgentPoolsDto
     {
-        internal List<BuildAgentPoolDto> AgentPool { get; set; } = new List<BuildAgentPoolDto>();
+        public List<BuildAgentPoolDto> AgentPool { get; set; } = new List<BuildAgentPoolDto>();
     }
 
     class ArtifactFileListDto
     {
-        internal List<ArtifactFileDto> File { get; set; } = new List<ArtifactFileDto>();
+        public List<ArtifactFileDto> File { get; set; } = new List<ArtifactFileDto>();
     }
 
     class ArtifactFileDto
     {
-        internal string Name { get; set; }
-        internal string FullName { get; set; }
-        internal long? Size { get; set; }
-        internal string ModificationTime { get; set; }
-        internal static readonly string FIELDS 
+        public string Name { get; set; }
+        public string FullName { get; set; }
+        public long? Size { get; set; }
+        public string ModificationTime { get; set; }
+        public static readonly string FIELDS 
             = $"{nameof(FullName)},{nameof(Name)},${nameof(Size)},${nameof(ModificationTime)}";
     }
 
     class IdDto
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
     }
 
     class VcsRootListDto
     {
-        internal string NextHref { get; set; }
-        internal List<VcsRootDto> VcsRoot { get; set; } = new List<VcsRootDto>();
+        public string NextHref { get; set; }
+        public List<VcsRootDto> VcsRoot { get; set; } = new List<VcsRootDto>();
     }
 
     class VcsRootDto : IdDto
     {
-        internal string Name { get; set; }
-
-        internal NameValuePropertiesDto Properties { get; set; }
+        public string Name { get; set; }
+        public NameValuePropertiesDto Properties { get; set; }
     }
 
     class VcsRootInstanceDto
     {
-        internal string VcsRootId { get; set; }
-        internal string Name { get; set; }
+        public string VcsRootId { get; set; }
+        public string Name { get; set; }
     }
 
     class BuildListDto
     {
-        internal string NextHref { get; set; }
-        internal List<BuildDto> Build { get; set; } = new List<BuildDto>();
+        public string NextHref { get; set; }
+        public List<BuildDto> Build { get; set; } = new List<BuildDto>();
     }
 
     class UserListDto
     {
-        internal List<UserDto> User { get; set; } = new List<UserDto>();
+        public List<UserDto> User { get; set; } = new List<UserDto>();
     }
 
     class BuildDto : IdDto
     {
-        internal string BuildTypeId { get; set; }
-        internal BuildCanceledDto CanceledInfo { get; set; }
-        internal string Number { get; set; }
-        internal BuildStatus? Status { get; set; }
-        internal string State { get; set; }
-        internal bool? Personal { get; set; }
-        internal string BranchName { get; set; }
-        internal bool? DefaultBranch { get; set; }
-        internal bool? Composite { get; set; }
-
-        internal string StatusText { get; set; }
-        internal string QueuedDate { get; set; }
-        internal string StartDate { get; set; }
-        internal string FinishDate { get; set; }
-
-        internal TagsDto Tags { get; set; }
-        internal BuildRunningInfoDto RunningInfo { get; set; }
-        internal RevisionsDto Revisions { get; set; }
-
-        internal PinInfoDto PinInfo { get; set; }
-
-        internal TriggeredDto Triggered { get; set; }
-        internal BuildCommentDto Comment { get; set; }
-        internal BuildAgentDto Agent { get; set; }
-
-        internal ParametersDto Properties { get; set; } = new ParametersDto();
-        internal BuildTypeDto BuildType { get; set; } = new BuildTypeDto();
-
-        internal BuildListDto SnapshotDependencies { get; set; }
+        public string BuildTypeId { get; set; }
+        public BuildCanceledDto CanceledInfo { get; set; }
+        public string Number { get; set; }
+        public BuildStatus? Status { get; set; }
+        public string State { get; set; }
+        public bool? Personal { get; set; }
+        public string BranchName { get; set; }
+        public bool? DefaultBranch { get; set; }
+        public bool? Composite { get; set; }
+        public string StatusText { get; set; }
+        public string QueuedDate { get; set; }
+        public string StartDate { get; set; }
+        public string FinishDate { get; set; }
+        public TagsDto Tags { get; set; }
+        public BuildRunningInfoDto RunningInfo { get; set; }
+        public RevisionsDto Revisions { get; set; }
+        public PinInfoDto PinInfo { get; set; }
+        public TriggeredDto Triggered { get; set; }
+        public BuildCommentDto Comment { get; set; }
+        public BuildAgentDto Agent { get; set; }
+        public ParametersDto Properties { get; set; } = new ParametersDto();
+        public BuildTypeDto BuildType { get; set; } = new BuildTypeDto();
+        public BuildListDto SnapshotDependencies { get; set; }
     }
 
     class BuildRunningInfoDto
     {
-        internal int PercentageComplete { get; set; } = 0;
-        internal long ElapsedSeconds { get; set; } = 0;
-        internal long EstimatedTotalSeconds { get; set; } = 0;
-        internal bool Outdated { get; set; } = false;
-        internal bool ProbablyHanging { get; set; } = false;
+        public int PercentageComplete { get; set; } = 0;
+        public long ElapsedSeconds { get; set; } = 0;
+        public long EstimatedTotalSeconds { get; set; } = 0;
+        public bool Outdated { get; set; } = false;
+        public bool ProbablyHanging { get; set; } = false;
     }
 
     class BuildTypeDto : IdDto
     {
-        internal string Name { get; set; }
-        internal string ProjectId { get; set; }
-        internal bool? Paused { get; set; }
-        internal BuildTypeSettingsDto Settings { get; set; }
+        public string Name { get; set; }
+        public string ProjectId { get; set; }
+        public bool? Paused { get; set; }
+        public BuildTypeSettingsDto Settings { get; set; }
     }
 
     class BuildTypeSettingsDto
     {
-        internal List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
+        public List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
     }
 
     class BuildProblemDto
     {
-        internal string Id { get; set; }
-        internal string Type { get; set; }
-        internal string Identity { get; set; }
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public string Identity { get; set; }
     }
 
     class BuildProblemOccurrencesDto
     {
-        internal string NextHref { get; set; }
-        internal List<BuildProblemOccurrenceDto> ProblemOccurrence { get; set; } = new List<BuildProblemOccurrenceDto>();
+        public string NextHref { get; set; }
+        public List<BuildProblemOccurrenceDto> ProblemOccurrence { get; set; } = new List<BuildProblemOccurrenceDto>();
     }
 
     class BuildProblemOccurrenceDto
     {
-        internal string Details { get; set; }
-        internal string AdditionalData { get; set; }
-        internal BuildProblemDto Problem { get; set; }
-        internal BuildDto Build { get; set; }
+        public string Details { get; set; }
+        public string AdditionalData { get; set; }
+        public BuildProblemDto Problem { get; set; }
+        public BuildDto Build { get; set; }
     }
 
     class BuildTypesDto
     {
-        internal List<BuildTypeDto> BuildType { get; set; } = new List<BuildTypeDto>();
+        public List<BuildTypeDto> BuildType { get; set; } = new List<BuildTypeDto>();
     }
 
     class TagDto
     {
-        internal string Name { get; set; }
+        public string Name { get; set; }
     }
 
     class TagsDto
     {
-        internal List<TagDto> Tag { get; set; } = new List<TagDto>();
+        public List<TagDto> Tag { get; set; } = new List<TagDto>();
     }
 
     class TriggerBuildRequestDto
     {
-        internal string BranchName { get; set; }
-        internal bool? Personal { get; set; }
-        internal TriggeringOptionsDto TriggeringOptions { get; set; }
-
-        internal ParametersDto Properties { get; set; }
-        internal BuildTypeDto BuildType { get; set; }
-        internal CommentDto Comment { get; set; }
-
+        public string BranchName { get; set; }
+        public bool? Personal { get; set; }
+        public TriggeringOptionsDto TriggeringOptions { get; set; }
+        public ParametersDto Properties { get; set; }
+        public BuildTypeDto BuildType { get; set; }
+        public CommentDto Comment { get; set; }
         //  TODO: lastChanges
         //    <lastChanges>
         //      <change id="modificationId"/>
@@ -177,111 +168,102 @@ namespace TeamCityRestClientNet.Service
 
     class TriggeringOptionsDto
     {
-        internal bool? CleanSources { get; set; }
-        internal bool? RebuildAllDependencies { get; set; }
-        internal bool? QueueAtTop { get; set; }
+        public bool? CleanSources { get; set; }
+        public bool? RebuildAllDependencies { get; set; }
+        public bool? QueueAtTop { get; set; }
     }
 
     class CommentDto
     {
-        internal string Text { get; set; }
+        public string Text { get; set; }
     }
 
     class TriggerDto
     {
-        internal string Id { get; set; }
-        internal string Type { get; set; }
-        internal ParametersDto Properties { get; set; } = new ParametersDto();
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public ParametersDto Properties { get; set; } = new ParametersDto();
     }
 
     class TriggersDto
     {
-        internal List<TriggerDto> Trigger { get; set; } = new List<TriggerDto>();
+        public List<TriggerDto> Trigger { get; set; } = new List<TriggerDto>();
     }
 
     class ArtifactDependencyDto : IdDto
     {
-        internal string Type { get; set; }
-        internal bool? Disabled { get; set; } = false;
-        internal bool? Inherited { get; set; } = false;
-        internal ParametersDto Properties { get; set; } = new ParametersDto();
-        internal BuildTypeDto SourceBuildType { get; set; } = new BuildTypeDto();
+        public string Type { get; set; }
+        public bool? Disabled { get; set; } = false;
+        public bool? Inherited { get; set; } = false;
+        public ParametersDto Properties { get; set; } = new ParametersDto();
+        public BuildTypeDto SourceBuildType { get; set; } = new BuildTypeDto();
     }
 
     class ArtifactDependenciesDto
     {
-        internal List<ArtifactDependencyDto> ArtifactDependency { get; set; } = new List<ArtifactDependencyDto>();
+        public List<ArtifactDependencyDto> ArtifactDependency { get; set; } = new List<ArtifactDependencyDto>();
     }
 
     class ProjectDto : IdDto
     {
-        internal string Name { get; set; }
-        internal string ParentProjectId { get; set; }
-        internal bool? Archived { get; set; }
-
-        internal ProjectsDto Projects { get; set; } = new ProjectsDto();
-        internal ParametersDto Parameters { get; set; } = new ParametersDto();
-        internal BuildTypesDto BuildTypes { get; set; } = new BuildTypesDto();
+        public string Name { get; set; }
+        public string ParentProjectId { get; set; }
+        public bool? Archived { get; set; }
+        public ProjectsDto Projects { get; set; } = new ProjectsDto();
+        public ParametersDto Parameters { get; set; } = new ParametersDto();
+        public BuildTypesDto BuildTypes { get; set; } = new BuildTypesDto();
     }
 
     class BuildAgentDto : IdDto
     {
-        internal string Name { get; set; }
-        internal bool? Connected { get; set; }
-        internal bool? Enabled { get; set; }
-        internal bool? Authorized { get; set; }
-        internal bool? Uptodate { get; set; }
-        internal string Ip { get; set; }
-
-        internal EnabledInfoDto EnabledInfo { get; set; }
-        internal AuthorizedInfoDto AuthorizedInfo { get; set; }
-
-        internal ParametersDto Properties { get; set; }
-        internal BuildAgentPoolDto Pool { get; set; }
-        internal BuildDto Build { get; set; }
+        public string Name { get; set; }
+        public bool? Connected { get; set; }
+        public bool? Enabled { get; set; }
+        public bool? Authorized { get; set; }
+        public bool? Uptodate { get; set; }
+        public string Ip { get; set; }
+        public EnabledInfoDto EnabledInfo { get; set; }
+        public AuthorizedInfoDto AuthorizedInfo { get; set; }
+        public ParametersDto Properties { get; set; }
+        public BuildAgentPoolDto Pool { get; set; }
+        public BuildDto Build { get; set; }
     }
 
     class BuildAgentPoolDto : IdDto
     {
-        internal string Name { get; set; }
-
-        internal ProjectsDto Projects { get; set; } = new ProjectsDto();
-        internal BuildAgentsDto Agents { get; set; } = new BuildAgentsDto();
+        public string Name { get; set; }
+        public ProjectsDto Projects { get; set; } = new ProjectsDto();
+        public BuildAgentsDto Agents { get; set; } = new BuildAgentsDto();
     }
 
     class ChangesDto
     {
-        internal List<ChangeDto> Change { get; set; } = new List<ChangeDto>();
+        public List<ChangeDto> Change { get; set; } = new List<ChangeDto>();
     }
 
     class ChangeDto : IdDto
     {
-        internal string Version { get; set; }
-        internal UserDto User { get; set; }
-        internal string Date { get; set; }
-        internal string Comment { get; set; }
-        internal string Username { get; set; }
-        internal VcsRootInstanceDto VcsRootInstance { get; set; }
+        public string Version { get; set; }
+        public UserDto User { get; set; }
+        public string Date { get; set; }
+        public string Comment { get; set; }
+        public string Username { get; set; }
+        public VcsRootInstanceDto VcsRootInstance { get; set; }
     }
 
     class UserDto : IdDto
     {
-        internal string Username { get; set; }
-        internal string Name { get; set; }
-        internal string Email { get; set; }
+        public string Username { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
 
     class ParametersDto
     {
-        internal List<ParameterDto> Property { get; set; } = new List<ParameterDto>();
+        public List<ParameterDto> Property { get; set; } = new List<ParameterDto>();
 
-        internal ParametersDto()
-        {
-
-
-        }
-
-        internal ParametersDto(List<ParameterDto> properties)
+        public ParametersDto() { }
+        public ParametersDto(List<ParameterDto> properties)
         {
             Property = properties;
         }
@@ -289,11 +271,11 @@ namespace TeamCityRestClientNet.Service
 
     class ParameterDto
     {
-        internal string Name { get; set; }
-        internal string Value { get; set; }
-        internal bool? Own { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public bool? Own { get; set; }
 
-        internal ParameterDto(string name, string value)
+        public ParameterDto(string name, string value)
         {
             this.Name = name;
             this.Value = value;
@@ -302,170 +284,168 @@ namespace TeamCityRestClientNet.Service
 
     class PinInfoDto
     {
-        internal UserDto User { get; set; }
-        internal string Timestamp { get; set; }
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
     }
 
     class TriggeredDto
     {
-        internal UserDto User { get; set; }
-        internal BuildDto Build { get; set; }
+        public UserDto User { get; set; }
+        public BuildDto Build { get; set; }
     }
 
     class BuildCommentDto
     {
-        internal UserDto User { get; set; }
-        internal string Timestamp { get; set; }
-        internal string Text { get; set; }
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
     }
 
     class EnabledInfoCommentDto
     {
-        internal UserDto User { get; set; }
-        internal string Timestamp { get; set; }
-        internal string Text { get; set; }
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
     }
 
     class EnabledInfoDto
     {
-        internal EnabledInfoCommentDto Comment { get; set; }
+        public EnabledInfoCommentDto Comment { get; set; }
     }
 
     class AuthorizedInfoCommentDto
     {
-        internal UserDto User { get; set; }
-        internal string Timestamp { get; set; }
-        internal string Text { get; set; }
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
     }
 
     class AuthorizedInfoDto
     {
-        internal AuthorizedInfoCommentDto Comment { get; set; }
+        public AuthorizedInfoCommentDto Comment { get; set; }
     }
 
     class BuildCanceledDto
     {
-        internal UserDto User { get; set; }
-        internal string Timestamp { get; set; }
-        internal string Text { get; set; }
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
     }
 
     class TriggeredBuildDto
     {
-        internal int? Id { get; set; }
-        internal string BuildTypeId { get; set; }
+        public int? Id { get; set; }
+        public string BuildTypeId { get; set; }
     }
 
     class RevisionsDto
     {
-        internal List<RevisionDto> Revision { get; set; } = new List<RevisionDto>();
+        public List<RevisionDto> Revision { get; set; } = new List<RevisionDto>();
     }
 
     class RevisionDto
     {
-        internal string Version { get; set; }
-        internal string VcsBranchName { get; set; }
-        internal VcsRootInstanceDto VcsRootInstance { get; set; }
+        public string Version { get; set; }
+        public string VcsBranchName { get; set; }
+        public VcsRootInstanceDto VcsRootInstance { get; set; }
     }
 
     class NameValuePropertiesDto
     {
-        internal List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
+        public List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
     }
 
     class NameValuePropertyDto
     {
-        internal string Name { get; set; }
-        internal string Value { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 
     class BuildCancelRequestDto
     {
-        internal string Comment { get; set; } = "";
-        internal bool ReaddIntoQueue { get; set; } = false;
+        public string Comment { get; set; } = "";
+        public bool ReaddIntoQueue { get; set; } = false;
     }
 
     class TestOccurrencesDto
     {
-        internal string NextHref { get; set; }
-        internal List<TestOccurrenceDto> TestOccurrence { get; set; } = new List<TestOccurrenceDto>();
+        public string NextHref { get; set; }
+        public List<TestOccurrenceDto> TestOccurrence { get; set; } = new List<TestOccurrenceDto>();
     }
 
     class TestDto
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
     }
 
     class TestOccurrenceDto
     {
-        internal string Name { get; set; }
-        internal string Status { get; set; }
-        internal bool? Ignored { get; set; }
-        internal long? Duration { get; set; }
-        internal string IgnoreDetails { get; set; }
-        internal string Details { get; set; }
-        internal bool? CurrentlyMuted { get; set; }
-        internal bool? Muted { get; set; }
-        internal bool? NewFailure { get; set; }
-
-        internal BuildDto Build { get; set; }
-        internal TestDto Test { get; set; }
-        internal BuildDto NextFixed { get; set; }
-        internal BuildDto FirstFailed { get; set; }
-
-        internal const string FILTER = "testOccurrence(name,status,ignored,muted,currentlyMuted,newFailure,duration,ignoreDetails,details,firstFailed(id),nextFixed(id),build(id),test(id))";
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public bool? Ignored { get; set; }
+        public long? Duration { get; set; }
+        public string IgnoreDetails { get; set; }
+        public string Details { get; set; }
+        public bool? CurrentlyMuted { get; set; }
+        public bool? Muted { get; set; }
+        public bool? NewFailure { get; set; }
+        public BuildDto Build { get; set; }
+        public TestDto Test { get; set; }
+        public BuildDto NextFixed { get; set; }
+        public BuildDto FirstFailed { get; set; }
+        public const string FILTER = "testOccurrence(name,status,ignored,muted,currentlyMuted,newFailure,duration,ignoreDetails,details,firstFailed(id),nextFixed(id),build(id),test(id))";
     }
 
     class InvestigationListDto
     {
-        internal List<InvestigationDto> Investigation { get; set; } = new List<InvestigationDto>();
+        public List<InvestigationDto> Investigation { get; set; } = new List<InvestigationDto>();
     }
 
     class InvestigationDto : IdDto
     {
-        internal InvestigationState? State { get; set; }
-        internal UserDto Assignee { get; set; }
-        internal AssignmentDto Assignment { get; set; }
-        internal InvestigationResolutionDto Resolution { get; set; }
-        internal InvestigationScopeDto Scope { get; set; }
-        internal InvestigationTargetDto Target { get; set; }
+        public InvestigationState? State { get; set; }
+        public UserDto Assignee { get; set; }
+        public AssignmentDto Assignment { get; set; }
+        public InvestigationResolutionDto Resolution { get; set; }
+        public InvestigationScopeDto Scope { get; set; }
+        public InvestigationTargetDto Target { get; set; }
     }
 
     class InvestigationResolutionDto
     {
-        internal string Type { get; set; }
+        public string Type { get; set; }
     }
 
     class AssignmentDto
     {
-        internal UserDto User { get; set; }
-        internal string Text { get; set; }
-        internal string Timestamp { get; set; }
+        public UserDto User { get; set; }
+        public string Text { get; set; }
+        public string Timestamp { get; set; }
     }
 
     class InvestigationTargetDto
     {
-        internal TestUnderInvestigationListDto Tests { get; set; }
-        internal ProblemUnderInvestigationListDto Problems { get; set; }
-        internal bool? AnyProblem { get; set; }
+        public TestUnderInvestigationListDto Tests { get; set; }
+        public ProblemUnderInvestigationListDto Problems { get; set; }
+        public bool? AnyProblem { get; set; }
     }
 
     class TestUnderInvestigationListDto
     {
-        internal int? Count { get; set; }
-        internal List<TestDto> Test { get; set; } = new List<TestDto>();
+        public int? Count { get; set; }
+        public List<TestDto> Test { get; set; } = new List<TestDto>();
 
     }
 
     class ProblemUnderInvestigationListDto
     {
-        internal int? Count { get; set; }
-        internal List<BuildProblemDto> Problem { get; set; } = new List<BuildProblemDto>();
+        public int? Count { get; set; }
+        public List<BuildProblemDto> Problem { get; set; } = new List<BuildProblemDto>();
     }
 
     class InvestigationScopeDto
     {
-        internal BuildTypesDto BuildTypes { get; set; }
-        internal ProjectDto Project { get; set; }
+        public BuildTypesDto BuildTypes { get; set; }
+        public ProjectDto Project { get; set; }
     }
 }
