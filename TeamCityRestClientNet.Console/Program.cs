@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Console
             Task.Run(async () =>
             {
                 System.Console.WriteLine("Getting users as entities.");
-                await foreach (var user in teamCity.Users.All())
+                await foreach (var user in teamCity.Users())
                 {
                     System.Console.WriteLine(user);
                 }

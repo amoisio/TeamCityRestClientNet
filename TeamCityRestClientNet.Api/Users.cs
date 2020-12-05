@@ -28,11 +28,6 @@ namespace TeamCityRestClientNet.Api
         string GetHomeUrl();
     }
 
-    public interface IUserLocator
-    {
-        IAsyncEnumerable<IUser> All();
-    }
-
     public interface IInfo
     {
         AsyncLazy<IUser> User { get; }

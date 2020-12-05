@@ -89,7 +89,14 @@ namespace TeamCityRestClientNet
             return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
         }
 
-        public override IUserLocator Users => new UserLocator(this);
+        public override async IAsyncEnumerable<IUser> Users()
+        {
+            var users = await Service.Users().ConfigureAwait(false);
+            foreach (var dto in users.User)
+            {
+                yield return await Domain.User.Create(dto, false, this).ConfigureAwait(false);
+            }
+        }
 
         public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {

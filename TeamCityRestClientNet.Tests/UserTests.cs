@@ -17,7 +17,7 @@ namespace TeamCityRestClientNet.Tests
         [Fact]
         public async Task Users_query_returns_all_users()
         {
-            var list = await _teamCity.Users.All().ToListAsync();
+            var list = await _teamCity.Users().ToListAsync();
             Assert.Equal(2, list.Count);                
         }
     }

@@ -29,7 +29,7 @@ namespace TeamCityRestClientNet.Api
         public abstract ITestRunsLocator TestRuns { get; }
         public abstract Task<IUser> User(UserId id);
         public abstract Task<IUser> User(string userName);
-        public abstract IUserLocator Users { get; }
+        public abstract IAsyncEnumerable<IUser> Users();
         public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
         public abstract IVcsRootLocator VcsRoots { get; }
 
