@@ -10,8 +10,6 @@ namespace TeamCityRestClientNet.Console
     class Program
     {
         readonly static string _serverUrl = "http://localhost:5000/";
-        readonly static string _username = "amoisio";
-        readonly static string _password = "Testi#123";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
         static void Main(string[] args)
         {
@@ -22,15 +20,14 @@ namespace TeamCityRestClientNet.Console
                     .AddFilter("System", LogLevel.Warning)
                     .AddFilter("TeamCityRestClientNet.Console.Program", LogLevel.Debug)
                     .AddConsole();
-
             });
-            // ILogger logger = loggerFactory.CreateLogger<Program>();
 
-            var teamCity = TeamCityInstanceFactory.TokenAuth(_serverUrl, _token, loggerFactory);            
-            // var teamCity = TeamCityInstanceFactory.GuestAuth(_serverUrl, loggerFactory);
-            System.Console.WriteLine("Getting users");
+            var logger = loggerFactory.CreateLogger("TeamCity.Console");
+            var teamCity = TeamCityInstanceFactory.TokenAuth(_serverUrl, _token, logger);            
+
             Task.Run(async () =>
             {
+                System.Console.WriteLine("Getting users as entities.");
                 await foreach (var user in teamCity.Users.All())
                 {
                     System.Console.WriteLine(user);
