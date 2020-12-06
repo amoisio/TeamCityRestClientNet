@@ -16,12 +16,12 @@ namespace TeamCityRestClientNet.Tests
 
     public class TeamCityFixture : IDisposable
     {
-        readonly static string _serverUrl = "http://localhost:5000/";
+        public readonly string serverUrl = "http://localhost:5500";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
 
         public TeamCityFixture()
         {
-            this.TeamCity = TeamCityInstanceFactory.TokenAuth(_serverUrl, _token, null);
+            this.TeamCity = TeamCityInstanceFactory.TokenAuth(serverUrl, _token, null);
         }
 
         public TeamCity TeamCity { get;}
