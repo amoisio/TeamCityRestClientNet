@@ -14,7 +14,7 @@ namespace TeamCityRestClientNet.Tests
         // ICollectionFixture<> interfaces.
     }
 
-    public class TeamCityFixture : IDisposable
+    public class TeamCityFixture
     {
         public readonly string serverUrl = "http://localhost:5500";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
@@ -25,10 +25,5 @@ namespace TeamCityRestClientNet.Tests
         }
 
         public TeamCity TeamCity { get;}
-
-        public void Dispose()
-        {
-            this.TeamCity.Dispose();
-        }
     }
 }
