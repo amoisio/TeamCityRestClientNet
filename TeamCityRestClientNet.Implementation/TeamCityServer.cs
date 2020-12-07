@@ -9,6 +9,7 @@ using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Locators;
 using TeamCityRestClientNet.Service;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Linq;
 
 namespace TeamCityRestClientNet
 {
@@ -27,7 +28,7 @@ namespace TeamCityRestClientNet
             this.ServerUrl = serviceBuilder.ServerUrl;
             this.ServerUrlBase = serviceBuilder.ServerUrlBase;
             this._service = new Lazy<ITeamCityService>(() => serviceBuilder.Build());
-            this._logger = logger ?? NullLogger.Instance; 
+            this._logger = logger ?? NullLogger.Instance;
         }
 
         public string ServerUrl { get; }
@@ -104,7 +105,28 @@ namespace TeamCityRestClientNet
             return await Domain.VcsRoot.Create(fullDto, true, this).ConfigureAwait(false);
         }
 
-        public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
+        public override IAsyncEnumerable<IVcsRoot> VcsRoots()
+        {
+            var sequence = new Paged<IVcsRoot, VcsRootListDto>(
+                 this,
+                 async () =>
+                 {
+                     // LOG.debug("Retrieving vcs roots from ${instance.serverUrl}")
+                     var roots = await Service.VcsRoots().ConfigureAwait(false);
+                     return roots;
+                 },
+                 async (list) =>
+                 {
+                     var tasks = list.VcsRoot.Select(root => Domain.VcsRoot.Create(root, false, this));
+                     var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
+                     return new Page<IVcsRoot>(
+                         dtos,
+                         list.NextHref
+                     );
+                 }
+             );
+            return sequence;
+        }
 
         internal string GetUserUrlPage(
             string pageName,

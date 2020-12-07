@@ -31,7 +31,7 @@ namespace TeamCityRestClientNet.Api
         public abstract Task<IUser> User(string userName);
         public abstract IAsyncEnumerable<IUser> Users();
         public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
-        public abstract IVcsRootLocator VcsRoots { get; }
+        public abstract IAsyncEnumerable<IVcsRoot> VcsRoots();
 
         protected virtual void Dispose(bool disposing)
         {

@@ -40,7 +40,7 @@ namespace TeamCityRestClientNet.Service
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/vcs-roots")]
-        Task<VcsRootListDto> VcsRoots(string locator = null);
+        Task<VcsRootListDto> VcsRoots();
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/vcs-roots/{id}")]

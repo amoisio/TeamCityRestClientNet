@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using TeamCityRestClientNet.Api;
 
 namespace TeamCityRestClientNet.Service
@@ -40,8 +41,11 @@ namespace TeamCityRestClientNet.Service
 
     class VcsRootListDto
     {
+        public string Href { get; set; }
         public string NextHref { get; set; }
-        public List<VcsRootDto> VcsRoot { get; set; } = new List<VcsRootDto>();
+        
+        [JsonProperty(PropertyName="vcs-root")]
+        public List<VcsRootDto> VcsRoot { get; set; }
     }
 
     class VcsRootDto : IdDto
