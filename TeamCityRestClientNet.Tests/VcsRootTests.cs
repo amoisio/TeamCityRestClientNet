@@ -34,16 +34,5 @@ namespace TeamCityRestClientNet.Tests
             Assert.Equal("refs/heads/master", root.DefaultBranch);
             Assert.Equal("https://amoisio@bitbucket.org/amoisio/teamcityrestclientnet.git", root.Url);
         }
-
-        // [Fact]
-        // public async Task User_query_by_username_returns_the_matching_user()
-        // {
-        //     var user = await _teamCity.User("amoisio");
-        //     Assert.Equal(new UserId("1"), user.Id);
-        //     Assert.Equal("aleksi.moisio30@gmail.com", user.Email);
-        //     Assert.Equal("Aleksi Moisio", user.Name);
-        //     Assert.Equal("amoisio", user.Username);
-        //     Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
-        // }
     }
 }
