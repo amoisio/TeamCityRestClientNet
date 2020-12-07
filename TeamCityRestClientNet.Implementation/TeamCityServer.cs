@@ -81,19 +81,24 @@ namespace TeamCityRestClientNet
 
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
 
-        public override async Task<IUser> User(UserId id)
-            => await Domain.User.Create(id.stringId, this).ConfigureAwait(false);
-
-        public override async Task<IUser> User(string userName)
+        public override async Task<IUser> User(UserId id) 
         {
-            var fullDto = await Service.Users($"username:{userName}").ConfigureAwait(false);
+            _logger.LogDebug($"Retrieving user id:{id}.");
+            return await Domain.User.Create(id.stringId, this).ConfigureAwait(false);
+        }
+
+        public override async Task<IUser> User(string username)
+        {
+            _logger.LogDebug($"Retrieving user username:{username}.");
+            var fullDto = await Service.Users($"username:{username}").ConfigureAwait(false);
             return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
         }
 
         public override async IAsyncEnumerable<IUser> Users()
         {
-            var users = await Service.Users().ConfigureAwait(false);
-            foreach (var dto in users.User)
+            _logger.LogDebug("Retrieving users.");
+            var userListDto = await Service.Users().ConfigureAwait(false);
+            foreach (var dto in userListDto.User)
             {
                 yield return await Domain.User.Create(dto, false, this).ConfigureAwait(false);
             }
@@ -101,6 +106,7 @@ namespace TeamCityRestClientNet
 
         public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {
+            _logger.LogDebug($"Retrieving vcs root id:{id}.");
             var fullDto = await Service.VcsRoot(id.stringId).ConfigureAwait(false);
             return await Domain.VcsRoot.Create(fullDto, true, this).ConfigureAwait(false);
         }
@@ -111,18 +117,14 @@ namespace TeamCityRestClientNet
                  this,
                  async () =>
                  {
-                     // LOG.debug("Retrieving vcs roots from ${instance.serverUrl}")
-                     var roots = await Service.VcsRoots().ConfigureAwait(false);
-                     return roots;
+                     _logger.LogDebug("Retrieving vcs roots.");
+                     return await Service.VcsRoots().ConfigureAwait(false);
                  },
                  async (list) =>
                  {
                      var tasks = list.VcsRoot.Select(root => Domain.VcsRoot.Create(root, false, this));
                      var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
-                     return new Page<IVcsRoot>(
-                         dtos,
-                         list.NextHref
-                     );
+                     return new Page<IVcsRoot>(dtos, list.NextHref);
                  }
              );
             return sequence;
