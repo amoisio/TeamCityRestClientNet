@@ -15,7 +15,8 @@ namespace TeamCityRestClientNet
 {
     class TeamCityServer : TeamCity
     {
-        public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMdd'T'HHmmssZ";
+        // TODO: Does this need to be configurable?
+        public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMddTHHmmsszzz";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
         private readonly Lazy<ITeamCityService> _service;
         public ITeamCityService Service => _service.Value;

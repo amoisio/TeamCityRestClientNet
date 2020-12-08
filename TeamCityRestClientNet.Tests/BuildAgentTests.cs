@@ -11,22 +11,62 @@ namespace TeamCityRestClientNet.Tests
     {
         public BuildAgentTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
-        // [Fact]
-        // public async Task VcsRoots_query_returns_all_vcsroots()
-        // {
-        //     var vcsRoots = await _teamCity.QueuedBuilds()
-        //     Assert.NotEmpty(vcsRoots);
-        // }
+        [Fact]
+        public async Task BuildAgents_All_query_returns_all_agents()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            Assert.NotEmpty(agents);
+        }
 
-        // [Fact]
-        // public async Task VcsRoot_query_returns_the_matching_vcsroot()
-        // {
-        //     var rootId = new VcsRootId("TeamCityRestClientNet_Bitbucket");
-        //     var root = await _teamCity.VcsRoot(rootId);
-        //     Assert.Equal(rootId, root.Id);
-        //     Assert.Equal("Bitbucket", root.Name);
-        //     Assert.Equal("refs/heads/master", root.DefaultBranch);
-        //     Assert.Equal("https://amoisio@bitbucket.org/amoisio/teamcityrestclientnet.git", root.Url);
-        // }
+        [Fact]
+        public async Task BuildAgents_includes_test_system_agent()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            var agent = agents.First();
+
+            var authorizedUser = await agent.AuthorizedInfo.User;
+            Assert.Equal("Aleksi Moisio", authorizedUser.Name);
+            Assert.Equal("aleksi.moisio30@gmail.com", authorizedUser.Email);
+            Assert.Equal("amoisio", authorizedUser.Username);
+            Assert.NotEqual(default(DateTimeOffset), agent.AuthorizedInfo.Timestamp);
+
+            Assert.True(agent.Connected);
+            Assert.True(agent.Enabled);
+
+            var enabledUser = await agent.EnabledInfo.User;
+            Assert.Equal("Aleksi Moisio", enabledUser.Name);
+            Assert.Equal("aleksi.moisio30@gmail.com", enabledUser.Email);
+            Assert.Equal("amoisio", enabledUser.Username);
+            Assert.NotEqual(default(DateTimeOffset), agent.EnabledInfo.Timestamp);
+            Assert.Equal("Enabled", agent.EnabledInfo.Text);
+
+            Assert.Equal("172.17.0.3", agent.IpAddress);
+            Assert.Equal("ip_172.17.0.3", agent.Name);
+            Assert.False(agent.Outdated);
+            Assert.NotEmpty(agent.Parameters);
+        }
+
+        [Fact]
+        public async Task BuildAgentPools_All_query_returns_all_pools()
+        {
+            var agentPool = await _teamCity.BuildAgentPools.All();
+            Assert.NotEmpty(agentPool);
+        }
+
+        [Fact]
+        public async Task BuildAgentPool_includes_test_system_agent_and_projects()
+        {
+            var agentPools = await _teamCity.BuildAgentPools.All();
+            var defaultPool = agentPools.First();
+
+            var agents = await defaultPool.Agents;
+            Assert.NotEmpty(agents);
+            Assert.True(agents.Any(a => a.Name == "ip_172.17.0.3"));
+
+            var projects = await defaultPool.Projects;
+            Assert.NotEmpty(projects);
+            Assert.True(projects.Any(a => a.Id.stringId == "TeamCityCliNet"));
+            Assert.True(projects.Any(a => a.Id.stringId == "TeamCityRestClientNet"));
+        }
     }
 }
