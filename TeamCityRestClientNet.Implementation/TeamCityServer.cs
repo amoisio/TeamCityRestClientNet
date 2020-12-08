@@ -56,8 +56,12 @@ namespace TeamCityRestClientNet
             => await BuildConfiguration(id.stringId).ConfigureAwait(false);
 
         public override IBuildQueue BuildQueue => new BuildQueue(this);
+        
+        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
+            => new BuildQueue(this).QueuedBuilds(projectId);
 
         public override IBuildLocator Builds => new BuildLocator(this);
+        
         public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
         {
             var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
@@ -73,8 +77,6 @@ namespace TeamCityRestClientNet
         public override async Task<IProject> Project(ProjectId id)
             => await Domain.Project.Create(new ProjectDto { Id = id.stringId }, false, this).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
-            => new BuildQueue(this).QueuedBuilds(projectId);
 
         public override async Task<IProject> RootProject()
             => await Project(new ProjectId("_Root")).ConfigureAwait(false);
