@@ -7,15 +7,9 @@ using System.Linq;
 namespace TeamCityRestClientNet.Tests
 {
     [Collection("TeamCity Collection")]
-    public class VcsRootTests
+    public class VcsRootTests : TestsBase
     {
-        private readonly TeamCity _teamCity;
-        private readonly string _serverUrl;
-
-        public VcsRootTests(TeamCityFixture teamCityFixture) {
-            _teamCity = teamCityFixture.TeamCity;
-            _serverUrl = teamCityFixture.serverUrl;
-        }
+        public VcsRootTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task VcsRoots_query_returns_all_vcsroots()

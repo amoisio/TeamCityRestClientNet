@@ -7,15 +7,9 @@ using System.Linq;
 namespace TeamCityRestClientNet.Tests
 {
     [Collection("TeamCity Collection")]
-    public class UserTests
+    public class UserTests : TestsBase
     {
-        private readonly TeamCity _teamCity;
-        private readonly string _serverUrl;
-
-        public UserTests(TeamCityFixture teamCityFixture) {
-            _teamCity = teamCityFixture.TeamCity;
-            _serverUrl = teamCityFixture.serverUrl;
-        }
+        public UserTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Users_query_returns_all_users()

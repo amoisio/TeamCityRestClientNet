@@ -7,16 +7,9 @@ using System.Linq;
 namespace TeamCityRestClientNet.Tests
 {
     [Collection("TeamCity Collection")]
-    public class BuildQueueTests
+    public class BuildQueueTests : TestsBase
     {
-        private readonly TeamCity _teamCity;
-        private readonly string _serverUrl;
-
-        public BuildQueueTests(TeamCityFixture teamCityFixture)
-        {
-            _teamCity = teamCityFixture.TeamCity;
-            _serverUrl = teamCityFixture.serverUrl;
-        }
+        public BuildQueueTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         // [Fact]
         // public async Task VcsRoots_query_returns_all_vcsroots()
