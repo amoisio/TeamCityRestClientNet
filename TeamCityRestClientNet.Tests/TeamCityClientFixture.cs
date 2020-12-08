@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.Tests
 
     public class TeamCityFixture
     {
-        public readonly string serverUrl = "http://localhost:5500";
+        public readonly string serverUrl = "http://localhost:5000";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
 
         public TeamCityFixture()
