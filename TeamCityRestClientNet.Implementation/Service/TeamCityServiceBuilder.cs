@@ -12,7 +12,8 @@ namespace TeamCityRestClientNet.Service
     {
         private string _serverUrl;
         private string _serverUrlBase;
-        private IAuthTokenStore _tokenStore;
+        private IBearerTokenStore _bearerTokenStore;
+        private ICSRFTokenStore _csrfTokenStore;
         private TimeUnit _unit;
         private long _timeout;
         private ILogger _logger;
@@ -38,9 +39,15 @@ namespace TeamCityRestClientNet.Service
             return this;
         }
 
-        public TeamCityServiceBuilder SetTokenStore(IAuthTokenStore tokenStore)
+        public TeamCityServiceBuilder SetBearerTokenStore(IBearerTokenStore tokenStore)
         {
-            _tokenStore = tokenStore;
+            _bearerTokenStore = tokenStore;
+            return this;
+        }
+
+        public TeamCityServiceBuilder SetCSRFTokenStore(ICSRFTokenStore csrfStore) 
+        {
+            _csrfTokenStore = csrfStore;
             return this;
         }
 
@@ -49,15 +56,19 @@ namespace TeamCityRestClientNet.Service
             ValidateProperties();
 
             var hostUrl = $"{_serverUrl}{ServerUrlBase}";
-            var settings = new RefitSettings { };
 
             _logger.LogInformation($"Building REST service to {hostUrl}.");
+
+            CSRFTokenHandler csrfHandler = null;
+            if (_csrfTokenStore != null)
+                csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
+
+            var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
             return RestService.For<ITeamCityService>(
-                new HttpClient(new TokenHeaderAuthenticationHandler(_tokenStore))
-                {
-                    BaseAddress = new Uri(hostUrl)
-                },
-                settings);
+                new HttpClient(serviceHandler) 
+                { 
+                    BaseAddress = new Uri(hostUrl) 
+                });
         }
 
         private void ValidateProperties()
@@ -65,8 +76,8 @@ namespace TeamCityRestClientNet.Service
             if (String.IsNullOrWhiteSpace(_serverUrl))
                 throw new ArgumentException("ServerUrl must be provided.");
 
-            if (_tokenStore == null)
-                throw new ArgumentException("TokenStore must be provided.");
+            if (_bearerTokenStore == null)
+                throw new ArgumentException("BearerTokenStore must be provided.");
         }
     }
 }

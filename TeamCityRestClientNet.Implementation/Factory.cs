@@ -1,10 +1,11 @@
 using System;
-using System.Text;
 using BAMCIS.Util.Concurrent;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Authentication;
+using Refit;
+using System.Net.Http;
 
 namespace TeamCityRestClientNet.Domain
 {
@@ -62,12 +63,27 @@ namespace TeamCityRestClientNet.Domain
 
         internal static TeamCityServer CreateTokenAuthInstance(string serverUrl, string token, ILogger logger)
         {
+          var hostUrl = $"{serverUrl}";
+          var bearerTokenStore = new SingleBearerTokenStore(token);
+          var csrfTokenStore = CreateCSRFTokenStore(hostUrl, bearerTokenStore);
+          
           var builder = new TeamCityServiceBuilder(logger)
             .SetServerUrl(serverUrl.TrimEnd('/'), "")
             .SetTimeout(TimeUnit.MINUTES, 2)
-            .SetTokenStore(new SingleAuthTokenStore(token));
+            .SetBearerTokenStore(bearerTokenStore)
+            .SetCSRFTokenStore(csrfTokenStore);
 
           return new TeamCityServer(builder, logger);          
+        }
+
+        private static ICSRFTokenStore CreateCSRFTokenStore(string hostUrl, IBearerTokenStore bearerTokenStore){
+            var authService = RestService.For<ITeamCityAuthService>(
+                new HttpClient(new BearerTokenHandler(bearerTokenStore))
+                {
+                    BaseAddress = new Uri(hostUrl)
+                });
+
+            return new TeamCityCSRFTokenStore(authService);
         }
     }
 }
