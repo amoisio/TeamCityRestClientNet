@@ -7,10 +7,7 @@ namespace TeamCityRestClientNet.Authentication
         Task<string> GetToken();
     }
 
-    public interface IBearerTokenStore : ITokenStore
-    {
-
-    }
+    public interface IBearerTokenStore : ITokenStore { }
 
     public class SingleBearerTokenStore : IBearerTokenStore
     {
@@ -21,10 +18,7 @@ namespace TeamCityRestClientNet.Authentication
         public async Task<string> GetToken() => await Task.FromResult(_token);
     }
 
-    public interface ICSRFTokenStore : ITokenStore
-    {
-
-    }
+    public interface ICSRFTokenStore : ITokenStore { }
 
     public class TeamCityCSRFTokenStore : ICSRFTokenStore
     {
@@ -40,5 +34,4 @@ namespace TeamCityRestClientNet.Authentication
             return await _authService.CSRFToken().ConfigureAwait(false);
         }
     }
-
 }
