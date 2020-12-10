@@ -55,6 +55,8 @@ namespace TeamCityRestClientNet.Domain
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 
+
+        // TODO: Add a builder type - string xml api, no thank you
         public async Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml)
         {
             var dto = await Service.CreateBuildType(buildConfigurationDescriptionXml).ConfigureAwait(false);
@@ -65,12 +67,16 @@ namespace TeamCityRestClientNet.Domain
         {
             var xml = new XElement("newProjectDescription",
                 new XAttribute("name", name),
-                new XAttribute("id", Id.stringId),
+                new XAttribute("id", id.stringId),
                 new XElement("parentProject",
                     new XAttribute("locator", $"id:{Id.stringId}")
                 )
             );
-            var projectDto = await Service.CreateProject(xml.ToString()).ConfigureAwait(false);
+            var reader = xml.CreateReader();
+            reader.MoveToContent();
+            var xmlString = reader.ReadOuterXml();
+
+            var projectDto = await Service.CreateProject(xmlString).ConfigureAwait(false);
             return new Project(projectDto, Instance);
         }
 
@@ -86,7 +92,7 @@ namespace TeamCityRestClientNet.Domain
 
             var xml = new XElement("vcs-root",
                 new XAttribute("name", name),
-                new XAttribute("id", Id.stringId),
+                new XAttribute("id", id.stringId),
                 new XAttribute("vcsName", type.stringType),
                 new XElement("project",
                     new XAttribute("id", IdString)

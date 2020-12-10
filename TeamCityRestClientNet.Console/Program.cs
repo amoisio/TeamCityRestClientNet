@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Refit;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Authentication;
 using TeamCityRestClientNet.Domain;
 
 namespace TeamCityRestClientNet.Console
@@ -22,19 +25,28 @@ namespace TeamCityRestClientNet.Console
                     .AddConsole();
             });
 
-            var logger = loggerFactory.CreateLogger("TeamCity.Console");
-            var teamCity = TeamCityInstanceFactory.TokenAuth(_serverUrl, _token, logger);            
+            // var bearerTokenStore = new SingleBearerTokenStore(_token);
+            // var service = RestService.For<ITeamCityAuthService>(new HttpClient(
+            //     new BearerTokenHandler(bearerTokenStore)
+            // ) {
+            //     BaseAddress = new Uri(_serverUrl)
+            // });
 
-            Task.Run(async () =>
-            {
-                System.Console.WriteLine("Getting users as entities.");
-                await foreach (var user in teamCity.Users())
-                {
-                    System.Console.WriteLine(user);
-                }
-            }).GetAwaiter().GetResult();
+            // var token = service.CSRFToken().GetAwaiter().GetResult();
 
-            System.Console.ReadKey();
+            
+            // var logger = loggerFactory.CreateLogger("TeamCity.Console");
+            // var teamCity = TeamCityInstanceFactory.TokenAuth(_serverUrl, _token, logger);            
+
+            // Task.Run(async () =>
+            // {
+            //     System.Console.WriteLine("Getting users as entities.");
+            //     await foreach (var user in teamCity.Users())
+            //     {
+            //         System.Console.WriteLine(user);
+            //     }
+            // }).GetAwaiter().GetResult();
+
         }
     }
 }

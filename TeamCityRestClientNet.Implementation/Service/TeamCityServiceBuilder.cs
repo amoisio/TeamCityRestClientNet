@@ -60,8 +60,9 @@ namespace TeamCityRestClientNet.Service
             _logger.LogInformation($"Building REST service to {hostUrl}.");
 
             CSRFTokenHandler csrfHandler = null;
-            if (_csrfTokenStore != null)
-                csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
+            // TODO: Enable when using csrf
+            // if (_csrfTokenStore != null)
+            //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
 
             var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
             return RestService.For<ITeamCityService>(

@@ -22,6 +22,8 @@ namespace TeamCityRestClientNet.Authentication
         {
             var token = await _bearerTokenStore.GetToken().ConfigureAwait(false);
             request.Headers.Authorization = new AuthenticationHeaderValue(BEARER_HEADER, token);
+            // TODO: Move and make nicer
+            request.Headers.Add("Origin", "http://localhost:5000");
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
