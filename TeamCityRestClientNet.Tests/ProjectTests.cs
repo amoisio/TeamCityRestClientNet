@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet.Tests
             Assert.False(rootProject.Archived);
             Assert.Null(rootProject.ParentProjectId.Value.stringId);
             Assert.Equal("<Root project>", rootProject.Name);
-            Assert.Equal(0, (await rootProject.BuildConfigurations).Count);
+            Assert.Empty(await rootProject.BuildConfigurations);
         }
 
         [Fact]
@@ -30,10 +30,10 @@ namespace TeamCityRestClientNet.Tests
 
             var childProjects = await rootProject.ChildProjects;
 
-            Assert.True(childProjects.Any(p => p.Name == "TeamCity CLI .NET"));
-            Assert.True(childProjects.Any(p => p.Id.stringId == "TeamCityCliNet"));
-            Assert.True(childProjects.Any(p => p.Name == "TeamCity Rest Client .NET"));
-            Assert.True(childProjects.Any(p => p.Id.stringId == "TeamCityRestClientNet"));
+            Assert.Contains(childProjects, p => p.Name == "TeamCity CLI .NET");
+            Assert.Contains(childProjects, p => p.Id.stringId == "TeamCityCliNet");
+            Assert.Contains(childProjects, p => p.Name == "TeamCity Rest Client .NET");
+            Assert.Contains(childProjects, p => p.Id.stringId == "TeamCityRestClientNet");
         }
 
         [Fact]
@@ -47,9 +47,9 @@ namespace TeamCityRestClientNet.Tests
             Assert.Equal("TeamCity Rest Client .NET", project.Name);
             Assert.Equal(rootProject.Id, project.ParentProjectId);
             Assert.False(project.Archived);
-            Assert.Equal(0, (await project.ChildProjects).Count);
+            Assert.Empty(await project.ChildProjects);
             Assert.NotEmpty(buildConfigurations);
-            Assert.True(buildConfigurations.Any(p => p.Name == "Rest Client"));
+            Assert.Contains(buildConfigurations, p => p.Name == "Rest Client");
         }
 
         [Fact]
