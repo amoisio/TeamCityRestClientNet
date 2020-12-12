@@ -61,12 +61,12 @@ namespace TeamCityRestClientNet.Tests
 
             var agents = await defaultPool.Agents;
             Assert.NotEmpty(agents);
-            Assert.True(agents.Any(a => a.Name == "ip_172.17.0.3"));
+            Assert.Contains(agents, a => a.Name == "ip_172.17.0.3");
 
             var projects = await defaultPool.Projects;
             Assert.NotEmpty(projects);
-            Assert.True(projects.Any(a => a.Id.stringId == "TeamCityCliNet"));
-            Assert.True(projects.Any(a => a.Id.stringId == "TeamCityRestClientNet"));
+            Assert.Contains(projects, a => a.Id.stringId == "TeamCityCliNet");
+            Assert.Contains(projects, a => a.Id.stringId == "TeamCityRestClientNet");
         }
     }
 }
