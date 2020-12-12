@@ -46,8 +46,16 @@ namespace TeamCityRestClientNet
             .Latest()
             .ConfigureAwait(false);
 
+        /// <summary>
+        /// Retrieve build agent locator.
+        /// </summary>
+        /// <returns>Locator used for interacting with build agents.</returns>
         public override IBuildAgentLocator BuildAgents => new BuildAgentLocator(this);
 
+        /// <summary>
+        /// Retrieve build agent pool locator.
+        /// </summary>
+        /// <returns>Locator used for interacting with build agent pools.</returns>
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
         public override async Task<IBuildConfiguration> BuildConfiguration(string id)
@@ -63,6 +71,7 @@ namespace TeamCityRestClientNet
 
         public override IBuildLocator Builds => new BuildLocator(this);
         
+        // TODO: This seems suspect...
         public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
         {
             var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);

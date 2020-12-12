@@ -15,7 +15,7 @@ namespace TeamCityRestClientNet.Tests
         public async Task BuildAgents_All_query_returns_all_agents()
         {
             var agents = await _teamCity.BuildAgents.All();
-            Assert.NotEmpty(agents);
+            Assert.Contains(agents, (agent) => agent.Name == "ip_172.17.0.3");
         }
 
         [Fact]
