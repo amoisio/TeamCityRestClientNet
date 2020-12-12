@@ -83,16 +83,17 @@ namespace TeamCityRestClientNet.Tests
         {
             var project = await _teamCity.RootProject();
 
-            var vcsId = Guid.NewGuid().ToString().Replace('-', '_');
+            var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
+
             await project.CreateVcsRoot(
-                new VcsRootId(vcsId), 
-                $"Vcs-{vcsId}",
+                new VcsRootId(vcsId),
+                vcsId,
                 VcsRootType.GIT,
                 new Dictionary<string, string>());
-
+                
             var vcs = await _teamCity.VcsRoot(new VcsRootId(vcsId));
             Assert.NotNull(vcs);
-            Assert.Equal($"Vcs-{vcsId}", vcs.Name);
+            Assert.Equal(vcsId, vcs.Name);
         }
     }
 }
