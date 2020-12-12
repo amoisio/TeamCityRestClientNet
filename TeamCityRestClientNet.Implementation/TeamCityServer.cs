@@ -69,9 +69,15 @@ namespace TeamCityRestClientNet
             return await Domain.Change.Create(dto, true, this).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Retrieve a change from TeamCity by change id.
+        /// </summary>
+        /// <param name="id">Id of the change to retrieve.</param>
+        /// <returns>Matching change. Throws a Refit.ApiException if change not found.</returns>
         public override async Task<IChange> Change(ChangeId id)
             => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
 
+        // TODO: comments + tests
         public override IInvestigationLocator Investigations
             => new InvestigationLocator(this);
 
@@ -90,6 +96,7 @@ namespace TeamCityRestClientNet
         public override async Task<IProject> RootProject()
             => await Project(new ProjectId("_Root")).ConfigureAwait(false);
 
+        // TODO: comments + tests
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
 
         /// <summary>

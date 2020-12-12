@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.Domain
             var fullDto = isFullDto
                 ? dto
                 : await instance.Service.Change(dto.Id).ConfigureAwait(false);
-            return new Change(dto, instance);
+            return new Change(fullDto, instance);
         }
 
         public ChangeId Id => new ChangeId(IdString);
@@ -38,6 +38,10 @@ namespace TeamCityRestClientNet.Domain
             => this.Dto.VcsRootInstance
               .Let(rootDto => new VcsRootInstance(rootDto));
 
+        /// <summary>
+        /// Retrieves the first builds related to change.
+        /// </summary>
+        /// <returns>List of first builds.</returns>
         public async Task<List<IBuild>> FirstBuilds()
         {
             var change = await Service.ChangeFirstBuilds(this.Id.stringId).ConfigureAwait(false);
