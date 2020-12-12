@@ -53,6 +53,12 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
+        public async Task Project_query_throws_ApiException_if_project_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Project(new ProjectId("Not.Found")));
+        }
+
+        [Fact]
         public async Task Project_can_create_new_projects()
         {
             var project = await _teamCity.RootProject();
