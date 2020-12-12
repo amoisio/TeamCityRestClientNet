@@ -83,7 +83,16 @@ namespace TeamCityRestClientNet.Domain
             return new Project(projectDto, Instance);
         }
 
-        public async Task<IVcsRoot> CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
+        /// <summary>
+        /// Create a new VCS root.
+        /// </summary>
+        /// <param name="id">Id of the vcs root.</param>
+        /// <param name="name">Name of the vcs root.</param>
+        /// <param name="type">Type of the vcs root (eg. Git).</param>
+        /// <param name="properties">Vcs root properties.</param>
+        /// <returns>Created VCS root.</returns>
+        public async Task<IVcsRoot> CreateVcsRoot(
+            VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
         {
             var propElement = new XElement("properties");
             foreach (var prop in properties.OrderBy(prop => prop.Key))
