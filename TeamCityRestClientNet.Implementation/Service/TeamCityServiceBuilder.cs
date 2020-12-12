@@ -17,6 +17,7 @@ namespace TeamCityRestClientNet.Service
         private TimeUnit _unit;
         private long _timeout;
         private ILogger _logger;
+        private RefitSettings _settings;
 
         public TeamCityServiceBuilder(ILogger logger)
         {
@@ -45,9 +46,15 @@ namespace TeamCityRestClientNet.Service
             return this;
         }
 
-        public TeamCityServiceBuilder SetCSRFTokenStore(ICSRFTokenStore csrfStore) 
+        public TeamCityServiceBuilder SetCSRFTokenStore(ICSRFTokenStore csrfStore)
         {
             _csrfTokenStore = csrfStore;
+            return this;
+        }
+
+        public TeamCityServiceBuilder SetRefitSettings(RefitSettings settings)
+        {
+            _settings = settings;
             return this;
         }
 
@@ -66,10 +73,8 @@ namespace TeamCityRestClientNet.Service
 
             var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
             return RestService.For<ITeamCityService>(
-                new HttpClient(serviceHandler) 
-                { 
-                    BaseAddress = new Uri(hostUrl) 
-                });
+                new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) },
+                _settings);
         }
 
         private void ValidateProperties()
