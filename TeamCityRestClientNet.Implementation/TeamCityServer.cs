@@ -121,6 +121,11 @@ namespace TeamCityRestClientNet
             }
         }
 
+        /// <summary>
+        /// Retrieve a vcs root from TeamCity by id.
+        /// </summary>
+        /// <param name="id">Id of the vcs root to retrieve.</param>
+        /// <returns>Matching vcs root. Throws a Refit.ApiException if vcs root not found.</returns>
         public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
         {
             _logger.LogDebug($"Retrieving vcs root id:{id}.");
@@ -128,6 +133,10 @@ namespace TeamCityRestClientNet
             return await Domain.VcsRoot.Create(fullDto, true, this).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Retrieves all vcs roots from TeamCity.
+        /// </summary>
+        /// <returns>All vcs roots defined in TeamCity.</returns>
         public override IAsyncEnumerable<IVcsRoot> VcsRoots()
         {
             var sequence = new Paged<IVcsRoot, VcsRootListDto>(

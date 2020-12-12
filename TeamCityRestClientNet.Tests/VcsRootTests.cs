@@ -15,7 +15,7 @@ namespace TeamCityRestClientNet.Tests
         public async Task VcsRoots_query_returns_all_vcsroots()
         {
             var vcsRoots = await _teamCity.VcsRoots().ToListAsync();
-            Assert.NotEmpty(vcsRoots);
+            Assert.Contains(vcsRoots, (root) => root.Id.stringId == "TeamCityRestClientNet_Bitbucket");
         }
 
         [Fact]
@@ -27,6 +27,14 @@ namespace TeamCityRestClientNet.Tests
             Assert.Equal("Bitbucket", root.Name);
             Assert.Equal("refs/heads/master", root.DefaultBranch);
             Assert.Equal("https://amoisio@bitbucket.org/amoisio/teamcityrestclientnet.git", root.Url);
+        }
+
+        [Fact]
+        public async Task VcsRoot_query_throws_ApiException_if_vcsroot_not_found()
+        {
+            var rootId = new VcsRootId("Not_found");
+
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoot(rootId));
         }
     }
 }
