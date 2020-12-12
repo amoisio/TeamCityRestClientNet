@@ -72,11 +72,8 @@ namespace TeamCityRestClientNet.Domain
                     new XAttribute("locator", $"id:{Id.stringId}")
                 )
             );
-            var reader = xml.CreateReader();
-            reader.MoveToContent();
-            var xmlString = reader.ReadOuterXml();
 
-            var projectDto = await Service.CreateProject(xmlString).ConfigureAwait(false);
+            var projectDto = await Service.CreateProject(xml.ToString()).ConfigureAwait(false);
             return new Project(projectDto, Instance);
         }
 

@@ -58,14 +58,21 @@ namespace TeamCityRestClientNet.Tests
             var project = await _teamCity.RootProject();
             
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            try {
-                await project.CreateProject(new ProjectId(projectId), projectId);
-
-            } catch (Exception ex) {
-                var m = ex.Message;
-            }
+            await project.CreateProject(new ProjectId(projectId), projectId);
 
             var newProject = await _teamCity.Project(new ProjectId(projectId));
+
+            Assert.NotNull(newProject);
+            Assert.Equal(projectId, newProject.Name);
+        }
+
+        [Fact]
+        public async Task Created_project_is_returned_by_the_create_call()
+        {
+            var project = await _teamCity.RootProject();
+
+            var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
+            var newProject = await project.CreateProject(new ProjectId(projectId), projectId);
 
             Assert.NotNull(newProject);
             Assert.Equal(projectId, newProject.Name);
