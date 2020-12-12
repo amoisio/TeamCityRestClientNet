@@ -15,7 +15,10 @@ namespace TeamCityRestClientNet.Tests
         public async Task Users_query_returns_all_users()
         {
             var users = await _teamCity.Users().ToListAsync();
-            Assert.NotEmpty(users);
+
+            Assert.Collection(users, 
+                user => Assert.Equal("amoisio", user.Username),
+                user => Assert.Equal("jbuilder", user.Username));
         }
 
         [Fact]
@@ -31,6 +34,13 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
+        public async Task User_query_by_id_throws_an_ApiException_if_user_not_found()
+        {
+            var userId = new UserId("9999");
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.User(userId));
+        }
+
+        [Fact]
         public async Task User_query_by_username_returns_the_matching_user()
         {
             var user = await _teamCity.User("amoisio");
@@ -39,6 +49,12 @@ namespace TeamCityRestClientNet.Tests
             Assert.Equal("Aleksi Moisio", user.Name);
             Assert.Equal("amoisio", user.Username);
             Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
+        }
+
+        [Fact]
+        public async Task User_query_username_id_throws_an_ApiException_if_user_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.User("not.found"));
         }
     }
 }
