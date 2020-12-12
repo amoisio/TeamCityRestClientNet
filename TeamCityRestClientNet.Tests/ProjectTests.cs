@@ -73,6 +73,24 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
+        public async Task Project_creation_throws_ApiException_if_creation_fails_because_of_invalid_id()
+        {
+            var project = await _teamCity.RootProject();
+
+            var projectId = $"---{Guid.NewGuid().ToString().Replace('-', '_')}";
+            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new ProjectId(projectId), projectId));
+        }
+
+        [Fact]
+        public async Task Project_creation_throws_ApiException_if_id_already_exists()
+        {
+            var project = await _teamCity.RootProject();
+
+            var projectId = "TeamCityRestClientNet";
+            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new ProjectId(projectId), projectId));
+        }
+
+        [Fact]
         public async Task Created_project_is_returned_by_the_create_call()
         {
             var project = await _teamCity.RootProject();

@@ -63,6 +63,12 @@ namespace TeamCityRestClientNet.Domain
             return await BuildConfiguration.Create(dto.Id, Instance).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Create a new child project.
+        /// </summary>
+        /// <param name="id">Id of the new project.</param>
+        /// <param name="name">Name of the new project</param>
+        /// <returns>The created project. Throws an ApiException is project cannot be created.</returns>
         public async Task<IProject> CreateProject(ProjectId id, string name)
         {
             var xml = new XElement("newProjectDescription",
