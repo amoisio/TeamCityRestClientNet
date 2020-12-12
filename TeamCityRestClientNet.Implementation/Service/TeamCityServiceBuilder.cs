@@ -72,9 +72,11 @@ namespace TeamCityRestClientNet.Service
             //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
 
             var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
-            return RestService.For<ITeamCityService>(
-                new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) },
-                _settings);
+            return _settings == null
+                ? RestService.For<ITeamCityService>(
+                    new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) })
+                : RestService.For<ITeamCityService>(
+                    new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) }, _settings);
         }
 
         private void ValidateProperties()
