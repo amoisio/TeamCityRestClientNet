@@ -1,30 +1,29 @@
 using System;
-using TeamCityRestClientNet.Api;
-using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using Xunit;
+using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Tests;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.Projects
 {
     [Collection("TeamCity Collection")]
-    public class ProjectTests : TestsBase
+    public class RootProject : TestsBase 
     {
-        public ProjectTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public RootProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task RootProject_query_returns_the_root_project()
+        public async Task Can_be_retrieved()
         {
             var rootProject = await _teamCity.RootProject();
 
-            Assert.False(rootProject.Archived);
-            Assert.Null(rootProject.ParentProjectId.Value.stringId);
+            Assert.Equal("_Root", rootProject.Id.stringId);
             Assert.Equal("<Root project>", rootProject.Name);
-            Assert.Empty(await rootProject.BuildConfigurations);
         }
 
         [Fact]
-        public async Task Projects_can_be_accessed_via_the_root_project()
+        public async Task Child_projects_can_be_retrieved()
         {
             var rootProject = await _teamCity.RootProject();
 
@@ -35,45 +34,29 @@ namespace TeamCityRestClientNet.Tests
             Assert.Contains(childProjects, p => p.Name == "TeamCity Rest Client .NET");
             Assert.Contains(childProjects, p => p.Id.stringId == "TeamCityRestClientNet");
         }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class NewProject : TestsBase
+    {
+        public NewProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task Project_query_returns_the_matching_project()
-        {
-            var rootProject = await _teamCity.RootProject();
-
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
-            var buildConfigurations = await project.BuildConfigurations;
-
-            Assert.Equal("TeamCity Rest Client .NET", project.Name);
-            Assert.Equal(rootProject.Id, project.ParentProjectId);
-            Assert.False(project.Archived);
-            Assert.Empty(await project.ChildProjects);
-            Assert.NotEmpty(buildConfigurations);
-            Assert.Contains(buildConfigurations, p => p.Name == "Rest Client");
-        }
-
-        [Fact]
-        public async Task Project_query_throws_ApiException_if_project_not_found()
-        {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Project(new ProjectId("Not.Found")));
-        }
-
-        [Fact]
-        public async Task Can_create_new_child_projects()
+        public async Task Can_be_created_as_child_to_root_project()
         {
             var project = await _teamCity.RootProject();
             
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            await project.CreateProject(new ProjectId(projectId), projectId);
+            var returnedProject = await project.CreateProject(new ProjectId(projectId), projectId);
 
             var newProject = await _teamCity.Project(new ProjectId(projectId));
-
             Assert.NotNull(newProject);
             Assert.Equal(projectId, newProject.Name);
+            Assert.Equal(projectId, returnedProject.Name);
         }
 
         [Fact]
-        public async Task Project_creation_throws_ApiException_if_creation_fails_because_of_invalid_id()
+        public async Task Creation_throws_ApiException_if_id_is_invalid()
         {
             var project = await _teamCity.RootProject();
 
@@ -82,7 +65,7 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
-        public async Task Project_creation_throws_ApiException_if_id_already_exists()
+        public async Task Creation_throws_ApiException_if_id_already_exists()
         {
             var project = await _teamCity.RootProject();
 
@@ -91,15 +74,62 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
-        public async Task Created_project_is_returned_by_the_create_call()
+        public async Task Can_be_created_as_child_to_nonroot_project()
         {
-            var project = await _teamCity.RootProject();
+            var root = await _teamCity.RootProject();
+            var project = (await root.ChildProjects).First();
 
-            var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            var newProject = await project.CreateProject(new ProjectId(projectId), projectId);
+            var newProjectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
+            await project.CreateProject(new ProjectId(newProjectId), newProjectId);
 
-            Assert.NotNull(newProject);
-            Assert.Equal(projectId, newProject.Name);
+            project = await _teamCity.Project(project.Id);
+            var childProjects = await project.ChildProjects;
+            Assert.Contains(childProjects, p => p.Name == newProjectId);
+        }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class ExistingProject : TestsBase 
+    {
+        public ExistingProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        [Fact]
+        public async Task Can_be_retrieved_with_id()
+        {
+            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+
+            Assert.Equal("TeamCity Rest Client .NET", project.Name);
+        }
+
+        [Fact]
+        public async Task Retrieval_throws_ApiException_if_id_is_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Project(new ProjectId("Not.Found")));
+        }
+
+        [Fact]
+        public async Task Parameters_can_be_retrieved()
+        {
+            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+
+            Assert.Collection(project.Parameters,
+                (param) => Assert.Equal("configuration_parameter", param.Name));
+        }
+
+        [Fact]
+        public async Task Existing_parameter_value_can_be_changed()
+        {
+            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+
+            var newValue = Guid.NewGuid().ToString();
+            await project.SetParameter("configuration_parameter", newValue);
+
+            project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            Assert.Collection(project.Parameters,
+                (param) => {
+                    Assert.Equal("configuration_parameter", param.Name);
+                    Assert.Equal(newValue, param.Value);
+                });
         }
     }
 }

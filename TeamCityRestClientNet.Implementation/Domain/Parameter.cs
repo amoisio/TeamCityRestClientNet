@@ -14,7 +14,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public string Name => _dto.Name.SelfOrNullRef();
-        public string Value => _dto.Name.SelfOrNullRef();
+        public string Value => _dto.Value.SelfOrNullRef();
         public bool Own => _dto.Own.ValueOrNullRef();
     }
 }

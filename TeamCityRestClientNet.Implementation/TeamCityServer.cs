@@ -97,7 +97,7 @@ namespace TeamCityRestClientNet
         /// <summary>
         /// Retrieve a project from TeamCity by project id.
         /// </summary>
-        /// <param name="id">Id of the proejct to retrieve.</param>
+        /// <param name="id">Id of the project to retrieve.</param>
         /// <returns>Matching project. Throws a Refit.ApiException if project not found.</returns>
         public override async Task<IProject> Project(ProjectId id)
             => await Domain.Project.Create(new ProjectDto { Id = id.stringId }, false, this).ConfigureAwait(false);
