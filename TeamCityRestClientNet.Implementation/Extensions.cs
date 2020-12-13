@@ -77,6 +77,7 @@ namespace TeamCityRestClientNet.Extensions
             => value.HasValue 
                 ? value.Value 
                 : throw new NullReferenceException();
+                
         public static string RemovePrefix(this string str, string prefix)
         {
             if (string.IsNullOrWhiteSpace(str) || string.IsNullOrWhiteSpace(prefix))
@@ -88,7 +89,7 @@ namespace TeamCityRestClientNet.Extensions
                 var index = str.IndexOf(prefix, StringComparison.CurrentCultureIgnoreCase);
                 if (index == 0)
                 {
-                    return str.Substring(0, prefix.Length);
+                    return str.Substring(prefix.Length);
                 }
                 else
                 {

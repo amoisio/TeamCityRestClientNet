@@ -19,12 +19,12 @@ namespace TeamCityRestClientNet.Locators
         private string _vcsRevision;
         private DateTimeOffset? _since;
         private DateTimeOffset? _until;
-        private BuildStatus? _status = BuildStatus.SUCCESS;
+        private BuildStatus? _status;
         private List<string> _tags = new List<string>();
         private int? _limitResults;
         private int? _pageSize;
         private string _branch;
-        private bool _includeAllBranches = false;
+        private bool _includeAllBranches = true;
         private bool _pinnedOnly = false;
         private string _personal;
         private string _running;
@@ -173,7 +173,7 @@ namespace TeamCityRestClientNet.Locators
 
         public IAsyncEnumerable<IBuild> All()
         {
-            int count = 0;//selectRestApiCountForPagedRequests(limitResults = limitResults, pageSize = pageSize)
+            int? count = Utilities.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
 
             var parameters = Utilities.ListOfNotNull(
                 _buildConfigurationId?.stringId.Let("buildType:{0}"),
@@ -188,7 +188,7 @@ namespace TeamCityRestClientNet.Locators
                 count.Let("count:{0}"),
                 TeamCitySince?.Let("sinceDate:{0}"),
                 TeamCityUntil?.Let("untilDate:{0}"),
-                !_includeAllBranches ? _branch?.Let("branch:{0}") : "branch:default:any",
+                _includeAllBranches ? "branch:default:any" : _branch.Let("branch:{0}"),
                 _personal?.Let("personal:{0}"),
                 // Always use default filter since sometimes TC automatically switches between
                 // defaultFilter:true and defaultFilter:false
