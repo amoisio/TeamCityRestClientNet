@@ -1,72 +1,58 @@
 using System;
-using TeamCityRestClientNet.Api;
-using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
+using Xunit;
+using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Tests;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.BuildAgents
 {
     [Collection("TeamCity Collection")]
-    public class BuildAgentTests : TestsBase
+    public class BuildAgentList : TestsBase 
     {
-        public BuildAgentTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildAgentList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task BuildAgents_All_query_returns_all_agents()
+        public async Task Contains_all_build_agents()
         {
             var agents = await _teamCity.BuildAgents.All();
-            Assert.Contains(agents, (agent) => agent.Name == "ip_172.17.0.3");
+            Assert.Collection(agents, 
+                (agent) => Assert.Equal("ip_172.17.0.3", agent.Name));
         }
+    }
 
-        [Fact]
-        public async Task BuildAgents_includes_test_system_agent()
-        {
-            var agents = await _teamCity.BuildAgents.All();
-            var agent = agents.First();
+    [Collection("TeamCity Collection")]
+    public class ExistingBuildAgent : TestsBase
+    {
+        public ExistingBuildAgent(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
-            var authorizedUser = await agent.AuthorizedInfo.User;
-            Assert.Equal("Aleksi Moisio", authorizedUser.Name);
-            Assert.Equal("aleksi.moisio30@gmail.com", authorizedUser.Email);
-            Assert.Equal("amoisio", authorizedUser.Username);
-            Assert.NotEqual(default(DateTimeOffset), agent.AuthorizedInfo.Timestamp);
+        // TODO: Reimplement once end-point is supported in client        
+        // [Fact]
+        // public async Task BuildAgents_includes_test_system_agent()
+        // {
+        //     var agents = await _teamCity.BuildAgents.All();
+        //     var agent = agents.First();
 
-            Assert.True(agent.Connected);
-            Assert.True(agent.Enabled);
+        //     var authorizedUser = await agent.AuthorizedInfo.User;
+        //     Assert.Equal("Aleksi Moisio", authorizedUser.Name);
+        //     Assert.Equal("aleksi.moisio30@gmail.com", authorizedUser.Email);
+        //     Assert.Equal("amoisio", authorizedUser.Username);
+        //     Assert.NotEqual(default(DateTimeOffset), agent.AuthorizedInfo.Timestamp);
 
-            var enabledUser = await agent.EnabledInfo.User;
-            Assert.Equal("Aleksi Moisio", enabledUser.Name);
-            Assert.Equal("aleksi.moisio30@gmail.com", enabledUser.Email);
-            Assert.Equal("amoisio", enabledUser.Username);
-            Assert.NotEqual(default(DateTimeOffset), agent.EnabledInfo.Timestamp);
-            Assert.Equal("Enabled", agent.EnabledInfo.Text);
+        //     Assert.True(agent.Connected);
+        //     Assert.True(agent.Enabled);
 
-            Assert.Equal("172.17.0.3", agent.IpAddress);
-            Assert.Equal("ip_172.17.0.3", agent.Name);
-            Assert.False(agent.Outdated);
-            Assert.NotEmpty(agent.Parameters);
-        }
+        //     var enabledUser = await agent.EnabledInfo.User;
+        //     Assert.Equal("Aleksi Moisio", enabledUser.Name);
+        //     Assert.Equal("aleksi.moisio30@gmail.com", enabledUser.Email);
+        //     Assert.Equal("amoisio", enabledUser.Username);
+        //     Assert.NotEqual(default(DateTimeOffset), agent.EnabledInfo.Timestamp);
+        //     Assert.Equal("Enabled", agent.EnabledInfo.Text);
 
-        [Fact]
-        public async Task BuildAgentPools_All_query_returns_all_pools()
-        {
-            var agentPool = await _teamCity.BuildAgentPools.All();
-            Assert.NotEmpty(agentPool);
-        }
-
-        [Fact]
-        public async Task BuildAgentPool_includes_test_system_agent_and_projects()
-        {
-            var agentPools = await _teamCity.BuildAgentPools.All();
-            var defaultPool = agentPools.First();
-
-            var agents = await defaultPool.Agents;
-            Assert.NotEmpty(agents);
-            Assert.Contains(agents, a => a.Name == "ip_172.17.0.3");
-
-            var projects = await defaultPool.Projects;
-            Assert.NotEmpty(projects);
-            Assert.Contains(projects, a => a.Id.stringId == "TeamCityCliNet");
-            Assert.Contains(projects, a => a.Id.stringId == "TeamCityRestClientNet");
-        }
+        //     Assert.Equal("172.17.0.3", agent.IpAddress);
+        //     Assert.Equal("ip_172.17.0.3", agent.Name);
+        //     Assert.False(agent.Outdated);
+        //     Assert.NotEmpty(agent.Parameters);
+        // }
     }
 }
