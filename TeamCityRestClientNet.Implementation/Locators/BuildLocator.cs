@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.Locators
         private int? _limitResults;
         private int? _pageSize;
         private string _branch;
-        private bool _includeAllBranches = true;
+        private bool _includeAllBranches = false;
         private bool _pinnedOnly = false;
         private string _personal;
         private string _running;

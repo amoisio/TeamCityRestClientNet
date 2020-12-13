@@ -1,23 +1,44 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using TeamCityRestClientNet.Api;
 using Xunit;
+using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Tests;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.Builds
 {
     [Collection("TeamCity Collection")]
-    public class BuildTests : TestsBase
+    public class BuildList : TestsBase 
     {
-        public BuildTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task All_builds()
+        public async Task By_default_contains_all_builds_from_default_branch()
         {
             var builds = await _teamCity.Builds.All().ToListAsync();
 
-            Assert.Contains(builds, (build) => build.Id.stringId == "12" && build.Status == BuildStatus.SUCCESS);
+            // TODO: BuildDto.BranchName is empty for some reason... 
+            // looking at the response it looks like the only branch information 
+            // is in the revisions... fix this.
+            Assert.Contains(builds, (build) => 
+                build.Id.stringId == "12" 
+                && build.Status == BuildStatus.SUCCESS);
+                // && build.Branch.Name == "refs/heads/master");
+
+            Assert.Contains(builds, (build) => 
+                build.Id.stringId == "13" 
+                && build.Status == BuildStatus.FAILURE);
+                // && build.Branch.Name == "refs/heads/master");
         }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class BuildTests : TestsBase
+    {
+        
+        public BuildTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        
 
         [Fact]
         public async Task Latest_build()
