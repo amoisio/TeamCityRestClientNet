@@ -1,28 +1,48 @@
 using System;
-using TeamCityRestClientNet.Api;
-using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
+using Xunit;
+using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Tests;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.Users
 {
     [Collection("TeamCity Collection")]
-    public class UserTests : TestsBase
+    public class UserList : TestsBase
     {
-        public UserTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public UserList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task Users_query_returns_all_users()
+        public async Task Contains_all_users()
         {
             var users = await _teamCity.Users().ToListAsync();
 
-            Assert.Collection(users, 
+            Assert.Collection(users,
                 user => Assert.Equal("amoisio", user.Username),
                 user => Assert.Equal("jbuilder", user.Username));
         }
+    }
+
+
+    [Collection("TeamCity Collection")]
+    public class NewUser : TestsBase
+    {
+        public NewUser(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        // [Fact]
+        // public async Task Can_be_created() 
+        // {
+
+        // }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class ExistingUser : TestsBase
+    {
+        public ExistingUser(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task User_query_by_id_returns_the_matching_user()
+        public async Task Can_be_retrieved_with_id()
         {
             var userId = new UserId("2");
             var user = await _teamCity.User(userId);
@@ -34,14 +54,14 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
-        public async Task User_query_by_id_throws_an_ApiException_if_user_not_found()
+        public async Task Throws_ApiException_if_id_not_found()
         {
             var userId = new UserId("9999");
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.User(userId));
         }
 
         [Fact]
-        public async Task User_query_by_username_returns_the_matching_user()
+        public async Task Can_be_retrieved_with_exact_username()
         {
             var user = await _teamCity.User("amoisio");
             Assert.Equal(new UserId("1"), user.Id);
@@ -52,7 +72,7 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
-        public async Task User_query_username_id_throws_an_ApiException_if_user_not_found()
+        public async Task Throws_ApiException_if_exact_username_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.User("not.found"));
         }
