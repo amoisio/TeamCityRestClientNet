@@ -101,44 +101,5 @@ namespace TeamCityRestClientNet.Tests
             Assert.NotNull(newProject);
             Assert.Equal(projectId, newProject.Name);
         }
-
-        [Fact]
-        public async Task Can_create_new_vcs_roots()
-        {
-            var project = await _teamCity.RootProject();
-
-            var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
-
-            await project.CreateVcsRoot(
-                new VcsRootId(vcsId),
-                vcsId,
-                VcsRootType.GIT,
-                new Dictionary<string, string>());
-                
-            var vcs = await _teamCity.VcsRoot(new VcsRootId(vcsId));
-            Assert.NotNull(vcs);
-            Assert.Equal(vcsId, vcs.Name);
-        }
-
-        [Fact]
-        public async Task VcsRoot_creation_throws_ApiException_if_creation_fails_because_of_invalid_id()
-        {
-            var project = await _teamCity.RootProject();
-
-            var vcsRootId = "-----TeamCityRestClientNet_Bitbucket";
-            await Assert.ThrowsAsync<Refit.ApiException>(
-                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
-        }
-
-        [Fact]
-        public async Task VcsRoot_creation_throws_ApiException_if_id_already_exists()
-        {
-            var project = await _teamCity.RootProject();
-
-            var vcsRootId = "TeamCityRestClientNet_Bitbucket";
-            await Assert.ThrowsAsync<Refit.ApiException>(
-                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
-        }
-
     }
 }

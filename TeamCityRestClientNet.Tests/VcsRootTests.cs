@@ -1,25 +1,79 @@
 using System;
-using TeamCityRestClientNet.Api;
-using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
+using Xunit;
+using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.Tests;
+using System.Collections.Generic;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.VcsRoots
 {
     [Collection("TeamCity Collection")]
-    public class VcsRootTests : TestsBase
+    public class VcsRootList : TestsBase
     {
-        public VcsRootTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public VcsRootList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task VcsRoots_query_returns_all_vcsroots()
+        public async Task Contains_all_VcsRoots()
         {
             var vcsRoots = await _teamCity.VcsRoots().ToListAsync();
             Assert.Contains(vcsRoots, (root) => root.Id.stringId == "TeamCityRestClientNet_Bitbucket");
         }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class NewGitVcsRoot : TestsBase 
+    {
+        public NewGitVcsRoot(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
-        public async Task VcsRoot_query_returns_the_matching_vcsroot()
+        public async Task Can_be_created_for_root_project()
+        {
+            var project = await _teamCity.RootProject();
+
+            var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
+
+            await project.CreateVcsRoot(
+                new VcsRootId(vcsId),
+                vcsId,
+                VcsRootType.GIT,
+                new Dictionary<string, string>());
+
+            var vcs = await _teamCity.VcsRoot(new VcsRootId(vcsId));
+            Assert.Equal(vcsId, vcs.Id.stringId);
+            Assert.Equal(vcsId, vcs.Name);
+            // TODO: Add vcs root type check
+            // TODO: Add parameter checks
+        }
+
+        [Fact]
+        public async Task Creation_throws_ApiException_if_id_is_invalid()
+        {
+            var project = await _teamCity.RootProject();
+
+            var vcsRootId = "-----TeamCityRestClientNet_Bitbucket";
+            await Assert.ThrowsAsync<Refit.ApiException>(
+                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+        }
+
+        [Fact]
+        public async Task Creation_throws_ApiException_if_id_already_exists()
+        {
+            var project = await _teamCity.RootProject();
+
+            var vcsRootId = "TeamCityRestClientNet_Bitbucket";
+            await Assert.ThrowsAsync<Refit.ApiException>(
+                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+        }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class ExistingVcsRoot : TestsBase
+    {
+        public ExistingVcsRoot(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        [Fact]
+        public async Task Can_be_retrieved_with_id()
         {
             var rootId = new VcsRootId("TeamCityRestClientNet_Bitbucket");
             var root = await _teamCity.VcsRoot(rootId);
@@ -30,7 +84,7 @@ namespace TeamCityRestClientNet.Tests
         }
 
         [Fact]
-        public async Task VcsRoot_query_throws_ApiException_if_vcsroot_not_found()
+        public async Task Retrieval_throws_ApiException_if_id_not_found()
         {
             var rootId = new VcsRootId("Not_found");
 
