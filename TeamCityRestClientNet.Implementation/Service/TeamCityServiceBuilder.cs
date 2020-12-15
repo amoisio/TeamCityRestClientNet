@@ -68,7 +68,9 @@ namespace TeamCityRestClientNet.Service
 
             _logger.LogInformation($"Building REST service to {hostUrl}.");
 
-            CSRFTokenHandler csrfHandler = null;
+            LoggingHandler loggingHandler = new LoggingHandler(_logger);
+            HttpMessageHandler innerHandler = loggingHandler;
+            // CSRFTokenHandler csrfHandler = null;
             // TODO: Enable when using csrf
             // if (_csrfTokenStore != null)
             //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
@@ -83,7 +85,7 @@ namespace TeamCityRestClientNet.Service
                     });
             }
 
-            var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
+            var serviceHandler = new BearerTokenHandler(_bearerTokenStore, innerHandler);
             return RestService.For<ITeamCityService>(
                     new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) }, _settings);
         }
