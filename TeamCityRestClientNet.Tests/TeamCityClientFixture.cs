@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Domain;
 using Xunit;
@@ -21,7 +22,17 @@ namespace TeamCityRestClientNet.Tests
 
         public TeamCityFixture()
         {
-            this.TeamCity = TeamCityInstanceFactory.TokenAuth(serverUrl, _token, null);
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("TeamCity.Tests", LogLevel.Trace)
+                    .AddConsole();
+            });
+
+            var logger = loggerFactory.CreateLogger("TeamCity.Tests");
+            this.TeamCity = TeamCityInstanceFactory.TokenAuth(serverUrl, _token, logger);
         }
 
         public TeamCity TeamCity { get;}
