@@ -225,15 +225,38 @@ namespace TeamCityRestClientNet.Builds
             Assert.Contains(_buildingStates, state => state == build.State);
         }
 
-        // [Fact]
-        // public async Task Can_be_seen_on_the_build_queue()
-        // {
+        [Fact]
+        public async Task Can_be_seen_on_the_build_queue()
+        {
+            await DisableAll();
 
-        //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-        //     var build = await config.RunBuild();
+            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+            var newBuild = await config.RunBuild();
 
-        //     Assert.Contains(_buildingStates, state => state == build.State);
-        // }
+            var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
+
+            Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
+
+            await EnableAll();
+        }
+
+        private async Task DisableAll()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            foreach (var agent in agents)
+            {
+                await agent.Disable();
+            }
+        }
+
+        private async Task EnableAll()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            foreach (var agent in agents)
+            {
+                await agent.Enable();
+            }
+        }
     }
 
     [Collection("TeamCity Collection")]
