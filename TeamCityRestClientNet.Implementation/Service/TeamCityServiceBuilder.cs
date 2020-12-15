@@ -3,6 +3,8 @@ using System.Net.Http;
 using BAMCIS.Util.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Refit;
 using TeamCityRestClientNet.Authentication;
 
@@ -71,11 +73,18 @@ namespace TeamCityRestClientNet.Service
             // if (_csrfTokenStore != null)
             //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
 
+            if (_settings == null)
+            {
+                _settings = new RefitSettings();
+                _settings.ContentSerializer = new NewtonsoftJsonContentSerializer(
+                    new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+            }
+
             var serviceHandler = new BearerTokenHandler(_bearerTokenStore, csrfHandler);
-            return _settings == null
-                ? RestService.For<ITeamCityService>(
-                    new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) })
-                : RestService.For<ITeamCityService>(
+            return RestService.For<ITeamCityService>(
                     new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) }, _settings);
         }
 
