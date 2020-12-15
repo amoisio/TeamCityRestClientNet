@@ -22,6 +22,8 @@ namespace TeamCityRestClientNet.Api
         AsyncLazy<IBuildAgentPool> Pool { get; }
         bool Connected { get; }
         bool Enabled { get; }
+        Task Enable();
+        Task Disable();
         bool Authorized { get; }
         bool Outdated { get; }
         string IpAddress { get; }

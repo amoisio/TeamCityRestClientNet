@@ -8,7 +8,7 @@ using TeamCityRestClientNet.Tests;
 namespace TeamCityRestClientNet.BuildAgents
 {
     [Collection("TeamCity Collection")]
-    public class BuildAgentList : TestsBase 
+    public class BuildAgentList : TestsBase
     {
         public BuildAgentList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.BuildAgents
         public async Task Contains_all_build_agents()
         {
             var agents = await _teamCity.BuildAgents.All();
-            Assert.Collection(agents, 
+            Assert.Collection(agents,
                 (agent) => Assert.Equal("ip_172.17.0.3", agent.Name));
         }
     }
@@ -26,6 +26,33 @@ namespace TeamCityRestClientNet.BuildAgents
     {
         public ExistingBuildAgent(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
+        [Fact]
+        public async Task Can_be_disabled()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            foreach (var agent in agents)
+            {
+                await agent.Disable();
+            }
+
+            agents = await _teamCity.BuildAgents.All();
+
+            Assert.All(agents, agent => Assert.False(agent.Enabled));
+        }
+
+        [Fact]
+        public async Task Can_be_enabled()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            foreach (var agent in agents)
+            {
+                await agent.Enable();
+            }
+
+            agents = await _teamCity.BuildAgents.All();
+
+            Assert.All(agents, agent => Assert.True(agent.Enabled));
+        }
         // TODO: Reimplement once end-point is supported in client        
         // [Fact]
         // public async Task BuildAgents_includes_test_system_agent()

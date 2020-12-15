@@ -71,6 +71,18 @@ namespace TeamCityRestClientNet.Domain
 
         public override string ToString() => $"BuildAgent(id={Id}, name={Name})";
 
+        public async Task Enable()
+        {
+            await Service.ToggleAgents($"id:{IdString}", true).ConfigureAwait(false);
+            Dto.Enabled = true;
+        }
+
+        public async Task Disable()
+        {
+            await Service.ToggleAgents($"id:{IdString}", false).ConfigureAwait(false);
+            Dto.Enabled = false;
+        }
+
         private class BuildAgentInfo : IInfo
         {
             public BuildAgentInfo(string userId, DateTimeOffset timestamp, string text, TeamCityServer instance)

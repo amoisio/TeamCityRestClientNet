@@ -135,12 +135,16 @@ namespace TeamCityRestClientNet.Service
         Task<BuildAgentsDto> Agents();
 
         [Headers("Accept: application/json")]
-        [Get("/app/rest/agentPools")]
-        Task<BuildAgentPoolsDto> AgentPools();
-
-        [Headers("Accept: application/json")]
         [Get("/app/rest/agents/{locator}")]
         Task<BuildAgentDto> Agents([AliasAs("locator")] string agentLocator = null);
+
+        [Headers("Accept: text/plain", "Content-Type: text/plain")]
+        [Put("/app/rest/agents/{locator}/enabled")]
+        Task ToggleAgents([AliasAs("locator")] string agentLocator, [Body(BodySerializationMethod.Serialized)] bool enable);
+
+        [Headers("Accept: application/json")]
+        [Get("/app/rest/agentPools")]
+        Task<BuildAgentPoolsDto> AgentPools();
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools/{locator}")]
