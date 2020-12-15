@@ -9,7 +9,7 @@ using TeamCityRestClientNet.Tools;
 namespace TeamCityRestClientNet.Builds
 {
     [Collection("TeamCity Collection")]
-    public class BuildList : TestsBase 
+    public class BuildList : TestsBase
     {
         public BuildList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
@@ -18,13 +18,13 @@ namespace TeamCityRestClientNet.Builds
         {
             var builds = await _teamCity.Builds.All().ToListAsync();
 
-            Assert.Contains(builds, (build) => 
-                build.Id.stringId == "12" 
+            Assert.Contains(builds, (build) =>
+                build.Id.stringId == "12"
                 && build.Status == BuildStatus.SUCCESS
                 && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
 
-            Assert.Contains(builds, (build) => 
-                build.Id.stringId == "13" 
+            Assert.Contains(builds, (build) =>
+                build.Id.stringId == "13"
                 && build.Status == BuildStatus.FAILURE
                 && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
         }
@@ -46,7 +46,7 @@ namespace TeamCityRestClientNet.Builds
 
             Assert.All(builds, build => Assert.Equal("refs/heads/development", build.Branch.Name));
         }
-            
+
         [Fact]
         public async Task Can_contain_builds_with_specific_build_number_only()
         {
@@ -80,7 +80,7 @@ namespace TeamCityRestClientNet.Builds
         }
 
         // TODO: Add test case for vcs revisions
-        
+
         [Fact]
         public async Task Contains_builds_until_a_specific_datetime()
         {
@@ -98,15 +98,151 @@ namespace TeamCityRestClientNet.Builds
 
             Assert.All(builds, build => Assert.True(sinceDate < build.FinishDateTime.Value));
         }
+
+        [Fact]
+        public async Task Contains_pinned_builds_only()
+        {
+            var pinned = await _teamCity.Builds.PinnedOnly().All().ToListAsync();
+
+            Assert.All(pinned, async build =>
+            {
+                Assert.NotNull(build.PinInfo);
+                var pinUser = await build.PinInfo.User;
+                Assert.Equal("aleksi.moisio30@gmail.com", pinUser.Email);
+                Assert.Equal("1", pinUser.Id.stringId);
+                Assert.Equal("Aleksi Moisio", pinUser.Name);
+                Assert.Equal("amoisio", pinUser.Username);
+            });
+        }
+
+        [Fact]
+        public async Task Contains_canceled_builds_only()
+        {
+            var canceled = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+
+            Assert.All(canceled, async build =>
+            {
+                Assert.NotNull(build.CanceledInfo);
+
+                Assert.Equal("cancel", build.CanceledInfo.Text);
+                var cancelTimestamp = Utilities.ParseTeamCity("20201214T201259+0000").Value;
+                Assert.Equal(cancelTimestamp, build.CanceledInfo.Timestamp);
+                var cancelUser = await build.CanceledInfo.User;
+                Assert.Equal("aleksi.moisio30@gmail.com", cancelUser.Email);
+                Assert.Equal("1", cancelUser.Id.stringId);
+                Assert.Equal("Aleksi Moisio", cancelUser.Name);
+                Assert.Equal("amoisio", cancelUser.Username);
+            });
+        }
+
+        // TODO: only personal builds
+        // [Fact]
+        // public async Task Contains_personal_builds_only()
+        // {
+        //     // var canceled = await _teamCity.Builds.().ToListAsync();
+
+        //     // Assert.All(canceled, async build => 
+        //     // {
+        //     //     Assert.NotNull(build.CanceledInfo);
+
+        //     //     Assert.Equal("cancel", build.CanceledInfo.Text);
+        //     //     var cancelTimestamp = Utilities.ParseTeamCity("20201214T201259+0000").Value;
+        //     //     Assert.Equal(cancelTimestamp, build.CanceledInfo.Timestamp);
+        //     //     var cancelUser = await build.CanceledInfo.User;
+        //     //     Assert.Equal("aleksi.moisio30@gmail.com", cancelUser.Email);
+        //     //     Assert.Equal("1", cancelUser.Id.stringId);
+        //     //     Assert.Equal("Aleksi Moisio", cancelUser.Name);
+        //     //     Assert.Equal("amoisio", cancelUser.Username);
+        //     // });
+        // }
+
+        [Fact]
+        public async Task Can_include_canceled_builds()
+        {
+            var canceled = await _teamCity.Builds
+            .WithAllBranches()
+            .IncludeCanceled()
+            .All().ToListAsync();
+
+            Assert.Contains(canceled, build => build.CanceledInfo != null && build.CanceledInfo.Text == "cancel");
+        }
+
+        [Fact]
+        public async Task Can_include_failed_builds()
+        {
+            var canceled = await _teamCity.Builds.IncludeFailed().All().ToListAsync();
+
+            Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
+        }
+
+        // TODO: include personal builds
+        // [Fact]
+        // public async Task Can_include_personal_builds()
+        // {
+        //     var canceled = await _teamCity.Builds.IncludePersonal().All().ToListAsync();
+
+        //     Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
+        // }
+
+
+        // [Fact]
+        // public async Task Can_contain_running_builds_only()
+        // {
+
+        // }
+
+        // [Fact]
+        // public async Task Can_include_running_builds()
+        // {
+
+        // }
+
+        // [Fact]
+        // public async Task Can_contain_builds_from_specific_configuration_only()
+        // {
+
+        // }
+
     }
 
     [Collection("TeamCity Collection")]
-    public class BuildTests : TestsBase
+    public class NewBuild : TestsBase
     {
-        public BuildTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        private BuildState[] _buildingStates = new BuildState[]
+        {
+            BuildState.QUEUED, /* Queued if there are no agents to run the build */ 
+            BuildState.RUNNING /* Running if agent can start the build immediatelly */
+        };
 
         [Fact]
-        public async Task Latest_build()
+        public async Task Can_be_started_for_a_branch()
+        {
+            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+            var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
+
+            Assert.Contains(_buildingStates, state => state == build.State);
+        }
+
+        // [Fact]
+        // public async Task Can_be_seen_on_the_build_queue()
+        // {
+
+        //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        //     var build = await config.RunBuild();
+
+        //     Assert.Contains(_buildingStates, state => state == build.State);
+        // }
+    }
+
+    [Collection("TeamCity Collection")]
+    public class ExistingBuild : TestsBase
+    {
+        public ExistingBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+
+        [Fact]
+        public async Task Can_be_retrieved_as_latest_build()
         {
             var builds = await _teamCity.Builds.All().ToListAsync();
             var latest = builds.OrderByDescending(b => Int32.Parse(b.Id.stringId)).First();
