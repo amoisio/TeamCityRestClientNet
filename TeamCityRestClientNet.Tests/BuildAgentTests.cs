@@ -29,29 +29,43 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_disabled()
         {
-            var agents = await _teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Disable();
-            }
+            await EnableAll().ConfigureAwait(false);
 
-            agents = await _teamCity.BuildAgents.All();
+            await DisableAll().ConfigureAwait(false);
+            var agents = await _teamCity.BuildAgents.All();
 
             Assert.All(agents, agent => Assert.False(agent.Enabled));
+
+            await EnableAll().ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Can_be_enabled()
+        {
+            await DisableAll().ConfigureAwait(false);
+
+            await EnableAll().ConfigureAwait(false);
+            var agents = await _teamCity.BuildAgents.All();
+
+            Assert.All(agents, agent => Assert.True(agent.Enabled));
+        }
+
+        private async Task EnableAll() 
         {
             var agents = await _teamCity.BuildAgents.All();
             foreach (var agent in agents)
             {
                 await agent.Enable();
             }
+        }
 
-            agents = await _teamCity.BuildAgents.All();
-
-            Assert.All(agents, agent => Assert.True(agent.Enabled));
+        private async Task DisableAll()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+            foreach (var agent in agents)
+            {
+                await agent.Disable();
+            }
         }
         // TODO: Reimplement once end-point is supported in client        
         // [Fact]
