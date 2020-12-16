@@ -104,35 +104,15 @@ namespace TeamCityRestClientNet.Builds
         {
             var pinned = await _teamCity.Builds.PinnedOnly().All().ToListAsync();
 
-            Assert.All(pinned, async build =>
-            {
-                Assert.NotNull(build.PinInfo);
-                var pinUser = await build.PinInfo.User;
-                Assert.Equal("aleksi.moisio30@gmail.com", pinUser.Email);
-                Assert.Equal("1", pinUser.Id.stringId);
-                Assert.Equal("Aleksi Moisio", pinUser.Name);
-                Assert.Equal("amoisio", pinUser.Username);
-            });
+            Assert.All(pinned, build => Assert.NotNull(build.PinInfo));
         }
 
         [Fact]
         public async Task Contains_canceled_builds_only()
         {
-            var canceled = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+            var cancelled = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
 
-            Assert.All(canceled, async build =>
-            {
-                Assert.NotNull(build.CanceledInfo);
-
-                Assert.Equal("cancel", build.CanceledInfo.Text);
-                var cancelTimestamp = Utilities.ParseTeamCity("20201214T201259+0000").Value;
-                Assert.Equal(cancelTimestamp, build.CanceledInfo.Timestamp);
-                var cancelUser = await build.CanceledInfo.User;
-                Assert.Equal("aleksi.moisio30@gmail.com", cancelUser.Email);
-                Assert.Equal("1", cancelUser.Id.stringId);
-                Assert.Equal("Aleksi Moisio", cancelUser.Name);
-                Assert.Equal("amoisio", cancelUser.Username);
-            });
+            Assert.All(cancelled, build => Assert.NotNull(build.CanceledInfo));
         }
 
         // TODO: only personal builds
@@ -160,9 +140,9 @@ namespace TeamCityRestClientNet.Builds
         public async Task Can_include_canceled_builds()
         {
             var canceled = await _teamCity.Builds
-            .WithAllBranches()
-            .IncludeCanceled()
-            .All().ToListAsync();
+                .WithAllBranches()
+                .IncludeCanceled()
+                .All().ToListAsync();
 
             Assert.Contains(canceled, build => build.CanceledInfo != null && build.CanceledInfo.Text == "cancel");
         }
@@ -185,17 +165,31 @@ namespace TeamCityRestClientNet.Builds
         // }
 
 
-        // [Fact]
-        // public async Task Can_contain_running_builds_only()
-        // {
+        [Fact]
+        public async Task Can_contain_running_builds_only()
+        {
+            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+            var newBuild = await config.RunBuild();
 
-        // }
+            var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
 
-        // [Fact]
-        // public async Task Can_include_running_builds()
-        // {
+            Assert.All(onlyRunning, build => Assert.Equal(BuildState.RUNNING, build.State));
+        }
 
-        // }
+        [Fact]
+        public async Task Can_include_running_builds()
+        {
+            await TeamCityHelpers.EnableAllAgents(_teamCity);
+
+            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+            var newBuild = await config.RunBuild();
+
+            var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
+
+            Assert.Contains(inclRunning, build => build.State == BuildState.RUNNING);
+            Assert.Contains(inclRunning, build => build.State == BuildState.FINISHED);
+
+        }
 
         // [Fact]
         // public async Task Can_contain_builds_from_specific_configuration_only()
@@ -228,7 +222,7 @@ namespace TeamCityRestClientNet.Builds
         [Fact]
         public async Task Can_be_seen_on_the_build_queue()
         {
-            await DisableAll();
+            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
 
             var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
             var newBuild = await config.RunBuild();
@@ -237,25 +231,30 @@ namespace TeamCityRestClientNet.Builds
 
             Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
 
-            await EnableAll();
+            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
         }
+    }
 
-        private async Task DisableAll()
-        {
-            var agents = await _teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Disable();
-            }
-        }
+    [Collection("TeamCity Collection")]
+    public class RunningBuild : TestsBase
+    {
+        public RunningBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
-        private async Task EnableAll()
+        [Fact]
+        public async Task Can_be_cancelled()
         {
-            var agents = await _teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Enable();
-            }
+            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+            var newBuild = await config.RunBuild();
+
+            await Task.Delay(500).ConfigureAwait(false);
+
+            var comment = $"Cancelled-{Guid.NewGuid()}";
+            await newBuild.Cancel(comment);
+
+            await Task.Delay(500).ConfigureAwait(false);
+
+            var cancelledBuilds = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+            Assert.Contains(cancelledBuilds, build => build.CanceledInfo.Text == comment);
         }
     }
 

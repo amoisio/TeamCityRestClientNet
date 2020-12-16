@@ -29,45 +29,28 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_disabled()
         {
-            await EnableAll().ConfigureAwait(false);
+            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
 
-            await DisableAll().ConfigureAwait(false);
+            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
             var agents = await _teamCity.BuildAgents.All();
 
             Assert.All(agents, agent => Assert.False(agent.Enabled));
 
-            await EnableAll().ConfigureAwait(false);
+            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Can_be_enabled()
         {
-            await DisableAll().ConfigureAwait(false);
+            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
 
-            await EnableAll().ConfigureAwait(false);
+            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
             var agents = await _teamCity.BuildAgents.All();
 
             Assert.All(agents, agent => Assert.True(agent.Enabled));
         }
 
-        private async Task EnableAll() 
-        {
-            var agents = await _teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Enable();
-            }
-        }
-
-        private async Task DisableAll()
-        {
-            var agents = await _teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Disable();
-            }
-        }
-        // TODO: Reimplement once end-point is supported in client        
+        // TODO: Reimplement once end-point single agent query is supported in client        
         // [Fact]
         // public async Task BuildAgents_includes_test_system_agent()
         // {
