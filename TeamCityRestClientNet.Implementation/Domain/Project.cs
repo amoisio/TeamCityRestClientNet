@@ -83,6 +83,11 @@ namespace TeamCityRestClientNet.Domain
             return new Project(projectDto, Instance);
         }
 
+        public async Task Delete()
+        {
+            await Service.DeleteProject($"id:{Id.stringId}").ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Create a new VCS root.
         /// </summary>

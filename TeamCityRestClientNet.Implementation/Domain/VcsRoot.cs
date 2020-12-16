@@ -38,5 +38,9 @@ namespace TeamCityRestClientNet.Domain
                 : null;
         public override string ToString()
             => $"VcsRoot(id={Id}, name={Name}, url={Url})";
+        public async Task Delete()
+        {
+            await Service.DeleteVcsRoot($"id:{Id.stringId}").ConfigureAwait(false);
+        }
     }
 }

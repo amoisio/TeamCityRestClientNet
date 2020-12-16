@@ -90,5 +90,20 @@ namespace TeamCityRestClientNet.VcsRoots
 
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoot(rootId));
         }
+
+        [Fact]
+        public async Task Can_be_deleted()
+        {
+            var vcsRoots = await _teamCity.VcsRoots().ToListAsync();
+
+            var toDelete = vcsRoots
+                .First(root => root.Id.stringId.StartsWith("Vcs_"));
+
+            await toDelete.Delete();
+
+            vcsRoots = await _teamCity.VcsRoots().ToListAsync();
+            
+            Assert.DoesNotContain(vcsRoots, root => root.Id.stringId == toDelete.Id.stringId);
+        }
     }
 }

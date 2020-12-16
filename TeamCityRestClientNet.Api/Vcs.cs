@@ -22,6 +22,7 @@ namespace TeamCityRestClientNet.Api
         string Name { get; }
         string Url { get; }
         string DefaultBranch { get; }
+        Task Delete();
     }
     public interface IVcsRootLocator
     {

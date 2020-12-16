@@ -158,9 +158,17 @@ namespace TeamCityRestClientNet.Service
         [Post("/app/rest/projects")]
         Task<ProjectDto> CreateProject([Body] string projectDescriptionXml);
 
+        [Headers("Accept: application/json")]
+        [Delete("/app/rest/projects/{locator}")]
+        Task DeleteProject([AliasAs("locator")] string projectLocator);
+
         [Headers("Accept: application/json", "Content-Type: application/xml")]
         [Post("/app/rest/vcs-roots")]
         Task<VcsRootDto> CreateVcsRoot([Body] string vcsRootXml);
+
+        [Headers("Accept: application/json")]
+        [Delete("/app/rest/vcs-roots/{locator}")]
+        Task DeleteVcsRoot([AliasAs("locator")] string vcsRootLocator);
 
         [Headers("Accept: application/json", "Content-Type: application/xml")]
         [Post("/app/rest/buildTypes")]

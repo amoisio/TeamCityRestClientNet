@@ -36,6 +36,7 @@ namespace TeamCityRestClientNet.Api
          */
         Task<IVcsRoot> CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
         Task<IProject> CreateProject(ProjectId id, string name);
+        Task Delete();
         /**
          * XML in the same format as
          * https://teamcity/app/rest/buildTypes/YourBuildConfigurationId

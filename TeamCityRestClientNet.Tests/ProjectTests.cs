@@ -131,5 +131,22 @@ namespace TeamCityRestClientNet.Projects
                     Assert.Equal(newValue, param.Value);
                 });
         }
+
+        [Fact]
+        public async Task Can_be_deleted() 
+        {
+            var rootProject = await _teamCity.RootProject();
+            var childProjects = await rootProject.ChildProjects;
+
+            var toDelete = childProjects
+                .First(project => project.Id.stringId.StartsWith("Project_"));
+
+            await toDelete.Delete();
+
+            rootProject = await _teamCity.RootProject();
+            childProjects = await rootProject.ChildProjects;
+            
+            Assert.DoesNotContain(childProjects, project => project.Id.stringId == toDelete.Id.stringId);
+        }
     }
 }
