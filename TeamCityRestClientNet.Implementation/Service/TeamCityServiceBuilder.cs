@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,6 +20,7 @@ namespace TeamCityRestClientNet.Service
         private ILogger _logger;
         private RefitSettings _settings;
         private Func<HttpMessageHandler, HttpMessageHandler>[] _handlers;
+        private bool _withDefaultHandlers;
 
         public TeamCityServiceBuilder(ILogger logger)
         {
@@ -71,6 +73,12 @@ namespace TeamCityRestClientNet.Service
             return this;
         }
 
+        public TeamCityServiceBuilder WithDefaultHandlers()
+        {
+            _withDefaultHandlers = true;
+            return this;
+        }
+
         public TeamCityServiceBuilder WithHandlers(params Func<HttpMessageHandler, HttpMessageHandler>[] handlers)
         {
             _handlers = handlers;
@@ -107,17 +115,20 @@ namespace TeamCityRestClientNet.Service
 
         private HttpMessageHandler BuildHandlerPipeline()
         {
-            if (_handlers == null || _handlers.Length == 0)
+            var handlers = new List<Func<HttpMessageHandler, HttpMessageHandler>>();
+            if (_withDefaultHandlers) 
             {
-                _handlers = new Func<HttpMessageHandler, HttpMessageHandler>[] 
-                {
-                    (innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler),
-                    //     // CSRFTokenHandler csrfHandler = null;
-                    //     // TODO: Enable when using csrf
-                    //     // if (_csrfTokenStore != null)
-                    //     //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
-                    (innerHandler) => new LoggingHandler(_logger)
-                };
+                handlers.Add((innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler));
+                // CSRFTokenHandler csrfHandler = null;
+                // TODO: Enable when using csrf
+                // if (_csrfTokenStore != null)
+                //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
+                handlers.Add((innerHandler) => new LoggingHandler(_logger));
+            }
+
+            if (_handlers != null)
+            {
+                handlers.AddRange(_handlers);
             }
 
             HttpMessageHandler innerHandler = null;
@@ -126,6 +137,7 @@ namespace TeamCityRestClientNet.Service
             {
                 innerHandler = _handlers[i](innerHandler);
             }
+            
             return innerHandler;
         }
 

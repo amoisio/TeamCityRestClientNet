@@ -70,7 +70,8 @@ namespace TeamCityRestClientNet.Domain
             .WithServerUrl(serverUrl.TrimEnd('/'), "")
             .WithTimeout(120)
             .WithBearerTokenStore(bearerTokenStore)
-            .WithCSRFTokenStore(csrfTokenStore);
+            .WithCSRFTokenStore(csrfTokenStore)
+            .WithDefaultHandlers();
 
           return new TeamCityServer(builder, logger);          
         }
