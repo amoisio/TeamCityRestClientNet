@@ -24,7 +24,6 @@
     <PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
     <PackageReference Include="refit" Version="5.2.4" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-    <PackageReference Include="TimeUnit" Version="1.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamCityRestClientNet.Api\TeamCityRestClientNet.Api.csproj" />

@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using BAMCIS.Util.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
@@ -16,10 +15,10 @@ namespace TeamCityRestClientNet.Service
         private string _serverUrlBase;
         private IBearerTokenStore _bearerTokenStore;
         private ICSRFTokenStore _csrfTokenStore;
-        private TimeUnit _unit;
         private long _timeout;
         private ILogger _logger;
         private RefitSettings _settings;
+        private Func<HttpMessageHandler, HttpMessageHandler>[] _handlers;
 
         public TeamCityServiceBuilder(ILogger logger)
         {
@@ -28,35 +27,53 @@ namespace TeamCityRestClientNet.Service
 
         public string ServerUrl => _serverUrl;
         public string ServerUrlBase => _serverUrlBase ?? "";
-        public TeamCityServiceBuilder SetServerUrl(string serverUrl, string serverUrlBase)
+
+        public TeamCityServiceBuilder WithServerUrl(string serverUrl, string serverUrlBase)
         {
             _serverUrl = serverUrl;
             _serverUrlBase = serverUrlBase;
             return this;
         }
 
-        public TeamCityServiceBuilder SetTimeout(TimeUnit unit, long timeout)
+        /// <summary>
+        /// Set query timeout.
+        /// </summary>
+        /// <param name="timeout">Query timeout in seconds.</param>
+        public TeamCityServiceBuilder WithTimeout(long timeout)
         {
-            _unit = unit;
             _timeout = timeout;
             return this;
         }
 
-        public TeamCityServiceBuilder SetBearerTokenStore(IBearerTokenStore tokenStore)
+        /// <summary>
+        /// Set the token store used for Bearer authentication.
+        /// </summary>
+        /// <param name="tokenStore">Token store.</param>
+        public TeamCityServiceBuilder WithBearerTokenStore(IBearerTokenStore tokenStore)
         {
             _bearerTokenStore = tokenStore;
             return this;
         }
 
-        public TeamCityServiceBuilder SetCSRFTokenStore(ICSRFTokenStore csrfStore)
+        /// <summary>
+        /// Set the token store used for CSRF tokens.
+        /// </summary>
+        /// <param name="csrfStore">Token store.</param>
+        public TeamCityServiceBuilder WithCSRFTokenStore(ICSRFTokenStore csrfStore)
         {
             _csrfTokenStore = csrfStore;
             return this;
         }
 
-        public TeamCityServiceBuilder SetRefitSettings(RefitSettings settings)
+        public TeamCityServiceBuilder WithRefitSettings(RefitSettings settings)
         {
             _settings = settings;
+            return this;
+        }
+
+        public TeamCityServiceBuilder WithHandlers(params Func<HttpMessageHandler, HttpMessageHandler>[] handlers)
+        {
+            _handlers = handlers;
             return this;
         }
 
@@ -68,26 +85,15 @@ namespace TeamCityRestClientNet.Service
 
             _logger.LogInformation($"Building REST service to {hostUrl}.");
 
-            LoggingHandler loggingHandler = new LoggingHandler(_logger);
-            HttpMessageHandler innerHandler = loggingHandler;
-            // CSRFTokenHandler csrfHandler = null;
-            // TODO: Enable when using csrf
-            // if (_csrfTokenStore != null)
-            //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
-
-            if (_settings == null)
-            {
-                _settings = new RefitSettings();
-                _settings.ContentSerializer = new NewtonsoftJsonContentSerializer(
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
-            }
-
-            var serviceHandler = new BearerTokenHandler(_bearerTokenStore, innerHandler);
+            var serviceHandler = BuildHandlerPipeline();
+            var settings = BuildRefitSettings();
+            
             return RestService.For<ITeamCityService>(
-                    new HttpClient(serviceHandler) { BaseAddress = new Uri(hostUrl) }, _settings);
+                new HttpClient(serviceHandler) 
+                { 
+                    BaseAddress = new Uri(hostUrl) 
+                },
+                settings);
         }
 
         private void ValidateProperties()
@@ -98,5 +104,43 @@ namespace TeamCityRestClientNet.Service
             if (_bearerTokenStore == null)
                 throw new ArgumentException("BearerTokenStore must be provided.");
         }
+
+        private HttpMessageHandler BuildHandlerPipeline()
+        {
+            if (_handlers == null || _handlers.Length == 0)
+            {
+                _handlers = new Func<HttpMessageHandler, HttpMessageHandler>[] 
+                {
+                    (innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler),
+                    //     // CSRFTokenHandler csrfHandler = null;
+                    //     // TODO: Enable when using csrf
+                    //     // if (_csrfTokenStore != null)
+                    //     //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
+                    (innerHandler) => new LoggingHandler(_logger)
+                };
+            }
+
+            HttpMessageHandler innerHandler = null;
+            int count = _handlers.Length;
+            for(int i = count - 1; i >= 0; i--)
+            {
+                innerHandler = _handlers[i](innerHandler);
+            }
+            return innerHandler;
+        }
+
+        private RefitSettings BuildRefitSettings() 
+        {
+            if (_settings == null)
+            {
+                _settings = new RefitSettings();
+                _settings.ContentSerializer = new NewtonsoftJsonContentSerializer(
+                    new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+            }
+            return _settings;
+        } 
     }
 }

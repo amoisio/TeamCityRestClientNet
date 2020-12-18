@@ -1,5 +1,4 @@
 using System;
-using BAMCIS.Util.Concurrent;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
@@ -68,10 +67,10 @@ namespace TeamCityRestClientNet.Domain
           var csrfTokenStore = CreateCSRFTokenStore(hostUrl, bearerTokenStore);
           
           var builder = new TeamCityServiceBuilder(logger)
-            .SetServerUrl(serverUrl.TrimEnd('/'), "")
-            .SetTimeout(TimeUnit.MINUTES, 2)
-            .SetBearerTokenStore(bearerTokenStore)
-            .SetCSRFTokenStore(csrfTokenStore);
+            .WithServerUrl(serverUrl.TrimEnd('/'), "")
+            .WithTimeout(120)
+            .WithBearerTokenStore(bearerTokenStore)
+            .WithCSRFTokenStore(csrfTokenStore);
 
           return new TeamCityServer(builder, logger);          
         }

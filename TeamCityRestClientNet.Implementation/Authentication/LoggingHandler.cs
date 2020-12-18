@@ -37,6 +37,8 @@ namespace TeamCityRestClientNet.Authentication
                 sb.Append($"{header.Key}:{String.Join(",", header.Value)} - ");
             }
             sb.AppendLine($"END.");
+            _logger.LogDebug(sb.ToString());
+            sb.Clear();
             if (request.Content != null)
             {
                 sb.Append($"Content ");
@@ -61,6 +63,8 @@ namespace TeamCityRestClientNet.Authentication
                 sb.Append($"{header.Key}:{String.Join(",", header.Value)} - ");
             }
             sb.AppendLine($"END.");
+            _logger.LogDebug(sb.ToString());
+            sb.Clear();
             if (response.Content != null)
             {
 

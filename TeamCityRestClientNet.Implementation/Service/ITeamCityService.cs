@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Refit;
@@ -8,6 +9,7 @@ namespace TeamCityRestClientNet.Service
     {
         [Headers("Accept: application/json")]
         [Get("/{**path}")]
+        [QueryUriFormat(UriFormat.Unescaped)]
         Task<T> Root<T>(string path);
 
         [Headers("Accept: application/json")]
