@@ -18,27 +18,43 @@ namespace TeamCityRestClientNet.Service
         private ICSRFTokenStore _csrfTokenStore;
         private long _timeout;
         private ILogger _logger;
+        private LogOptions _options;
         private RefitSettings _settings;
         private Func<HttpMessageHandler, HttpMessageHandler>[] _handlers;
-        private bool _withDefaultHandlers;
+        private bool _omitDefaultHandlers;
 
-        public TeamCityServiceBuilder(ILogger logger)
+        public TeamCityServiceBuilder()
         {
-            this._logger = logger ?? NullLogger.Instance;
+            this._logger = NullLogger.Instance;
+
         }
 
+        /// <summary>
+        /// TeamCity server (host) url. Eg. If TC REST API is at http://localhost:5000/custom/app/rest/
+        /// then ServerUrl should be "http://localhost:5000".
+        /// </summary>
         public string ServerUrl => _serverUrl;
+
+        /// <summary>
+        /// TeamCity REST API url base. E.g if TC REST API is at http://localhost:5000/custom/app/rest/
+        /// then ServerUrlBase should be "/custom".
+        /// </summary>
         public string ServerUrlBase => _serverUrlBase ?? "";
 
+        /// <summary>
+        /// Configure the url of the TeamCity REST API.
+        /// </summary>
+        /// <param name="serverUrl">TeamCity server (host) url.</param>
+        /// <param name="serverUrlBase">TeamCity REST API url base address.</param>
         public TeamCityServiceBuilder WithServerUrl(string serverUrl, string serverUrlBase)
         {
-            _serverUrl = serverUrl;
-            _serverUrlBase = serverUrlBase;
+            _serverUrl = serverUrl.TrimEnd('/');
+            _serverUrlBase = serverUrlBase?.TrimEnd('/');
             return this;
         }
 
         /// <summary>
-        /// Set query timeout.
+        /// Configure the query timeout used with the TeamCity REST API.
         /// </summary>
         /// <param name="timeout">Query timeout in seconds.</param>
         public TeamCityServiceBuilder WithTimeout(long timeout)
@@ -48,7 +64,7 @@ namespace TeamCityRestClientNet.Service
         }
 
         /// <summary>
-        /// Set the token store used for Bearer authentication.
+        /// Configure the store used for retrieving the bearer token.
         /// </summary>
         /// <param name="tokenStore">Token store.</param>
         public TeamCityServiceBuilder WithBearerTokenStore(IBearerTokenStore tokenStore)
@@ -58,7 +74,7 @@ namespace TeamCityRestClientNet.Service
         }
 
         /// <summary>
-        /// Set the token store used for CSRF tokens.
+        /// Configure the store used for retrieving CSRF tokens.
         /// </summary>
         /// <param name="csrfStore">Token store.</param>
         public TeamCityServiceBuilder WithCSRFTokenStore(ICSRFTokenStore csrfStore)
@@ -67,21 +83,51 @@ namespace TeamCityRestClientNet.Service
             return this;
         }
 
+        /// <summary>
+        /// Configure Refit settings. See <see cref="https://github.com/reactiveui/refit">.
+        /// </summary>
+        /// <param name="settings">Refit settings.</param>
         public TeamCityServiceBuilder WithRefitSettings(RefitSettings settings)
         {
             _settings = settings;
             return this;
         }
 
-        public TeamCityServiceBuilder WithDefaultHandlers()
+        /// <summary>
+        /// Configure the TeamCity client to not use default HTTP message handlers.
+        /// Default handlers do the following:
+        /// 1. Set the Bearer authentication token in every request.
+        /// 2. Set the CSRF token in POST, PUT and DELETE requests.
+        /// 3. Log every request and response with Trace level.
+        /// </summary>
+        public TeamCityServiceBuilder OmitDefaultHandlers()
         {
-            _withDefaultHandlers = true;
+            _omitDefaultHandlers = true;
             return this;
         }
 
+        /// <summary>
+        /// Configure the HTTP message handler used when processing TeamCity queries.
+        /// The provided handlers will be added to the HTTP message pipeline so that
+        /// they are executed after Bearer and CSRF token have been added but before 
+        /// request and response logging is done.
+        /// </summary>
+        /// <param name="handlers">Handlers to use.</param>
         public TeamCityServiceBuilder WithHandlers(params Func<HttpMessageHandler, HttpMessageHandler>[] handlers)
         {
             _handlers = handlers;
+            return this;
+        }
+
+        /// <summary>
+        /// Configure logging for TeamCity queries.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        /// <param name="options">Logging options.</param>
+        public TeamCityServiceBuilder WithLogging(ILogger logger, LogOptions options)
+        {
+            _logger = logger;
+            _options = options;
             return this;
         }
 
@@ -116,14 +162,13 @@ namespace TeamCityRestClientNet.Service
         private HttpMessageHandler BuildHandlerPipeline()
         {
             var handlers = new List<Func<HttpMessageHandler, HttpMessageHandler>>();
-            if (_withDefaultHandlers) 
+            if (!_omitDefaultHandlers) 
             {
                 handlers.Add((innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler));
                 // CSRFTokenHandler csrfHandler = null;
                 // TODO: Enable when using csrf
                 // if (_csrfTokenStore != null)
                 //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
-                handlers.Add((innerHandler) => new LoggingHandler(_logger));
             }
 
             if (_handlers != null)
@@ -131,13 +176,18 @@ namespace TeamCityRestClientNet.Service
                 handlers.AddRange(_handlers);
             }
 
+            if (!_omitDefaultHandlers)
+            {
+                handlers.Add((innerHandler) => new LoggingHandler(_logger));
+            }
+
             HttpMessageHandler innerHandler = null;
-            int count = _handlers.Length;
+            int count = handlers.Count;
             for(int i = count - 1; i >= 0; i--)
             {
                 innerHandler = _handlers[i](innerHandler);
             }
-            
+
             return innerHandler;
         }
 
