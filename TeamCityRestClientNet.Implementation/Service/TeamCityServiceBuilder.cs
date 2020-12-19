@@ -178,7 +178,7 @@ namespace TeamCityRestClientNet.Service
 
             if (!_omitDefaultHandlers)
             {
-                handlers.Add((innerHandler) => new LoggingHandler(_logger));
+                handlers.Add((innerHandler) => new LoggingHandler(_logger, _options));
             }
 
             HttpMessageHandler innerHandler = null;
