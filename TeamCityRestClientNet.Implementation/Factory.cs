@@ -66,12 +66,11 @@ namespace TeamCityRestClientNet.Domain
           var bearerTokenStore = new SingleBearerTokenStore(token);
           var csrfTokenStore = CreateCSRFTokenStore(hostUrl, bearerTokenStore);
           
-          var builder = new TeamCityServiceBuilder(logger)
-            .WithServerUrl(serverUrl.TrimEnd('/'), "")
-            .WithTimeout(120)
+          var builder = new TeamCityServiceBuilder()
+            .WithServerUrl(serverUrl)
             .WithBearerTokenStore(bearerTokenStore)
             .WithCSRFTokenStore(csrfTokenStore)
-            .WithDefaultHandlers();
+            .WithLogging(logger);
 
           return new TeamCityServer(builder, logger);          
         }

@@ -46,7 +46,7 @@ namespace TeamCityRestClientNet.Service
         /// </summary>
         /// <param name="serverUrl">TeamCity server (host) url.</param>
         /// <param name="serverUrlBase">TeamCity REST API url base address.</param>
-        public TeamCityServiceBuilder WithServerUrl(string serverUrl, string serverUrlBase)
+        public TeamCityServiceBuilder WithServerUrl(string serverUrl, string serverUrlBase = "")
         {
             _serverUrl = serverUrl.TrimEnd('/');
             _serverUrlBase = serverUrlBase?.TrimEnd('/');
@@ -124,10 +124,10 @@ namespace TeamCityRestClientNet.Service
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="options">Logging options.</param>
-        public TeamCityServiceBuilder WithLogging(ILogger logger, LogOptions options)
+        public TeamCityServiceBuilder WithLogging(ILogger logger, LogOptions options = null)
         {
             _logger = logger;
-            _options = options;
+            _options = options ?? new LogOptions();
             return this;
         }
 
@@ -141,11 +141,11 @@ namespace TeamCityRestClientNet.Service
 
             var serviceHandler = BuildHandlerPipeline();
             var settings = BuildRefitSettings();
-            
+
             return RestService.For<ITeamCityService>(
-                new HttpClient(serviceHandler) 
-                { 
-                    BaseAddress = new Uri(hostUrl) 
+                new HttpClient(serviceHandler)
+                {
+                    BaseAddress = new Uri(hostUrl)
                 },
                 settings);
         }
@@ -153,16 +153,22 @@ namespace TeamCityRestClientNet.Service
         private void ValidateProperties()
         {
             if (String.IsNullOrWhiteSpace(_serverUrl))
-                throw new ArgumentException("ServerUrl must be provided.");
+                throw new InvalidOperationException("Server url must be provided.");
 
-            if (_bearerTokenStore == null)
-                throw new ArgumentException("BearerTokenStore must be provided.");
+            if (!_omitDefaultHandlers)
+            {
+                if (_bearerTokenStore == null)
+                    throw new InvalidOperationException("Bearer token store must be provided.");
+
+                if (_csrfTokenStore == null)
+                    throw new InvalidOperationException("CSRF token store must be provided.");
+            }
         }
 
         private HttpMessageHandler BuildHandlerPipeline()
         {
             var handlers = new List<Func<HttpMessageHandler, HttpMessageHandler>>();
-            if (!_omitDefaultHandlers) 
+            if (!_omitDefaultHandlers)
             {
                 handlers.Add((innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler));
                 // CSRFTokenHandler csrfHandler = null;
@@ -183,7 +189,7 @@ namespace TeamCityRestClientNet.Service
 
             HttpMessageHandler innerHandler = null;
             int count = handlers.Count;
-            for(int i = count - 1; i >= 0; i--)
+            for (int i = count - 1; i >= 0; i--)
             {
                 innerHandler = _handlers[i](innerHandler);
             }
@@ -191,7 +197,7 @@ namespace TeamCityRestClientNet.Service
             return innerHandler;
         }
 
-        private RefitSettings BuildRefitSettings() 
+        private RefitSettings BuildRefitSettings()
         {
             if (_settings == null)
             {
@@ -203,6 +209,6 @@ namespace TeamCityRestClientNet.Service
                     });
             }
             return _settings;
-        } 
+        }
     }
 }
