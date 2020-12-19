@@ -191,7 +191,7 @@ namespace TeamCityRestClientNet.Service
             int count = handlers.Count;
             for (int i = count - 1; i >= 0; i--)
             {
-                innerHandler = _handlers[i](innerHandler);
+                innerHandler = handlers[i](innerHandler);
             }
 
             return innerHandler;

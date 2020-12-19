@@ -75,6 +75,9 @@ namespace TeamCityRestClientNet.Domain
           return new TeamCityServer(builder, logger);          
         }
 
+        public static TeamCity TokenAuth(TeamCityServiceBuilder builder, ILogger logger)
+          => new TeamCityServer(builder, logger);
+
         private static ICSRFTokenStore CreateCSRFTokenStore(string hostUrl, IBearerTokenStore bearerTokenStore){
             var authService = RestService.For<ITeamCityAuthService>(
                 new HttpClient(new BearerTokenHandler(bearerTokenStore))
