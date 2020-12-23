@@ -9,8 +9,6 @@ namespace TeamCityRestClientNet.Api
     /// </summary>
     public abstract class TeamCity
     {
-        private const string factoryFQN = "TeamCityRestClientNet.TeamCityInstanceFactory";
-        private bool disposedValue;
         public abstract Task<IBuild> Build(BuildId id);
         public abstract Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number);
         public abstract IBuildAgentLocator BuildAgents { get; }
