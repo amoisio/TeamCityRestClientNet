@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
-    <PackageReference Include="TimeUnit" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
