@@ -18,17 +18,26 @@ namespace TeamCityRestClientNet
         // TODO: Does this need to be configurable?
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMddTHHmmsszz00";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
-        private readonly Lazy<ITeamCityService> _service;
-        public ITeamCityService Service => _service.Value;
+        public ITeamCityService Service { get; }
         private readonly ILogger _logger;
-        internal TeamCityServer(TeamCityServiceBuilder serviceBuilder, ILogger logger = null)
-        {
-            if (serviceBuilder == null)
-                throw new ArgumentNullException(nameof(serviceBuilder));
 
-            this.ServerUrl = serviceBuilder.ServerUrl;
-            this.ServerUrlBase = serviceBuilder.ServerUrlBase;
-            this._service = new Lazy<ITeamCityService>(() => serviceBuilder.Build());
+        internal TeamCityServer(
+            string serverUrl,
+            string serverUrlBase,
+            ITeamCityService service,
+            ILogger logger = null)
+        {
+            if (String.IsNullOrWhiteSpace(serverUrl))
+                throw new ArgumentNullException(nameof(serverUrl));
+
+            this.ServerUrl = serverUrl;
+
+            if (String.IsNullOrWhiteSpace(serverUrlBase))
+                this.ServerUrlBase = string.Empty;
+            else 
+                this.ServerUrlBase = serverUrlBase;
+
+            this.Service = service ?? throw new ArgumentNullException(nameof(service));
             this._logger = logger ?? NullLogger.Instance;
         }
 
@@ -65,7 +74,7 @@ namespace TeamCityRestClientNet
             => await BuildConfiguration(id.stringId).ConfigureAwait(false);
 
         public override IBuildQueue BuildQueue => new BuildQueue(this);
-        
+
         public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
             => new BuildQueue(this).QueuedBuilds(projectId);
 
@@ -74,7 +83,7 @@ namespace TeamCityRestClientNet
         /// </summary>
         /// <returns>Locator used for interacting with builds.</returns>
         public override IBuildLocator Builds => new BuildLocator(this);
-        
+
         // TODO: This seems suspect...
         public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
         {
@@ -117,7 +126,7 @@ namespace TeamCityRestClientNet
         /// </summary>
         /// <param name="id">Id of the user to retrieve.</param>
         /// <returns>Matching user. Throws a Refit.ApiException if user not found.</returns>
-        public override async Task<IUser> User(UserId id) 
+        public override async Task<IUser> User(UserId id)
         {
             _logger.LogDebug($"Retrieving user id:{id}.");
             return await Domain.User.Create(id.stringId, this).ConfigureAwait(false);
