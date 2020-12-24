@@ -1,7 +1,6 @@
-using System;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Domain;
+using TeamCityRestClientNet.Service;
 using Xunit;
 
 namespace TeamCityRestClientNet.Tests
@@ -32,9 +31,37 @@ namespace TeamCityRestClientNet.Tests
             });
 
             var logger = loggerFactory.CreateLogger("TeamCity.Tests");
-            this.TeamCity = TeamCityInstanceFactory.TokenAuth(serverUrl, _token, logger);
+            this.TeamCity = TeamCityServerBuilder.CreateTokenAuthInstance(serverUrl, _token, logger);
         }
 
         public TeamCity TeamCity { get;}
+    }
+
+    public class TestFixture
+    {
+        public readonly string serverUrl = "http://localhost:5000";
+        readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
+
+        public TestFixture()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("TeamCity.Tests", LogLevel.Trace)
+                    .AddConsole();
+            });
+
+            var logger = loggerFactory.CreateLogger("TeamCity.Tests");
+
+            this.TeamCity = new TeamCityServerBuilder()
+              .WithServerUrl(serverUrl)
+              .WithBearerAuthentication(_token)
+              .WithLogging(logger)
+              .Build();
+        }
+
+        public TeamCity TeamCity { get; }
     }
 }
