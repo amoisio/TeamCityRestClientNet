@@ -23,6 +23,24 @@ namespace TeamCityRestClientNet.Service
         private RefitSettings _settings;
         private Func<HttpMessageHandler, HttpMessageHandler>[] _handlers;
 
+        /**
+        * Creates token based connection.
+        * TeamCity access token generated on My Settings & Tools | Access Tokens
+        *
+        * @param serverUrl HTTP or HTTPS URL to TeamCity server
+        * @param token token
+        *
+        * see https://www.jetbrains.com/help/teamcity/rest-api.html#RESTAPI-RESTAuthentication
+        */
+        public static TeamCity CreateTokenAuthInstance(string serverUrl, string token, ILogger logger)
+        {
+            return new TeamCityServerBuilder()
+              .WithServerUrl(serverUrl)
+              .WithBearerAuthentication(token)
+              .WithLogging(logger)
+              .Build();
+        }
+
         /// <summary>
         /// TeamCity server (host) url. Eg. If TC REST API is at http://localhost:5000/custom/app/rest/
         /// then ServerUrl should be "http://localhost:5000".

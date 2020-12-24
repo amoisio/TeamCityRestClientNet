@@ -6,18 +6,6 @@ namespace TeamCityRestClientNet.Authentication
     {
         Task<string> GetToken();
     }
-
-    public interface IBearerTokenStore : ITokenStore { }
-
-    public class SingleBearerTokenStore : IBearerTokenStore
-    {
-        private readonly string _token;
-
-        public SingleBearerTokenStore(string token) => _token = token;
-
-        public async Task<string> GetToken() => await Task.FromResult(_token);
-    }
-
     public interface ICSRFTokenStore : ITokenStore { }
 
     public class TeamCityCSRFTokenStore : ICSRFTokenStore
