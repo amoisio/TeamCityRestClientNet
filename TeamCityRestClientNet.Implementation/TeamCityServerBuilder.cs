@@ -15,14 +15,13 @@ namespace TeamCityRestClientNet.Service
     {
         private string _serverUrl;
         private string _serverUrlBase;
-        private IBearerTokenStore _bearerTokenStore;
+        private string _bearerToken;
         private ICSRFTokenStore _csrfTokenStore;
         private long _timeout;
         private ILogger _logger;
         private LogOptions _options;
         private RefitSettings _settings;
         private Func<HttpMessageHandler, HttpMessageHandler>[] _handlers;
-        private bool _omitDefaultHandlers;
 
         /// <summary>
         /// TeamCity server (host) url. Eg. If TC REST API is at http://localhost:5000/custom/app/rest/
@@ -52,27 +51,28 @@ namespace TeamCityRestClientNet.Service
         /// Configure the query timeout used with the TeamCity REST API.
         /// </summary>
         /// <param name="timeout">Query timeout in seconds.</param>
-        public TeamCityServerBuilder WithTimeout(long timeout)
+        public TeamCityServerBuilder WithQueryTimeout(long timeout)
         {
             _timeout = timeout;
             return this;
         }
 
         /// <summary>
-        /// Configure the store used for retrieving the bearer token.
+        /// Configure the token used for Bearer token authentication.
         /// </summary>
-        /// <param name="tokenStore">Token store.</param>
-        public TeamCityServerBuilder WithBearerTokenStore(IBearerTokenStore tokenStore)
+        /// <param name="bearerToken">Bearer token.</param>
+        public TeamCityServerBuilder WithBearerAuthentication(string bearerToken)
         {
-            _bearerTokenStore = tokenStore;
+            _bearerToken = bearerToken;
             return this;
         }
 
         /// <summary>
-        /// Configure the store used for retrieving CSRF tokens.
+        /// Configure the store used for retrieving CSRF tokens for state altering HTTP calls such as
+        /// POST, PUT and DELETE.
         /// </summary>
         /// <param name="csrfStore">Token store.</param>
-        public TeamCityServerBuilder WithCSRFTokenStore(ICSRFTokenStore csrfStore)
+        public TeamCityServerBuilder WithCSRF(ICSRFTokenStore csrfStore)
         {
             _csrfTokenStore = csrfStore;
             return this;
@@ -85,19 +85,6 @@ namespace TeamCityRestClientNet.Service
         public TeamCityServerBuilder WithRefitSettings(RefitSettings settings)
         {
             _settings = settings;
-            return this;
-        }
-
-        /// <summary>
-        /// Configure the TeamCity client to not use default HTTP message handlers.
-        /// Default handlers do the following:
-        /// 1. Set the Bearer authentication token in every request.
-        /// 2. Set the CSRF token in POST, PUT and DELETE requests.
-        /// 3. Log every request and response with Trace level.
-        /// </summary>
-        public TeamCityServerBuilder OmitDefaultHandlers()
-        {
-            _omitDefaultHandlers = true;
             return this;
         }
 
@@ -150,38 +137,23 @@ namespace TeamCityRestClientNet.Service
         {
             if (String.IsNullOrWhiteSpace(_serverUrl))
                 throw new InvalidOperationException("Server url must be provided.");
-
-            if (!_omitDefaultHandlers)
-            {
-                if (_bearerTokenStore == null)
-                    throw new InvalidOperationException("Bearer token store must be provided.");
-
-                if (_csrfTokenStore == null)
-                    throw new InvalidOperationException("CSRF token store must be provided.");
-            }
         }
 
         private HttpMessageHandler BuildHandlerPipeline()
         {
             var handlers = new List<Func<HttpMessageHandler, HttpMessageHandler>>();
-            if (!_omitDefaultHandlers)
-            {
-                handlers.Add((innerHandler) => new BearerTokenHandler(_bearerTokenStore, innerHandler));
-                // CSRFTokenHandler csrfHandler = null;
-                // TODO: Enable when using csrf
-                // if (_csrfTokenStore != null)
-                //     csrfHandler = new CSRFTokenHandler(_csrfTokenStore);
-            }
+
+            if (!String.IsNullOrWhiteSpace(_bearerToken))
+                handlers.Add((innerHandler) => new BearerAuthenticationHandler(_serverUrl, _bearerToken, innerHandler));
+
+            if (_csrfTokenStore != null)
+                handlers.Add((innerHandler) => new CSRFTokenHandler(_csrfTokenStore, innerHandler));
 
             if (_handlers != null)
-            {
                 handlers.AddRange(_handlers);
-            }
 
-            if (!_omitDefaultHandlers)
-            {
+            if (_logger != null)
                 handlers.Add((innerHandler) => new LoggingHandler(_logger, _options));
-            }
 
             HttpMessageHandler innerHandler = null;
             int count = handlers.Count;
@@ -189,7 +161,6 @@ namespace TeamCityRestClientNet.Service
             {
                 innerHandler = handlers[i](innerHandler);
             }
-
             return innerHandler;
         }
 
