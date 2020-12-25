@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Authentication;
+using TeamCityRestClientNet.Service;
 
-namespace TeamCityRestClientNet.Service
+namespace TeamCityRestClientNet
 {
     public class TeamCityServerBuilder
     {

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Service;
@@ -55,13 +57,29 @@ namespace TeamCityRestClientNet.Tests
 
             var logger = loggerFactory.CreateLogger("TeamCity.Tests");
 
+            this.Handler = new LoopbackHandler();
             this.TeamCity = new TeamCityServerBuilder()
               .WithServerUrl(serverUrl)
               .WithBearerAuthentication(_token)
               .WithLogging(logger)
+              .WithHandlers((innerHandler) => this.Handler)
               .Build();
         }
 
         public TeamCity TeamCity { get; }
+
+        public LoopbackHandler Handler { get; }
+
+        public async Task CallSafe(Func<Task> fn)
+        {
+            try
+            {
+                await fn();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
     }
 }
