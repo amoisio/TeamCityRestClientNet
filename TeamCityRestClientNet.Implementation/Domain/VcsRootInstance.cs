@@ -1,5 +1,5 @@
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Domain

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Domain
 {

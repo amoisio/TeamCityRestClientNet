@@ -1,7 +1,7 @@
 using System;
 using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Tools;
 
 namespace TeamCityRestClientNet.Domain

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Tools;
+using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {

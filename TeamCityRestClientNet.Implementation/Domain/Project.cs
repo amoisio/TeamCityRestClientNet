@@ -5,7 +5,7 @@ using System.Xml;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Extensions;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using System.Xml.Linq;
 using Nito.AsyncEx;
 

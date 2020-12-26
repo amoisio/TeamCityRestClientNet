@@ -1,6 +1,5 @@
 using System;
-
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Domain
 {

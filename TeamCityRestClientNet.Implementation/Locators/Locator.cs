@@ -1,5 +1,5 @@
 using TeamCityRestClientNet.Domain;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Locators
 {

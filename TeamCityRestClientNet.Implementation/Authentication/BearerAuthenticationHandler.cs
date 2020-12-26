@@ -18,6 +18,7 @@ namespace TeamCityRestClientNet.Authentication
            : base(innerHandler ?? new HttpClientHandler())
         {
             _bearerToken = token ?? throw new ArgumentNullException(nameof(token));
+            _origin = origin ?? throw new ArgumentNullException(nameof(origin));
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Extensions;
-using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Domain
 {

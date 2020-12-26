@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Domain
 {

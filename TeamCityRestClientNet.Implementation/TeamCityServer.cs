@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Locators;

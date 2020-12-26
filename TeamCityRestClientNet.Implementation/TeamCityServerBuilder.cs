@@ -7,6 +7,7 @@ using Newtonsoft.Json.Serialization;
 using Refit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Authentication;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet

@@ -1,6 +1,6 @@
 using System;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.Tools;
 using Nito.AsyncEx;

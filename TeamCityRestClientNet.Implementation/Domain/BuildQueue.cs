@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Extensions;
 using System.Linq;

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Tools;
 

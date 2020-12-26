@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Service

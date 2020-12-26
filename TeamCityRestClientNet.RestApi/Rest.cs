@@ -2,29 +2,29 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using TeamCityRestClientNet.Api;
 
-namespace TeamCityRestClientNet.Service
+namespace TeamCityRestClientNet.RestApi
 {
-    class ProjectsDto
+    public class ProjectsDto
     {
         public List<ProjectDto> Project { get; set; } = new List<ProjectDto>();
     }
 
-    class BuildAgentsDto
+    public class BuildAgentsDto
     {
         public List<BuildAgentDto> Agent { get; set; } = new List<BuildAgentDto>();
     }
 
-    class BuildAgentPoolsDto
+    public class BuildAgentPoolsDto
     {
         public List<BuildAgentPoolDto> AgentPool { get; set; } = new List<BuildAgentPoolDto>();
     }
 
-    class ArtifactFileListDto
+    public class ArtifactFileListDto
     {
         public List<ArtifactFileDto> File { get; set; } = new List<ArtifactFileDto>();
     }
 
-    class ArtifactFileDto
+    public class ArtifactFileDto
     {
         public string Name { get; set; }
         public string FullName { get; set; }
@@ -34,12 +34,12 @@ namespace TeamCityRestClientNet.Service
             = $"{nameof(FullName)},{nameof(Name)},${nameof(Size)},${nameof(ModificationTime)}";
     }
 
-    class IdDto
+    public class IdDto
     {
         public string Id { get; set; }
     }
 
-    class VcsRootListDto
+    public class VcsRootListDto
     {
         public string Href { get; set; }
         public string NextHref { get; set; }
@@ -48,30 +48,30 @@ namespace TeamCityRestClientNet.Service
         public List<VcsRootDto> VcsRoot { get; set; }
     }
 
-    class VcsRootDto : IdDto
+    public class VcsRootDto : IdDto
     {
         public string Name { get; set; }
         public NameValuePropertiesDto Properties { get; set; }
     }
 
-    class VcsRootInstanceDto
+    public class VcsRootInstanceDto
     {
         public string VcsRootId { get; set; }
         public string Name { get; set; }
     }
 
-    class BuildListDto
+    public class BuildListDto
     {
         public string NextHref { get; set; }
         public List<BuildDto> Build { get; set; } = new List<BuildDto>();
     }
 
-    class UserListDto
+    public class UserListDto
     {
         public List<UserDto> User { get; set; } = new List<UserDto>();
     }
 
-    class BuildDto : IdDto
+    public class BuildDto : IdDto
     {
         public string BuildTypeId { get; set; }
         public BuildCanceledDto CanceledInfo { get; set; }
@@ -98,7 +98,7 @@ namespace TeamCityRestClientNet.Service
         public BuildListDto SnapshotDependencies { get; set; }
     }
 
-    class BuildRunningInfoDto
+    public class BuildRunningInfoDto
     {
         public int PercentageComplete { get; set; } = 0;
         public long ElapsedSeconds { get; set; } = 0;
@@ -107,7 +107,7 @@ namespace TeamCityRestClientNet.Service
         public bool ProbablyHanging { get; set; } = false;
     }
 
-    class BuildTypeDto : IdDto
+    public class BuildTypeDto : IdDto
     {
         public string Name { get; set; }
         public string ProjectId { get; set; }
@@ -115,25 +115,25 @@ namespace TeamCityRestClientNet.Service
         public BuildTypeSettingsDto Settings { get; set; }
     }
 
-    class BuildTypeSettingsDto
+    public class BuildTypeSettingsDto
     {
         public List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
     }
 
-    class BuildProblemDto
+    public class BuildProblemDto
     {
         public string Id { get; set; }
         public string Type { get; set; }
         public string Identity { get; set; }
     }
 
-    class BuildProblemOccurrencesDto
+    public class BuildProblemOccurrencesDto
     {
         public string NextHref { get; set; }
         public List<BuildProblemOccurrenceDto> ProblemOccurrence { get; set; } = new List<BuildProblemOccurrenceDto>();
     }
 
-    class BuildProblemOccurrenceDto
+    public class BuildProblemOccurrenceDto
     {
         public string Details { get; set; }
         public string AdditionalData { get; set; }
@@ -141,22 +141,22 @@ namespace TeamCityRestClientNet.Service
         public BuildDto Build { get; set; }
     }
 
-    class BuildTypesDto
+    public class BuildTypesDto
     {
         public List<BuildTypeDto> BuildType { get; set; } = new List<BuildTypeDto>();
     }
 
-    class TagDto
+    public class TagDto
     {
         public string Name { get; set; }
     }
 
-    class TagsDto
+    public class TagsDto
     {
         public List<TagDto> Tag { get; set; } = new List<TagDto>();
     }
 
-    class TriggerBuildRequestDto
+    public class TriggerBuildRequestDto
     {
         public string BranchName { get; set; }
         public bool? Personal { get; set; }
@@ -170,31 +170,31 @@ namespace TeamCityRestClientNet.Service
         //    </lastChanges>
     }
 
-    class TriggeringOptionsDto
+    public class TriggeringOptionsDto
     {
         public bool? CleanSources { get; set; }
         public bool? RebuildAllDependencies { get; set; }
         public bool? QueueAtTop { get; set; }
     }
 
-    class CommentDto
+    public class CommentDto
     {
         public string Text { get; set; }
     }
 
-    class TriggerDto
+    public class TriggerDto
     {
         public string Id { get; set; }
         public string Type { get; set; }
         public ParametersDto Properties { get; set; } = new ParametersDto();
     }
 
-    class TriggersDto
+    public class TriggersDto
     {
         public List<TriggerDto> Trigger { get; set; } = new List<TriggerDto>();
     }
 
-    class ArtifactDependencyDto : IdDto
+    public class ArtifactDependencyDto : IdDto
     {
         public string Type { get; set; }
         public bool? Disabled { get; set; } = false;
@@ -203,12 +203,12 @@ namespace TeamCityRestClientNet.Service
         public BuildTypeDto SourceBuildType { get; set; } = new BuildTypeDto();
     }
 
-    class ArtifactDependenciesDto
+    public class ArtifactDependenciesDto
     {
         public List<ArtifactDependencyDto> ArtifactDependency { get; set; } = new List<ArtifactDependencyDto>();
     }
 
-    class ProjectDto : IdDto
+    public class ProjectDto : IdDto
     {
         public string Name { get; set; }
         public string ParentProjectId { get; set; }
@@ -218,7 +218,7 @@ namespace TeamCityRestClientNet.Service
         public BuildTypesDto BuildTypes { get; set; } = new BuildTypesDto();
     }
 
-    class BuildAgentDto : IdDto
+    public class BuildAgentDto : IdDto
     {
         public string Name { get; set; }
         public bool? Connected { get; set; }
@@ -233,19 +233,19 @@ namespace TeamCityRestClientNet.Service
         public BuildDto Build { get; set; }
     }
 
-    class BuildAgentPoolDto : IdDto
+    public class BuildAgentPoolDto : IdDto
     {
         public string Name { get; set; }
         public ProjectsDto Projects { get; set; } = new ProjectsDto();
         public BuildAgentsDto Agents { get; set; } = new BuildAgentsDto();
     }
 
-    class ChangesDto
+    public class ChangesDto
     {
         public List<ChangeDto> Change { get; set; } = new List<ChangeDto>();
     }
 
-    class ChangeDto : IdDto
+    public class ChangeDto : IdDto
     {
         public string Version { get; set; }
         public UserDto User { get; set; }
@@ -255,14 +255,14 @@ namespace TeamCityRestClientNet.Service
         public VcsRootInstanceDto VcsRootInstance { get; set; }
     }
 
-    class UserDto : IdDto
+    public class UserDto : IdDto
     {
         public string Username { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
     }
 
-    class ParametersDto
+    public class ParametersDto
     {
         public List<ParameterDto> Property { get; set; } = new List<ParameterDto>();
 
@@ -273,7 +273,7 @@ namespace TeamCityRestClientNet.Service
         }
     }
 
-    class ParameterDto
+    public class ParameterDto
     {
         public string Name { get; set; }
         public string Value { get; set; }
@@ -286,103 +286,103 @@ namespace TeamCityRestClientNet.Service
         }
     }
 
-    class PinInfoDto
+    public class PinInfoDto
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
     }
 
-    class TriggeredDto
+    public class TriggeredDto
     {
         public UserDto User { get; set; }
         public BuildDto Build { get; set; }
     }
 
-    class BuildCommentDto
+    public class BuildCommentDto
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
         public string Text { get; set; }
     }
 
-    class EnabledInfoCommentDto
+    public class EnabledInfoCommentDto
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
         public string Text { get; set; }
     }
 
-    class EnabledInfoDto
+    public class EnabledInfoDto
     {
         public EnabledInfoCommentDto Comment { get; set; }
     }
 
-    class AuthorizedInfoCommentDto
+    public class AuthorizedInfoCommentDto
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
         public string Text { get; set; }
     }
 
-    class AuthorizedInfoDto
+    public class AuthorizedInfoDto
     {
         public AuthorizedInfoCommentDto Comment { get; set; }
     }
 
-    class BuildCanceledDto
+    public class BuildCanceledDto
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
         public string Text { get; set; }
     }
 
-    class TriggeredBuildDto
+    public class TriggeredBuildDto
     {
         public int? Id { get; set; }
         public string BuildTypeId { get; set; }
     }
 
-    class RevisionsDto
+    public class RevisionsDto
     {
         public List<RevisionDto> Revision { get; set; } = new List<RevisionDto>();
     }
 
-    class RevisionDto
+    public class RevisionDto
     {
         public string Version { get; set; }
         public string VcsBranchName { get; set; }
         public VcsRootInstanceDto VcsRootInstance { get; set; }
     }
 
-    class NameValuePropertiesDto
+    public class NameValuePropertiesDto
     {
         public List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
     }
 
-    class NameValuePropertyDto
+    public class NameValuePropertyDto
     {
         public string Name { get; set; }
         public string Value { get; set; }
     }
 
-    class BuildCancelRequestDto
+    public class BuildCancelRequestDto
     {
         public string Comment { get; set; } = "";
         public bool ReaddIntoQueue { get; set; } = false;
     }
 
-    class TestOccurrencesDto
+    public class TestOccurrencesDto
     {
         public string NextHref { get; set; }
         public List<TestOccurrenceDto> TestOccurrence { get; set; } = new List<TestOccurrenceDto>();
     }
 
-    class TestDto
+    public class TestDto
     {
         public string Id { get; set; }
     }
 
-    class TestOccurrenceDto
+    public class TestOccurrenceDto
     {
         public string Name { get; set; }
         public string Status { get; set; }
@@ -400,12 +400,12 @@ namespace TeamCityRestClientNet.Service
         public const string FILTER = "testOccurrence(name,status,ignored,muted,currentlyMuted,newFailure,duration,ignoreDetails,details,firstFailed(id),nextFixed(id),build(id),test(id))";
     }
 
-    class InvestigationListDto
+    public class InvestigationListDto
     {
         public List<InvestigationDto> Investigation { get; set; } = new List<InvestigationDto>();
     }
 
-    class InvestigationDto : IdDto
+    public class InvestigationDto : IdDto
     {
         public InvestigationState? State { get; set; }
         public UserDto Assignee { get; set; }
@@ -415,39 +415,39 @@ namespace TeamCityRestClientNet.Service
         public InvestigationTargetDto Target { get; set; }
     }
 
-    class InvestigationResolutionDto
+    public class InvestigationResolutionDto
     {
         public string Type { get; set; }
     }
 
-    class AssignmentDto
+    public class AssignmentDto
     {
         public UserDto User { get; set; }
         public string Text { get; set; }
         public string Timestamp { get; set; }
     }
 
-    class InvestigationTargetDto
+    public class InvestigationTargetDto
     {
         public TestUnderInvestigationListDto Tests { get; set; }
         public ProblemUnderInvestigationListDto Problems { get; set; }
         public bool? AnyProblem { get; set; }
     }
 
-    class TestUnderInvestigationListDto
+    public class TestUnderInvestigationListDto
     {
         public int? Count { get; set; }
         public List<TestDto> Test { get; set; } = new List<TestDto>();
 
     }
 
-    class ProblemUnderInvestigationListDto
+    public class ProblemUnderInvestigationListDto
     {
         public int? Count { get; set; }
         public List<BuildProblemDto> Problem { get; set; } = new List<BuildProblemDto>();
     }
 
-    class InvestigationScopeDto
+    public class InvestigationScopeDto
     {
         public BuildTypesDto BuildTypes { get; set; }
         public ProjectDto Project { get; set; }

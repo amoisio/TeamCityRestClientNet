@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tools;
 using TeamCityRestClientNet.Extensions;
+using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Service;
 using TeamCityRestClientNet.Domain;
 

@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Refit;
 
-namespace TeamCityRestClientNet.Service
+namespace TeamCityRestClientNet.RestApi
 {
-    interface ITeamCityService
+    public interface ITeamCityService
     {
         [Headers("Accept: application/json")]
         [Get("/{**path}")]

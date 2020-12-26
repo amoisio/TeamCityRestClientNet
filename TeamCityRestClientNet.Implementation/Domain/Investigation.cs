@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Nito.AsyncEx;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Service;
+using TeamCityRestClientNet.RestApi;
 using System.Linq;
 
 namespace TeamCityRestClientNet.Domain
