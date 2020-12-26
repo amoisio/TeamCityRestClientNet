@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TeamCityRestClientNet.Api;
+using TeamCityRestClientNet.FakeServer;
 using TeamCityRestClientNet.RestApi;
 using Xunit;
 
@@ -69,17 +70,5 @@ namespace TeamCityRestClientNet.Tests
         public TeamCity TeamCity { get; }
 
         public LoopbackHandler Handler { get; }
-
-        public async Task CallSafe(Func<Task> fn)
-        {
-            try
-            {
-                await fn();
-            }
-            catch (Exception)
-            {
-
-            }
-        }
     }
 }

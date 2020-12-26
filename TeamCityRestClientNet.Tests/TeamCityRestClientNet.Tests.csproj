@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TeamCityRestClientNet.Api\TeamCityRestClientNet.Api.csproj" />
     <ProjectReference Include="..\TeamCityRestClientNet.RestApi\TeamCityRestClientNet.RestApi.csproj" />
+    <ProjectReference Include="..\TeamCityRestClientNet.FakeServer\TeamCityRestClientNet.FakeServer.csproj" />
     <ProjectReference Include="..\TeamCityRestClientNet.Implementation\TeamCityRestClientNet.Implementation.csproj" />
   </ItemGroup>
 

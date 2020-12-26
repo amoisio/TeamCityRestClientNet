@@ -4,6 +4,7 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using System.Net.Http;
 using System.Linq;
+using TeamCityRestClientNet.FakeServer;
 
 namespace TeamCityRestClientNet.Users
 {
@@ -27,7 +28,7 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task By_id_generates_a_call_to_users_end_point_with_id_locator()
         {
-            await _fixture.CallSafe(async () => await _teamCity.User(new UserId("1")));
+            var user = await _teamCity.User(new UserId("1"));
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
@@ -38,22 +39,21 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task By_username_generates_a_call_to_users_end_point_with_username_locator()
         {
-            await _fixture.CallSafe(async () => await _teamCity.User("jane.doe"));
+            var user = await _teamCity.User("jadoe");
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
             Assert.Contains(ApiCall.Locators,
-                locator => locator.Key == "username" && locator.Value == "jane.doe");
+                locator => locator.Key == "username" && locator.Value == "jadoe");
         }
 
         [Fact]
         public async Task By_username_generates_a_call_to_users_end_point_with_username_locator2()
         {
-            await _fixture.CallSafe(async () => await _teamCity.Users().ToListAsync());
+            var users = await _teamCity.Users().ToListAsync();
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
         }
-
     }
 }
