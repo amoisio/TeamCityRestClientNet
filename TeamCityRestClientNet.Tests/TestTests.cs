@@ -3,6 +3,7 @@ using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using System.Net.Http;
+using System.Linq;
 
 namespace TeamCityRestClientNet.Users
 {
@@ -43,6 +44,15 @@ namespace TeamCityRestClientNet.Users
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
             Assert.Contains(ApiCall.Locators,
                 locator => locator.Key == "username" && locator.Value == "jane.doe");
+        }
+
+        [Fact]
+        public async Task By_username_generates_a_call_to_users_end_point_with_username_locator2()
+        {
+            await _fixture.CallSafe(async () => await _teamCity.Users().ToListAsync());
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
         }
 
     }
