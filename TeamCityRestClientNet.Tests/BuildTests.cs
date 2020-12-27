@@ -9,9 +9,9 @@ using TeamCityRestClientNet.Tools;
 namespace TeamCityRestClientNet.Builds
 {
     [Collection("TeamCity Collection")]
-    public class BuildList : TestsBase
+    public class BuildList : _TestsBase
     {
-        public BuildList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task By_default_contains_all_builds_from_default_branch()
@@ -200,9 +200,9 @@ namespace TeamCityRestClientNet.Builds
     }
 
     [Collection("TeamCity Collection")]
-    public class NewBuild : TestsBase
+    public class NewBuild : _TestsBase
     {
-        public NewBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         private BuildState[] _buildingStates = new BuildState[]
         {
@@ -236,9 +236,9 @@ namespace TeamCityRestClientNet.Builds
     }
 
     [Collection("TeamCity Collection")]
-    public class RunningBuild : TestsBase
+    public class RunningBuild : _TestsBase
     {
-        public RunningBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public RunningBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_cancelled()
@@ -259,9 +259,9 @@ namespace TeamCityRestClientNet.Builds
     }
 
     [Collection("TeamCity Collection")]
-    public class ExistingBuild : TestsBase
+    public class ExistingBuild : _TestsBase
     {
-        public ExistingBuild(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_as_latest_build()

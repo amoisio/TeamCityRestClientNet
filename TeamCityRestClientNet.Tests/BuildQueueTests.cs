@@ -7,9 +7,9 @@ using System.Linq;
 namespace TeamCityRestClientNet.Tests
 {
     [Collection("TeamCity Collection")]
-    public class BuildQueueTests : TestsBase
+    public class BuildQueueTests : _TestsBase
     {
-        public BuildQueueTests(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildQueueTests(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         // [Fact]
         // public async Task VcsRoots_query_returns_all_vcsroots()

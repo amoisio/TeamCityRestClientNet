@@ -8,9 +8,9 @@ using TeamCityRestClientNet.Tests;
 namespace TeamCityRestClientNet.BuildAgentPools
 {
     [Collection("TeamCity Collection")]
-    public class BuildAgentPoolList : TestsBase 
+    public class BuildAgentPoolList : _TestsBase 
     {
-        public BuildAgentPoolList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildAgentPoolList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Contains_all_build_agent_pools()
@@ -22,9 +22,9 @@ namespace TeamCityRestClientNet.BuildAgentPools
     }
 
     [Collection("TeamCity Collection")]
-    public class ExistingBuildAgentPool : TestsBase
+    public class ExistingBuildAgentPool : _TestsBase
     {
-        public ExistingBuildAgentPool(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingBuildAgentPool(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         // TODO: Reimplement once end-point is supported in client.
         // [Fact]

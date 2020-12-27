@@ -9,17 +9,17 @@ using TeamCityRestClientNet.Tools;
 namespace TeamCityRestClientNet.Changes
 {
     [Collection("TeamCity Collection")]
-    public class ChangeList : TestsBase 
+    public class ChangeList : _TestsBase 
     {
-        public ChangeList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ChangeList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         // TODO: implement tests once end-point is supported in client.
     }
 
     [Collection("TeamCity Collection")]
-    public class ExistingChange : TestsBase
+    public class ExistingChange : _TestsBase
     {
-        public ExistingChange(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingChange(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()

@@ -9,9 +9,9 @@ using System.Collections.Generic;
 namespace TeamCityRestClientNet.VcsRoots
 {
     [Collection("TeamCity Collection")]
-    public class VcsRootList : TestsBase
+    public class VcsRootList : _TestsBase
     {
-        public VcsRootList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public VcsRootList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Contains_all_VcsRoots()
@@ -22,9 +22,9 @@ namespace TeamCityRestClientNet.VcsRoots
     }
 
     [Collection("TeamCity Collection")]
-    public class NewGitVcsRoot : TestsBase 
+    public class NewGitVcsRoot : _TestsBase 
     {
-        public NewGitVcsRoot(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewGitVcsRoot(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_created_for_root_project()
@@ -68,9 +68,9 @@ namespace TeamCityRestClientNet.VcsRoots
     }
 
     [Collection("TeamCity Collection")]
-    public class ExistingVcsRoot : TestsBase
+    public class ExistingVcsRoot : _TestsBase
     {
-        public ExistingVcsRoot(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingVcsRoot(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()

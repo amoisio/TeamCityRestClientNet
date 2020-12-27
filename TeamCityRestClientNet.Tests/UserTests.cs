@@ -4,13 +4,13 @@ using System.Linq;
 using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
+using System.Net.Http;
 
 namespace TeamCityRestClientNet.Users
 {
-    [Collection("TeamCity Collection")]
-    public class UserList : TestsBase
+    public class UserList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public UserList(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public UserList(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Contains_all_users()
@@ -18,16 +18,25 @@ namespace TeamCityRestClientNet.Users
             var users = await _teamCity.Users().ToListAsync();
 
             Assert.Collection(users,
-                user => Assert.Equal("amoisio", user.Username),
-                user => Assert.Equal("jbuilder", user.Username));
+                user => Assert.Equal("jodoe", user.Username),
+                user => Assert.Equal("jadoe", user.Username),
+                user => Assert.Equal("dunkin", user.Username),
+                user => Assert.Equal("maccheese", user.Username));
+        }
+
+        [Fact]
+        public async Task GETs_the_users_end_point()
+        {
+            var users = await _teamCity.Users().ToListAsync();
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
         }
     }
 
-
-    [Collection("TeamCity Collection")]
-    public class NewUser : TestsBase
+    public class NewUser : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public NewUser(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewUser(TeamCityFixture fixture) : base(fixture) { }
 
         // [Fact]
         // public async Task Can_be_created() 
@@ -36,21 +45,20 @@ namespace TeamCityRestClientNet.Users
         // }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingUser : TestsBase
+    public class ExistingUser : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingUser(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingUser(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
-            var userId = new UserId("2");
+            var userId = new UserId("1");
             var user = await _teamCity.User(userId);
             Assert.Equal(userId, user.Id);
-            Assert.Equal("jbuilder@mailinator.com", user.Email);
-            Assert.Equal("Jenny Builder", user.Name);
-            Assert.Equal("jbuilder", user.Username);
-            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=2", user.GetHomeUrl());
+            Assert.Equal("john.doe@mailinator.com", user.Email);
+            Assert.Equal("John Doe", user.Name);
+            Assert.Equal("jodoe", user.Username);
+            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
         }
 
         [Fact]
@@ -63,18 +71,40 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task Can_be_retrieved_with_exact_username()
         {
-            var user = await _teamCity.User("amoisio");
-            Assert.Equal(new UserId("1"), user.Id);
-            Assert.Equal("aleksi.moisio30@gmail.com", user.Email);
-            Assert.Equal("Aleksi Moisio", user.Name);
-            Assert.Equal("amoisio", user.Username);
-            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
+            var user = await _teamCity.User("dunkin");
+            Assert.Equal(new UserId("3"), user.Id);
+            Assert.Equal("dunkin@mailinator.com", user.Email);
+            Assert.Equal("Dunkin' Donuts", user.Name);
+            Assert.Equal("dunkin", user.Username);
+            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=3", user.GetHomeUrl());
         }
 
         [Fact]
         public async Task Throws_ApiException_if_exact_username_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.User("not.found"));
+        }
+
+        [Fact]
+        public async Task GETs_users_end_point_with_id_locator()
+        {
+            var user = await _teamCity.User(new UserId("1"));
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
+            Assert.Contains(ApiCall.Locators,
+                locator => locator.Key == "id" && locator.Value == "1");
+        }
+
+        [Fact]
+        public async Task GETs_users_end_point_with_username_locator()
+        {
+            var user = await _teamCity.User("jadoe");
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
+            Assert.Contains(ApiCall.Locators,
+                locator => locator.Key == "username" && locator.Value == "jadoe");
         }
     }
 }

@@ -10,19 +10,19 @@ namespace TeamCityRestClientNet.Tests
 {
 
     [CollectionDefinition("TeamCity Collection")]
-    public class TeamCityCollection : ICollectionFixture<TeamCityFixture>
+    public class TeamCityCollection : ICollectionFixture<_TeamCityFixture>
     {
         // This class has no code, and is never created. Its purpose is simply
         // to be the place to apply [CollectionDefinition] and all the
         // ICollectionFixture<> interfaces.
     }
 
-    public class TeamCityFixture
+    public class _TeamCityFixture
     {
         public readonly string serverUrl = "http://localhost:5000";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
 
-        public TeamCityFixture()
+        public _TeamCityFixture()
         {
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
@@ -40,12 +40,12 @@ namespace TeamCityRestClientNet.Tests
         public TeamCity TeamCity { get;}
     }
 
-    public class TestFixture
+    public class TeamCityFixture
     {
         public readonly string serverUrl = "http://localhost:5000";
         readonly static string _token = "eyJ0eXAiOiAiVENWMiJ9.Tkp4RUN4RGpWbl8wNy1KVG5EbmxsZXpWaDIw.ZTRmYTc3NDUtYTQ3OS00ZmMzLWJkMTAtMTU0OTE1YWVlOGI4";
 
-        public TestFixture()
+        public TeamCityFixture()
         {
             using var loggerFactory = LoggerFactory.Create(builder =>
             {

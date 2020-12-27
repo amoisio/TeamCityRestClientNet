@@ -9,9 +9,9 @@ using TeamCityRestClientNet.Tests;
 namespace TeamCityRestClientNet.Projects
 {
     [Collection("TeamCity Collection")]
-    public class RootProject : TestsBase 
+    public class RootProject : _TestsBase 
     {
-        public RootProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public RootProject(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved()
@@ -37,9 +37,9 @@ namespace TeamCityRestClientNet.Projects
     }
 
     [Collection("TeamCity Collection")]
-    public class NewProject : TestsBase
+    public class NewProject : _TestsBase
     {
-        public NewProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewProject(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_created_as_child_to_root_project()
@@ -89,9 +89,9 @@ namespace TeamCityRestClientNet.Projects
     }
 
     [Collection("TeamCity Collection")]
-    public class ExistingProject : TestsBase 
+    public class ExistingProject : _TestsBase 
     {
-        public ExistingProject(TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingProject(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()
