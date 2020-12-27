@@ -8,10 +8,9 @@ using System.Collections.Generic;
 
 namespace TeamCityRestClientNet.VcsRoots
 {
-    [Collection("TeamCity Collection")]
-    public class VcsRootList : _TestsBase
+    public class VcsRootList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public VcsRootList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public VcsRootList(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Contains_all_VcsRoots()
@@ -21,10 +20,9 @@ namespace TeamCityRestClientNet.VcsRoots
         }
     }
 
-    [Collection("TeamCity Collection")]
-    public class NewGitVcsRoot : _TestsBase 
+    public class NewGitVcsRoot : TestsBase, IClassFixture<TeamCityFixture> 
     {
-        public NewGitVcsRoot(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public NewGitVcsRoot(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Can_be_created_for_root_project()
@@ -67,10 +65,9 @@ namespace TeamCityRestClientNet.VcsRoots
         }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingVcsRoot : _TestsBase
+    public class ExistingVcsRoot : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingVcsRoot(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingVcsRoot(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()
@@ -80,7 +77,7 @@ namespace TeamCityRestClientNet.VcsRoots
             Assert.Equal(rootId, root.Id);
             Assert.Equal("Bitbucket", root.Name);
             Assert.Equal("refs/heads/master", root.DefaultBranch);
-            Assert.Equal("https://amoisio@bitbucket.org/amoisio/teamcityrestclientnet.git", root.Url);
+            Assert.Equal("https://noexist@bitbucket.org/joedoe/teamcityrestclientnet.git", root.Url);
         }
 
         [Fact]
