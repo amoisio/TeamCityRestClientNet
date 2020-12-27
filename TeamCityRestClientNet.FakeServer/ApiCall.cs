@@ -19,10 +19,11 @@ namespace TeamCityRestClientNet.FakeServer
     {
         public ApiCall(HttpRequestMessage request)
         {
+            this.Locators = new Dictionary<string, string>();
+            this.QueryParameters = new Dictionary<string, string[]>();
             this.Method = request.Method;
             this.RequestPath = request.RequestUri.AbsolutePath;
             ParseSegments(request.RequestUri.Segments);
-            this.QueryParameters = new Dictionary<string, string[]>();
             this.RequestHeaders = request.Headers;
         }
 
@@ -33,7 +34,17 @@ namespace TeamCityRestClientNet.FakeServer
         public string Resource { get; private set; }
         public string Locator { get; private set; }
         public Dictionary<string, string> Locators { get; private set; }
-        public bool HasLocators => Locators != null && Locators.Count > 0;
+        public bool HasLocators => Locators != null && Locators.Count > 0 || !String.IsNullOrEmpty(Locator);
+        public string GetLocatorValue(string locator)
+        {
+            if (!HasLocators)
+                throw new InvalidOperationException("ApiCall has no locators.");
+
+            if (Locators.ContainsKey(locator))
+                return Locators[locator];
+            else
+                return Locator;
+        }
         public string Property { get; private set; }
         public string Descriptor { get; private set; }
         private void ParseSegments(string[] segments)
