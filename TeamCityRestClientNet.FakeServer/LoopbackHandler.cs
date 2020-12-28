@@ -16,28 +16,36 @@ namespace TeamCityRestClientNet.FakeServer
         {
             this.ApiCall = new ApiCall(request);
             var fs = new FakeServer();
-            var response = fs.ResolveApiCall(this.ApiCall);
-
             HttpStatusCode code;
             HttpContent content;
-            if (response == null)
+            try
             {
-                code = HttpStatusCode.NotFound;
-                content = null;
+                var response = fs.ResolveApiCall(this.ApiCall);
+
+                if (response == null)
+                {
+                    code = HttpStatusCode.NotFound;
+                    content = null;
+                }
+                else
+                {
+                    code = HttpStatusCode.OK;
+                    content = new StringContent(JsonConvert.SerializeObject(response));
+                }
             }
-            else
+            catch
             {
-                code = HttpStatusCode.OK;
-                content = new StringContent(JsonConvert.SerializeObject(response));
+                code = HttpStatusCode.BadRequest;
+                content = null;
             }
 
             return await Task
-                .FromResult(new HttpResponseMessage(code)
-                {
-                    Content = content,
-                    RequestMessage = request
-                })
-                .ConfigureAwait(false);
+                    .FromResult(new HttpResponseMessage(code)
+                    {
+                        Content = content,
+                        RequestMessage = request
+                    })
+                    .ConfigureAwait(false);
         }
     }
 }
