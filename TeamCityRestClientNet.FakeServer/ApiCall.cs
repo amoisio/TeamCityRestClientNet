@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -19,18 +20,19 @@ namespace TeamCityRestClientNet.FakeServer
     {
         public ApiCall(HttpRequestMessage request)
         {
+            this.Request = request;
             this.Locators = new Dictionary<string, string>();
-            this.QueryParameters = new Dictionary<string, string[]>();
-            this.Method = request.Method;
-            this.RequestPath = request.RequestUri.AbsolutePath;
             ParseSegments(request.RequestUri.Segments);
-            this.RequestHeaders = request.Headers;
+            this.QueryParameters = new Dictionary<string, string[]>();
+            ParseQuery(request.RequestUri.Query);
         }
 
-        public HttpMethod Method { get; private set; }
-        public string RequestPath { get; private set; }
+        public HttpRequestMessage Request { get; private set; }
+        public HttpMethod Method => Request.Method;
+        public string RequestPath => Request.RequestUri.AbsolutePath;
         public Dictionary<string, string[]> QueryParameters { get; private set; }
-        public HttpRequestHeaders RequestHeaders { get; private set; }
+        public HttpRequestHeaders RequestHeaders => Request.Headers;
+        public HttpContent Content => Request.Content;
         public string Resource { get; private set; }
         public string Locator { get; private set; }
         public Dictionary<string, string> Locators { get; private set; }
@@ -58,12 +60,13 @@ namespace TeamCityRestClientNet.FakeServer
                 var value = WebUtility.UrlDecode(segments[i].TrimEnd('/'));
                 if (i == 3)
                     this.Resource = value;
-                else if (i == 4) {
-                    if (value.Contains(':')) 
+                else if (i == 4)
+                {
+                    if (value.Contains(':'))
                     {
                         this.Locators = ParseLocators(value);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         this.Locator = value;
                     }
@@ -87,6 +90,31 @@ namespace TeamCityRestClientNet.FakeServer
                 locators.Add(locatorParts[0]?.Trim(), locatorParts[1]?.Trim());
             }
             return locators;
+        }
+
+        private void ParseQuery(string query)
+        {
+            if (!String.IsNullOrEmpty(query))
+            {
+                var parameters = query.Split('&');
+                foreach (var parameter in parameters)
+                {
+                    var parts = parameter.Split('=');
+                    var key = parts[0].Trim().ToLower();
+                    var val = parts[1]?.Trim();
+
+                    if (!this.QueryParameters.ContainsKey(key)) 
+                    {
+                        this.QueryParameters.Add(key, new string[0]);
+                    }
+
+                    if (!String.IsNullOrEmpty(val))
+                    {
+                        var values = this.QueryParameters[key];
+                        this.QueryParameters[key] = values.Append(val).ToArray();
+                    }
+                }
+            }
         }
     }
 }
