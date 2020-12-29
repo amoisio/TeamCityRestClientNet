@@ -111,22 +111,31 @@ namespace TeamCityRestClientNet.Domain
         public async Task<IVcsRoot> CreateVcsRoot(
             VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
         {
-            var propElement = new XElement("properties");
-            foreach (var prop in properties.OrderBy(prop => prop.Key))
+            var xmlDto = new NewVcsRoot
             {
-                propElement.Add(new XElement("property",
-                    new XAttribute("name", prop.Key),
-                    new XAttribute("value", prop.Value)));
-            }
+                Name = name,
+                Id = id.stringId,
+                VcsName = type.stringType,
+                Project = new ReferenceDto
+                {
+                    Id = IdString
+                },
+                Properties = new PropertiesDto
+                {
+                    Property = properties?.Select(prop => new PropertyDto
+                    {
+                        Name = prop.Key,
+                        Value = prop.Value
+                    }).ToList() ?? new List<PropertyDto>()
+                }
+            };
 
-            var xml = new XElement("vcs-root",
-                new XAttribute("name", name),
-                new XAttribute("id", id.stringId),
-                new XAttribute("vcsName", type.stringType),
-                new XElement("project",
-                    new XAttribute("id", IdString)
-                ),
-                propElement);
+            var xml = new StringBuilder();
+            using (var tw = new StringWriter(xml))
+            {
+                var serializer = new XmlSerializer(typeof(NewVcsRoot));
+                serializer.Serialize(tw, xmlDto);
+            }
 
             var vcsRootDto = await Service.CreateVcsRoot(xml.ToString()).ConfigureAwait(false);
             return await VcsRoot.Create(vcsRootDto, true, Instance).ConfigureAwait(false);

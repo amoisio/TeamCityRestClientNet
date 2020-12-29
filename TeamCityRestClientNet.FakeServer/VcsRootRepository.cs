@@ -64,29 +64,20 @@ namespace TeamCityRestClientNet.FakeServer
 
         public VcsRootDto Create(string xmlString)
         {
-            XmlRootAttribute xRoot = new XmlRootAttribute();
-            xRoot.ElementName = "vcs-root";
-            var overrides = new XmlAttributeOverrides();
-            overrides.Add(typeof(VcsRootDto), "Name", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-            overrides.Add(typeof(IdDto), "Id", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-            overrides.Add(typeof(VcsRootDto), "VcsName", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-            overrides.Add(typeof(ProjectDto), "Id", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-            overrides.Add(typeof(NameValuePropertyDto), "Name", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-            overrides.Add(typeof(NameValuePropertyDto), "Value", new XmlAttributes() { XmlAttribute = new XmlAttributeAttribute() });
-
-            var serializer = new XmlSerializer(typeof(VcsRootDto), overrides, null, xRoot, null);
-            using (var strReader = new StringReader(xmlString))
-            using (var xmlReader = new ClientXmlReader(XmlReader.Create(strReader)))
+            using(var strReader = new StringReader(xmlString))
+            using (var xmlReader = XmlReader.Create(strReader))
             {
-                var dto = serializer.Deserialize(xmlReader) as VcsRootDto;
+                var serializer = new XmlSerializer(typeof(NewVcsRoot));
+                var newDto = serializer.Deserialize(xmlReader) as NewVcsRoot;
 
                 // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
                 // for Ids. - is not one of those characters.
-                if (dto.Id.Contains('-'))
+                if (newDto.Id.Contains('-'))
                 {
                     throw new InvalidOperationException("Invalid character in id.");
                 }
 
+                var dto = newDto.ToVcsRootDto();
                 _roots.Add(dto.Id, dto);
                 return dto;
             }
