@@ -9,15 +9,7 @@ namespace TeamCityRestClientNet.FakeServer
         public static ProjectDto RootProject = new ProjectDto
         {
             Id = "_Root",
-            Name = "<Root project>",
-            Projects = new ProjectsDto
-            {
-                Project = new List<ProjectDto>
-                {
-                    RestClientProject,
-                    TeamCityCliProject
-                }
-            }
+            Name = "<Root project>"
         };
 
         public static ProjectDto RestClientProject = new ProjectDto
@@ -56,15 +48,12 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
-        private static readonly List<ProjectDto> _projects = new List<ProjectDto>
-        {
-            RootProject,
-            RestClientProject,
-            TeamCityCliProject
-        };
-
+        private static readonly List<ProjectDto> _projects;
+        
         static ProjectRepository()
         {
+            RootProject.Projects.Project.Add(RestClientProject);
+            RootProject.Projects.Project.Add(TeamCityCliProject);
             var project1 = new ProjectDto
             {
                 Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
@@ -72,6 +61,11 @@ namespace TeamCityRestClientNet.FakeServer
                 Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
             };
             RootProject.Projects.Project.Add(project1);
+
+            _projects = new List<ProjectDto>();
+            _projects.Add(RootProject);
+            _projects.Add(RestClientProject);
+            _projects.Add(TeamCityCliProject);
             _projects.Add(project1);
         }
 
