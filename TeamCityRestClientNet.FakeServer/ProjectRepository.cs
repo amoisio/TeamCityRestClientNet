@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
@@ -48,8 +52,8 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
-        private static readonly List<ProjectDto> _projects;
-        
+        private static readonly Dictionary<string, ProjectDto> _projects;
+
         static ProjectRepository()
         {
             RootProject.Projects.Project.Add(RestClientProject);
@@ -62,14 +66,61 @@ namespace TeamCityRestClientNet.FakeServer
             };
             RootProject.Projects.Project.Add(project1);
 
-            _projects = new List<ProjectDto>();
-            _projects.Add(RootProject);
-            _projects.Add(RestClientProject);
-            _projects.Add(TeamCityCliProject);
-            _projects.Add(project1);
+            _projects = new Dictionary<string, ProjectDto>();
+            _projects.Add(RootProject.Id, RootProject);
+            _projects.Add(RestClientProject.Id, RestClientProject);
+            _projects.Add(TeamCityCliProject.Id, TeamCityCliProject);
+            _projects.Add(project1.Id, project1);
         }
 
-        public ProjectDto ById(string id) => _projects.SingleOrDefault(u => u.Id == id);
-        public ProjectsDto All() => new ProjectsDto { Project = _projects };
+        public ProjectDto ById(string id) => _projects[id];
+        public ProjectsDto All() => new ProjectsDto { Project = _projects.Values.ToList() };
+        public ProjectDto Create(string xmlString)
+        {
+            using (var strReader = new StringReader(xmlString))
+            using (var xmlReader = XmlReader.Create(strReader))
+            {
+                var serializer = new XmlSerializer(typeof(NewProjectDescriptionDto));
+                var newDto = serializer.Deserialize(xmlReader) as NewProjectDescriptionDto;
+
+                // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
+                // for Ids. - is not one of those characters.
+                if (newDto.Id.Contains('-'))
+                {
+                    throw new InvalidOperationException("Invalid character in id.");
+                }
+
+                var dto = newDto.ToProjectDto();
+
+                var parent = ById(dto.ParentProjectId);
+                parent.Projects.Project.Add(dto);
+                _projects.Add(dto.Id, dto);
+                return dto;
+            }
+        }
+
+        public ProjectDto Delete(string id)
+        {
+            var toDelete = ById(id);
+            var parent = ById(toDelete.ParentProjectId);
+            _projects.Remove(id);
+            parent.Projects.Project.Remove(toDelete);
+            return toDelete;
+        }
+
+        public ProjectDto SetParameter(string id, string name, string value)
+        {
+            var project = ById(id);
+            var param = project.Parameters.Property.SingleOrDefault(p => p.Name == name);
+            if (param == null)
+            {
+                project.Parameters.Property.Add(new ParameterDto(name, value));
+            } 
+            else 
+            {
+                param.Value = value;
+            }
+            return project;
+        }
     }
 }

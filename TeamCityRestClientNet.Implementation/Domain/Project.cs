@@ -8,6 +8,9 @@ using TeamCityRestClientNet.Extensions;
 using TeamCityRestClientNet.RestApi;
 using System.Xml.Linq;
 using Nito.AsyncEx;
+using System.Xml.Serialization;
+using System.IO;
+using System.Text;
 
 namespace TeamCityRestClientNet.Domain
 {
@@ -71,13 +74,22 @@ namespace TeamCityRestClientNet.Domain
         /// <returns>The created project. Throws an ApiException is project cannot be created.</returns>
         public async Task<IProject> CreateProject(ProjectId id, string name)
         {
-            var xml = new XElement("newProjectDescription",
-                new XAttribute("name", name),
-                new XAttribute("id", id.stringId),
-                new XElement("parentProject",
-                    new XAttribute("locator", $"id:{Id.stringId}")
-                )
-            );
+            var xmlDto = new NewProjectDescriptionDto
+            {
+                Name = name,
+                Id = id.stringId,
+                ParentProject = new ProjectLocatorDto
+                {
+                    Locator = $"id:{Id.stringId}"
+                }
+            };
+
+            var xml = new StringBuilder();
+            using (var tw = new StringWriter(xml))
+            {
+                var serializer = new XmlSerializer(typeof(NewProjectDescriptionDto));
+                serializer.Serialize(tw, xmlDto);
+            }
 
             var projectDto = await Service.CreateProject(xml.ToString()).ConfigureAwait(false);
             return new Project(projectDto, Instance);

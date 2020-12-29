@@ -81,11 +81,31 @@ namespace TeamCityRestClientNet.FakeServer
                     return this.Projects.All();
                 else
                     return this.Projects.ById(apiCall.GetLocatorValue("id"));
-            }
-            else
+            } 
+            else if (apiCall.Method == HttpMethod.Post)
             {
-                throw new NotImplementedException();
+                var xmlString = apiCall.Request.Content
+                    .ReadAsStringAsync()
+                    .GetAwaiter()
+                    .GetResult();
+
+                return this.Projects.Create(xmlString);
             }
+            else if (apiCall.Method == HttpMethod.Delete)
+            {
+                return this.Projects.Delete(apiCall.GetLocatorValue("id"));
+            } 
+            else if (apiCall.Method == HttpMethod.Put)
+            {
+                if (apiCall.Property == "parameters")
+                {
+                    var id = apiCall.GetLocatorValue("id");
+                    var name = apiCall.Descriptor;
+                    var value = apiCall.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    return this.Projects.SetParameter(id, name, value);
+                } 
+            }
+            throw new NotImplementedException();
         }
 
         private object ResolveBuildTypes(ApiCall apiCall)
