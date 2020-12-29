@@ -33,25 +33,30 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
-        private static readonly Dictionary<string, VcsRootDto> _roots = new Dictionary<string, VcsRootDto>
+        private static readonly Dictionary<string, VcsRootDto> _roots;
+
+        static VcsRootRepository()
         {
-            { 
-                RestClientGit.Id, 
-                RestClientGit 
-            },
-            { "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269", new VcsRootDto
+            _roots = new Dictionary<string, VcsRootDto>
+            {
                 {
-                    Id = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269",
-                    Name = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269"
+                    RestClientGit.Id,
+                    RestClientGit
+                },
+                { "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269", new VcsRootDto
+                    {
+                        Id = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269",
+                        Name = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269"
+                    }
+                },
+                { "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6", new VcsRootDto
+                    {
+                        Id = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6",
+                        Name = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6"
+                    }
                 }
-            },
-            { "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6", new VcsRootDto
-                {
-                    Id = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6",
-                    Name = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6"
-                }
-            }
-        };
+            };
+        }
 
         public VcsRootDto ById(string id) => _roots.ContainsKey(id) ? _roots[id] : default(VcsRootDto);
 

@@ -4,14 +4,14 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class BuildTypeRepository 
+    public class BuildTypeRepository
     {
         public static readonly BuildTypeDto RestClient = new BuildTypeDto
-        { 
-            Id = "TeamCityRestClientNet_RestClient", 
-            Name = "Rest Client", 
+        {
+            Id = "TeamCityRestClientNet_RestClient",
+            Name = "Rest Client",
             ProjectId = "TeamCityRestClientNet",
-            Settings = new BuildTypeSettingsDto 
+            Settings = new BuildTypeSettingsDto
             {
                 Property = new List<NameValuePropertyDto>
                 {
@@ -37,11 +37,16 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
-        private static readonly List<BuildTypeDto> _buildTypes = new List<BuildTypeDto>
+        private static readonly List<BuildTypeDto> _buildTypes;
+
+        static BuildTypeRepository()
         {
-            RestClient,
-            TeamCityCli
-        };
+            _buildTypes = new List<BuildTypeDto>
+            {
+                RestClient,
+                TeamCityCli
+            };
+        }
 
         public BuildTypeDto ById(string id) => _buildTypes.SingleOrDefault(u => u.Id == id);
         public BuildTypesDto All() => new BuildTypesDto { BuildType = _buildTypes };
