@@ -75,6 +75,8 @@ namespace TeamCityRestClientNet.FakeServer
             {
                 var dto = serializer.Deserialize(xmlReader) as VcsRootDto;
 
+                // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
+                // for Ids. - is not one of those characters.
                 if (dto.Id.Contains('-'))
                 {
                     throw new InvalidOperationException("Invalid character in id.");
