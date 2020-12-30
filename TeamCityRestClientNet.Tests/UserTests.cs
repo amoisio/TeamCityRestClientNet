@@ -92,8 +92,8 @@ namespace TeamCityRestClientNet.Users
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
-            Assert.Contains(ApiCall.Locators,
-                locator => locator.Key == "id" && locator.Value == "1");
+            Assert.True(ApiCall.HasLocators);
+            Assert.Equal("1", ApiCall.GetLocatorValue());
         }
 
         [Fact]
@@ -103,8 +103,8 @@ namespace TeamCityRestClientNet.Users
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
-            Assert.Contains(ApiCall.Locators,
-                locator => locator.Key == "username" && locator.Value == "jadoe");
+            Assert.True(ApiCall.HasLocators);
+            Assert.Equal("jadoe", ApiCall.GetLocatorValue("username"));
         }
     }
 }

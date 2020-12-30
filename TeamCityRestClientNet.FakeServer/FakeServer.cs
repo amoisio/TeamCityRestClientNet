@@ -39,10 +39,10 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (!apiCall.HasLocators)
                 return this.Users.All();
-            else if (apiCall.Locators.ContainsKey("username"))
-                return this.Users.ByUsername(apiCall.Locators["username"]);
+            else if (apiCall.HasNamedLocator("username"))
+                return this.Users.ByUsername(apiCall.GetLocatorValue("username"));
             else
-                return this.Users.ById(apiCall.GetLocatorValue("id"));
+                return this.Users.ById(apiCall.GetLocatorValue());
         }
 
         private object ResolveVcsRoots(ApiCall apiCall)
@@ -52,7 +52,7 @@ namespace TeamCityRestClientNet.FakeServer
                 if (!apiCall.HasLocators)
                     return this.VcsRoots.All();
                 else
-                    return this.VcsRoots.ById(apiCall.GetLocatorValue("id"));
+                    return this.VcsRoots.ById(apiCall.GetLocatorValue());
             }
             else if (apiCall.Method == HttpMethod.Post)
             {
@@ -65,7 +65,7 @@ namespace TeamCityRestClientNet.FakeServer
             } 
             else if (apiCall.Method == HttpMethod.Delete)
             {
-                return this.VcsRoots.Delete(apiCall.GetLocatorValue("id"));
+                return this.VcsRoots.Delete(apiCall.GetLocatorValue());
             }
             else 
             {
@@ -80,7 +80,7 @@ namespace TeamCityRestClientNet.FakeServer
                 if (!apiCall.HasLocators)
                     return this.Projects.All();
                 else
-                    return this.Projects.ById(apiCall.GetLocatorValue("id"));
+                    return this.Projects.ById(apiCall.GetLocatorValue());
             } 
             else if (apiCall.Method == HttpMethod.Post)
             {
@@ -93,15 +93,15 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Delete)
             {
-                return this.Projects.Delete(apiCall.GetLocatorValue("id"));
+                return this.Projects.Delete(apiCall.GetLocatorValue());
             } 
             else if (apiCall.Method == HttpMethod.Put)
             {
                 if (apiCall.Property == "parameters")
                 {
-                    var id = apiCall.GetLocatorValue("id");
+                    var id = apiCall.GetLocatorValue();
                     var name = apiCall.Descriptor;
-                    var value = apiCall.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    var value = apiCall.Content;
                     return this.Projects.SetParameter(id, name, value);
                 } 
             }
@@ -115,7 +115,7 @@ namespace TeamCityRestClientNet.FakeServer
                 if (!apiCall.HasLocators)
                     return this.BuildTypes.All();
                 else
-                    return this.BuildTypes.ById(apiCall.GetLocatorValue("id"));
+                    return this.BuildTypes.ById(apiCall.GetLocatorValue());
             }
             else
             {

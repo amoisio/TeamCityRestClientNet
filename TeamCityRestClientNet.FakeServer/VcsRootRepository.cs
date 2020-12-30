@@ -54,6 +54,18 @@ namespace TeamCityRestClientNet.FakeServer
                         Id = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6",
                         Name = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6"
                     }
+                },
+                { "Vcs_ExtraOne", new VcsRootDto
+                    {
+                        Id = "Vcs_ExtraOne",
+                        Name = "Vcs_ExtraOne"
+                    }
+                },
+                { "Vcs_AnotherOne", new VcsRootDto
+                    {
+                        Id = "Vcs_AnotherOne",
+                        Name = "Vcs_AnotherOne"
+                    }
                 }
             };
         }
