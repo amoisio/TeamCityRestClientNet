@@ -34,5 +34,17 @@ namespace TeamCityRestClientNet.FakeServer
         }
 
         public List<T> AllItems() => _itemsById.Values.ToList();
+
+        public virtual T Delete(string id)
+        {
+            var root = ById(id);
+            if (root != null)
+            {
+                _itemsById.Remove(id);
+                return root;
+            }
+            else
+                throw new ArgumentException($"Item with id {id} not found.");
+        }
     }
 }
