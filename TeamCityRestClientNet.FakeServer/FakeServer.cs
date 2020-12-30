@@ -6,7 +6,7 @@ namespace TeamCityRestClientNet.FakeServer
     /// <summary>
     /// In-memory team city server for faking responses.
     /// </summary>
-    class FakeServer
+    public class FakeServer
     {
         public FakeServer()
         {
@@ -16,10 +16,10 @@ namespace TeamCityRestClientNet.FakeServer
             BuildTypes = new BuildTypeRepository();
         }
 
-        public UserRepository Users { get; }
-        public VcsRootRepository VcsRoots { get; }
-        public ProjectRepository Projects { get; }
-        public BuildTypeRepository BuildTypes { get; }
+        internal UserRepository Users { get; }
+        internal VcsRootRepository VcsRoots { get; }
+        internal ProjectRepository Projects { get; }
+        internal BuildTypeRepository BuildTypes { get; }
 
         public object ResolveApiCall(ApiCall apiCall)
         {

@@ -8,7 +8,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class VcsRootRepository
+    class VcsRootRepository : BaseRepository<VcsRootDto>
     {
         public static readonly VcsRootDto RestClientGit = new VcsRootDto
         {
@@ -33,46 +33,34 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
-        private static readonly Dictionary<string, VcsRootDto> _roots;
-
-        static VcsRootRepository()
+        public static readonly VcsRootDto Vcs1 = new VcsRootDto
         {
-            _roots = new Dictionary<string, VcsRootDto>
-            {
-                {
-                    RestClientGit.Id,
-                    RestClientGit
-                },
-                { "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269", new VcsRootDto
-                    {
-                        Id = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269",
-                        Name = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269"
-                    }
-                },
-                { "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6", new VcsRootDto
-                    {
-                        Id = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6",
-                        Name = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6"
-                    }
-                },
-                { "Vcs_ExtraOne", new VcsRootDto
-                    {
-                        Id = "Vcs_ExtraOne",
-                        Name = "Vcs_ExtraOne"
-                    }
-                },
-                { "Vcs_AnotherOne", new VcsRootDto
-                    {
-                        Id = "Vcs_AnotherOne",
-                        Name = "Vcs_AnotherOne"
-                    }
-                }
-            };
-        }
+            Id = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269",
+            Name = "Vcs_af57aa45_ddd0_4e39_8163_b685be56e269"
+        };
 
-        public VcsRootDto ById(string id) => _roots.ContainsKey(id) ? _roots[id] : default(VcsRootDto);
+        public static readonly VcsRootDto Vcs2 = new VcsRootDto
+        {
+            Id = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6",
+            Name = "Vcs_b283d84e_6dc1_4fa8_87cf_1fecf65aada6"
+        };
 
-        public VcsRootListDto All() => new VcsRootListDto { VcsRoot = _roots.Values.ToList() };
+        public static readonly VcsRootDto Vcs3 = new VcsRootDto
+        {
+            Id = "Vcs_ExtraOne",
+            Name = "Vcs_ExtraOne"
+        };
+
+        public static readonly VcsRootDto Vcs4 = new VcsRootDto
+        {
+            Id = "Vcs_AnotherOne",
+            Name = "Vcs_AnotherOne"
+        };
+
+        public VcsRootRepository() 
+            : base(root => root.Id, RestClientGit, Vcs1, Vcs2, Vcs3, Vcs4) { }
+
+        public VcsRootListDto All() => new VcsRootListDto { VcsRoot = AllItems() };
 
         public VcsRootDto Create(string xmlString)
         {
@@ -90,7 +78,7 @@ namespace TeamCityRestClientNet.FakeServer
                 }
 
                 var dto = newDto.ToVcsRootDto();
-                _roots.Add(dto.Id, dto);
+                _itemsById.Add(dto.Id, dto);
                 return dto;
             }
         }
@@ -100,7 +88,7 @@ namespace TeamCityRestClientNet.FakeServer
             var root = ById(id);
             if (root != null)
             {
-                _roots.Remove(id);
+                _itemsById.Remove(id);
                 return root;
             }
             else

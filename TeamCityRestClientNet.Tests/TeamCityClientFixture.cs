@@ -58,7 +58,7 @@ namespace TeamCityRestClientNet.Tests
 
             var logger = loggerFactory.CreateLogger("TeamCity.Tests");
 
-            this.Handler = new LoopbackHandler();
+            this.Handler = new LoopbackHandler(new FakeServer.FakeServer());
             this.TeamCity = new TeamCityServerBuilder()
               .WithServerUrl(serverUrl)
               .WithBearerAuthentication(_token)

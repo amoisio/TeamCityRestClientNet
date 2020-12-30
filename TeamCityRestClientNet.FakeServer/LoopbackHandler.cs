@@ -11,11 +11,17 @@ namespace TeamCityRestClientNet.FakeServer
 {
     public class LoopbackHandler : DelegatingHandler
     {
+        private readonly FakeServer _fakeServer;
+        public LoopbackHandler(FakeServer fakeServer)
+        {
+            _fakeServer = fakeServer;
+        }
+
         public ApiCall ApiCall { get; set; }
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             this.ApiCall = new ApiCall(request);
-            var fs = new FakeServer();
+            var fs = _fakeServer;
             HttpStatusCode code;
             HttpContent content;
             try
