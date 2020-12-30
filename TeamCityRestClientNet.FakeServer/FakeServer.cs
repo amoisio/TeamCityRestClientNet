@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using Newtonsoft.Json;
-using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class FakeServer
+    /// <summary>
+    /// In-memory team city server for faking responses.
+    /// </summary>
+    class FakeServer
     {
         public FakeServer()
         {

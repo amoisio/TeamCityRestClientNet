@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class UserRepository
+    class UserRepository : BaseRepository<UserDto>
     {
         public static readonly UserDto JohnDoe = new UserDto
         {
@@ -38,21 +37,10 @@ namespace TeamCityRestClientNet.FakeServer
             Email = "maccheese@mailinator.com"
         };
 
-        private static readonly List<UserDto> _users;
+        public UserRepository() 
+            : base(user => user.Id, JohnDoe, JaneDoe, DunkinDonuts, MacCheese) { }
 
-        static UserRepository()
-        {
-            _users = new List<UserDto>
-            {
-                JohnDoe,
-                JaneDoe,
-                DunkinDonuts,
-                MacCheese
-            };
-        }
-
-        public UserDto ById(string id) => _users.SingleOrDefault(u => u.Id == id);
-        public UserDto ByUsername(string username) => _users.SingleOrDefault(u => u.Username == username);
-        public UserListDto All() => new UserListDto { User = _users };
+        public UserDto ByUsername(string username) => _itemsById.Values.SingleOrDefault(u => u.Username == username);
+        public UserListDto All() => new UserListDto { User = AllItems() };
     }
 }
