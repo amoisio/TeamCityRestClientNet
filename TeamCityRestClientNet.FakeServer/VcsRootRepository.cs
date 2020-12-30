@@ -57,6 +57,8 @@ namespace TeamCityRestClientNet.FakeServer
             Name = "Vcs_AnotherOne"
         };
 
+        static VcsRootRepository() { }
+
         public VcsRootRepository() 
             : base(root => root.Id, RestClientGit, Vcs1, Vcs2, Vcs3, Vcs4) { }
 
@@ -81,18 +83,6 @@ namespace TeamCityRestClientNet.FakeServer
                 _itemsById.Add(dto.Id, dto);
                 return dto;
             }
-        }
-
-        public VcsRootDto Delete(string id)
-        {
-            var root = ById(id);
-            if (root != null)
-            {
-                _itemsById.Remove(id);
-                return root;
-            }
-            else
-                throw new ArgumentException($"Vcs root with id {id} not found.");
         }
     }
 }

@@ -37,6 +37,8 @@ namespace TeamCityRestClientNet.FakeServer
             Email = "maccheese@mailinator.com"
         };
 
+        static UserRepository() { }
+
         public UserRepository() 
             : base(user => user.Id, JohnDoe, JaneDoe, DunkinDonuts, MacCheese) { }
 
