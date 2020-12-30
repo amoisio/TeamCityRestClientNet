@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet.Tests
         protected readonly TeamCityFixture _fixture;
         protected readonly TeamCity _teamCity;
         protected readonly string _serverUrl;
-        protected readonly LoopbackHandler _handler;
+        protected readonly RedirectToFakeServer _handler;
         protected ApiCall ApiCall => _handler.ApiCall;
 
         public TestsBase(TeamCityFixture fixture)

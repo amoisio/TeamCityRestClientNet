@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class LoopbackHandler : DelegatingHandler
+    public class RedirectToFakeServer : DelegatingHandler
     {
         private readonly FakeServer _fakeServer;
-        public LoopbackHandler(FakeServer fakeServer)
+        public RedirectToFakeServer(FakeServer fakeServer)
         {
             _fakeServer = fakeServer;
         }
