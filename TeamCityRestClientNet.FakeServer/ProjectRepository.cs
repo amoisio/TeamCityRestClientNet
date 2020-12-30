@@ -8,7 +8,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    public class ProjectRepository
+    class ProjectRepository : BaseRepository<ProjectDto>
     {
         public static ProjectDto RootProject = new ProjectDto
         {
@@ -27,54 +27,35 @@ namespace TeamCityRestClientNet.FakeServer
                 {
                     new ParameterDto("configuration_parameter", "6692e7bf-c9a4-4941-9e89-5dde9417f05f"),
                 }
-            },
-            BuildTypes = new BuildTypesDto
-            {
-                BuildType = new List<BuildTypeDto>
-                {
-                    BuildTypeRepository.RestClient
-                }
             }
-
         };
 
         public static ProjectDto TeamCityCliProject = new ProjectDto
         {
             Id = "TeamCityCliNet",
             ParentProjectId = "_Root",
-            Name = "TeamCity CLI .NET",
-            BuildTypes = new BuildTypesDto
-            {
-                BuildType = new List<BuildTypeDto>
-                {
-                    BuildTypeRepository.TeamCityCli
-                }
-            }
+            Name = "TeamCity CLI .NET"
         };
 
-        private static readonly Dictionary<string, ProjectDto> _projects;
+        public static ProjectDto Project1 = new ProjectDto
+        {
+            Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
+            ParentProjectId = "_Root",
+            Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
+        };
 
-        static ProjectRepository()
+        static ProjectRepository() { }
+        public ProjectRepository()
+            : base (project => project.Id, RootProject, RestClientProject, TeamCityCliProject, Project1) 
         {
             RootProject.Projects.Project.Add(RestClientProject);
+            TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeRepository.RestClient);
             RootProject.Projects.Project.Add(TeamCityCliProject);
-            var project1 = new ProjectDto
-            {
-                Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
-                ParentProjectId = "_Root",
-                Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
-            };
-            RootProject.Projects.Project.Add(project1);
-
-            _projects = new Dictionary<string, ProjectDto>();
-            _projects.Add(RootProject.Id, RootProject);
-            _projects.Add(RestClientProject.Id, RestClientProject);
-            _projects.Add(TeamCityCliProject.Id, TeamCityCliProject);
-            _projects.Add(project1.Id, project1);
+            TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeRepository.TeamCityCli);
+            RootProject.Projects.Project.Add(Project1);
         }
 
-        public ProjectDto ById(string id) => _projects[id];
-        public ProjectsDto All() => new ProjectsDto { Project = _projects.Values.ToList() };
+        public ProjectsDto All() => new ProjectsDto { Project = AllItems() };
         public ProjectDto Create(string xmlString)
         {
             using (var strReader = new StringReader(xmlString))
@@ -91,19 +72,17 @@ namespace TeamCityRestClientNet.FakeServer
                 }
 
                 var dto = newDto.ToProjectDto();
-
                 var parent = ById(dto.ParentProjectId);
                 parent.Projects.Project.Add(dto);
-                _projects.Add(dto.Id, dto);
+                _itemsById.Add(dto.Id, dto);
                 return dto;
             }
         }
 
-        public ProjectDto Delete(string id)
+        public override ProjectDto Delete(string id)
         {
-            var toDelete = ById(id);
+            var toDelete = base.Delete(id);
             var parent = ById(toDelete.ParentProjectId);
-            _projects.Remove(id);
             parent.Projects.Project.Remove(toDelete);
             return toDelete;
         }
