@@ -130,7 +130,7 @@ namespace TeamCityRestClientNet.FakeServer
             {
                 Property = new List<ParameterDto>
                 {
-                    new ParameterDto("configuration_parameter", "6692e7bf-c9a4-4941-9e89-5dde9417f05f"),
+                    new ParameterDto("configuration_parameter", "6692e7bf_c9a4_4941_9e89_5dde9417f05f"),
                 }
             }
         };
@@ -149,6 +149,19 @@ namespace TeamCityRestClientNet.FakeServer
             Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
         };
 
+        private readonly ProjectDto Project2 = new ProjectDto
+        {
+            Id = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819",
+            ParentProjectId = "_Root",
+            Name = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819"
+        };
+
+        private readonly ProjectDto Project3 = new ProjectDto
+        {
+            Id = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928",
+            ParentProjectId = "_Root",
+            Name = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928"
+        };
         public DataBuilder()
         {
             Users = new UserRepository();
@@ -164,12 +177,16 @@ namespace TeamCityRestClientNet.FakeServer
             RootProject.Projects.Project.Add(RestClientProject);
             RootProject.Projects.Project.Add(TeamCityCliProject);
             RootProject.Projects.Project.Add(Project1);
+            RootProject.Projects.Project.Add(Project2);
+            RootProject.Projects.Project.Add(Project3);
             Projects.Add(RootProject);
             RestClientProject.BuildTypes.BuildType.Add(BuildTypeRestClient);
             Projects.Add(RestClientProject);
             TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeTeamCityCli);
             Projects.Add(TeamCityCliProject);
             Projects.Add(Project1);
+            Projects.Add(Project2);
+            Projects.Add(Project3);
 
             Users.Add(UserJohnDoe);
             Users.Add(UserJaneDoe);
