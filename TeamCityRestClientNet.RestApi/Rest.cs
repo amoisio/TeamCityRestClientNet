@@ -15,6 +15,12 @@ namespace TeamCityRestClientNet.RestApi
         public string NextHref { get; set; }
     }
 
+    public class ChangesDto : ListDto<ChangeDto>
+    {
+        public List<ChangeDto> Change { get => Items; set => Items = value; }
+    }
+
+
     public class UserListDto : ListDto<UserDto>
     {
         public List<UserDto> User { get => Items; set => Items = value; }
@@ -249,10 +255,6 @@ namespace TeamCityRestClientNet.RestApi
         public BuildAgentsDto Agents { get; set; } = new BuildAgentsDto();
     }
 
-    public class ChangesDto
-    {
-        public List<ChangeDto> Change { get; set; } = new List<ChangeDto>();
-    }
 
     public class ChangeDto : IdDto
     {
