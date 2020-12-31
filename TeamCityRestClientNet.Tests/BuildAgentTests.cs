@@ -7,10 +7,9 @@ using TeamCityRestClientNet.Tests;
 
 namespace TeamCityRestClientNet.BuildAgents
 {
-    [Collection("TeamCity Collection")]
-    public class BuildAgentList : _TestsBase
+    public class BuildAgentList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public BuildAgentList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildAgentList(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Contains_all_build_agents()
@@ -21,10 +20,9 @@ namespace TeamCityRestClientNet.BuildAgents
         }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingBuildAgent : _TestsBase
+    public class ExistingBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingBuildAgent(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingBuildAgent(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Can_be_disabled()

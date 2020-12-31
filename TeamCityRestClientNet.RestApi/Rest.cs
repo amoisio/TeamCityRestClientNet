@@ -244,7 +244,7 @@ namespace TeamCityRestClientNet.RestApi
         public string Ip { get; set; }
         public EnabledInfoDto EnabledInfo { get; set; }
         public AuthorizedInfoDto AuthorizedInfo { get; set; }
-        public ParametersDto Properties { get; set; }
+        public ParametersDto Properties { get; set; } = new ParametersDto();
         public BuildAgentPoolDto Pool { get; set; }
         public BuildDto Build { get; set; }
     }
@@ -326,7 +326,7 @@ namespace TeamCityRestClientNet.RestApi
 
     public class EnabledInfoDto
     {
-        public EnabledInfoCommentDto Comment { get; set; }
+        public EnabledInfoCommentDto Comment { get; set; } = new EnabledInfoCommentDto();
     }
 
     public class AuthorizedInfoCommentDto
@@ -338,7 +338,7 @@ namespace TeamCityRestClientNet.RestApi
 
     public class AuthorizedInfoDto
     {
-        public AuthorizedInfoCommentDto Comment { get; set; }
+        public AuthorizedInfoCommentDto Comment { get; set; } = new AuthorizedInfoCommentDto();
     }
 
     public class BuildCanceledDto

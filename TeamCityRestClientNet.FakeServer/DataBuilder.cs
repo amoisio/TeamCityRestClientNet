@@ -33,6 +33,13 @@ namespace TeamCityRestClientNet.FakeServer
                     new ParameterDto("env.DOTNET_USE_POLLING_FILE_WATCHER", "true"),
                     new ParameterDto("env.GIT_SSH_VARIANT", "ssh")
                 }
+            },
+            EnabledInfo = new EnabledInfoDto(),
+            AuthorizedInfo = new AuthorizedInfoDto(),
+            Pool = new BuildAgentPoolDto
+            {
+                Id = "0",
+                Name = "Default"
             }
         };
 
@@ -217,10 +224,12 @@ namespace TeamCityRestClientNet.FakeServer
         
         public DataBuilder()
         {
-            Users = new UserRepository();
-            VcsRoots = new VcsRootRepository();
+            BuildAgents = new BuildAgentRepository();
+            BuildAgentPools = new BuildAgentPoolRepository();
             BuildTypes = new BuildTypeRepository();
             Projects = new ProjectRepository();
+            Users = new UserRepository();
+            VcsRoots = new VcsRootRepository();
         }
 
         public void Load()
@@ -233,7 +242,6 @@ namespace TeamCityRestClientNet.FakeServer
             enabComment.Timestamp = DateTime.UtcNow.AddDays(-13).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             enabComment.Text = "Enabled";
             enabComment.User = UserJohnDoe;
-            Agent1.Pool = DefaultPool;
             BuildAgents.Add(Agent1);
 
             DefaultPool.Agents.Agent.Add(Agent1);
