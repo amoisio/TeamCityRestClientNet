@@ -174,9 +174,9 @@ namespace TeamCityRestClientNet.Locators
 
         public IAsyncEnumerable<IBuild> All()
         {
-            int? count = Utilities.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
+            int? count = Utility.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
 
-            var parameters = Utilities.ListOfNotNull(
+            var parameters = Utility.ListOfNotNull(
                 _buildConfigurationId?.stringId.Let("buildType:{0}"),
                 _snapshotDependencyTo?.stringId.Let("snapshotDependency:(to:(id:{0}))"),
                 _number.Let("number:{0}"),

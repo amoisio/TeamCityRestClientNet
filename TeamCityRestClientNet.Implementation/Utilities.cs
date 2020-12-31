@@ -7,22 +7,10 @@ using TeamCityRestClientNet.Extensions;
 
 namespace TeamCityRestClientNet.Tools
 {
-    public static class Utilities
+    public static class Utility
     {
         public static List<T> ListOfNotNull<T>(params T[] values)
             => values.Where(val => val != null).ToList();
-
-
-        public static DateTimeOffset? ParseTeamCity(string teamCityDateTime)
-        {
-            if (String.IsNullOrEmpty(teamCityDateTime))
-                return null;
-            else
-                return DateTimeOffset.ParseExact(
-                    teamCityDateTime,
-                    TeamCityServer.TEAMCITY_DATETIME_FORMAT,
-                    CultureInfo.CurrentCulture);
-        }
 
         public static int? SelectRestApiCountForPagedRequests(int? limitResults, int? pageSize)
         {

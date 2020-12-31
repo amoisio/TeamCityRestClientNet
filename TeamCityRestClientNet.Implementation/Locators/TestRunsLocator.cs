@@ -32,8 +32,8 @@ namespace TeamCityRestClientNet.Locators
                 TestStatus.IGNORED => "ignored:true",
                 _ => throw new Exception($"Unsupported filter by test status {_testStatus}")
             };
-            var count = Utilities.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
-            var parameters = Utilities.ListOfNotNull(
+            var count = Utility.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
+            var parameters = Utility.ListOfNotNull(
                 count?.Let(val => $"count:{val}"),
                 _affectedProjectId?.Let(val => $"affectedProject:{val}"),
                 _buildId?.Let(val => $"build:{val}"),
