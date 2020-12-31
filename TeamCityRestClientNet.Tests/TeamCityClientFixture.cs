@@ -56,13 +56,14 @@ namespace TeamCityRestClientNet.Tests
                     .AddConsole();
             });
 
-            var logger = loggerFactory.CreateLogger("TeamCity.Tests");
+            var guid = Guid.NewGuid().ToString().Substring(0,6);
+            Logger = loggerFactory.CreateLogger($"TeamCity.Tests.{guid}");
 
-            this.Handler = new RedirectToFakeServer(new FakeServer.FakeServer());
+            this.Handler = new RedirectToFakeServer(new FakeServer.FakeServer(Logger));
             this.TeamCity = new TeamCityServerBuilder()
               .WithServerUrl(serverUrl)
               .WithBearerAuthentication(_token)
-              .WithLogging(logger)
+              .WithLogging(Logger)
               .WithHandlers((innerHandler) => this.Handler)
               .Build();
         }
@@ -70,5 +71,7 @@ namespace TeamCityRestClientNet.Tests
         public TeamCity TeamCity { get; }
 
         public RedirectToFakeServer Handler { get; }
+
+        public ILogger Logger { get; }
     }
 }

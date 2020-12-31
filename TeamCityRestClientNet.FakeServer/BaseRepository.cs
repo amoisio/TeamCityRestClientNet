@@ -1,28 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    abstract class BaseRepository<T> where T : class
+    abstract class BaseRepository<TDto, TListDto> 
+        where TDto : IdDto 
+        where TListDto : ListDto<TDto>, new()
     {
-        protected readonly Dictionary<string, T> _itemsById;
-        protected readonly Func<T, string> _idResolver;
-        public BaseRepository(Func<T, string> idResolver, params T[] items)
-        {
-            _idResolver = idResolver ?? throw new ArgumentNullException(nameof(idResolver));
-
-            _itemsById = new Dictionary<string, T>();
-            if (items != null)
-            {
-                foreach (var item in items)
-                {
-                    _itemsById.Add(_idResolver(item), item);
-                }
-            }
-        }
-
-        public T ById(string id) 
+        protected readonly Dictionary<string, TDto> _itemsById = new Dictionary<string, TDto>();
+        public void Add(TDto item) => _itemsById.Add(item.Id, item);
+        public TListDto All() => new TListDto() { Items = _itemsById.Values.ToList() };
+        public TDto ById(string id) 
         {
             if (String.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id));
@@ -33,9 +23,7 @@ namespace TeamCityRestClientNet.FakeServer
                 return null;
         }
 
-        public List<T> AllItems() => _itemsById.Values.ToList();
-
-        public virtual T Delete(string id)
+        public virtual TDto Delete(string id)
         {
             var root = ById(id);
             if (root != null)

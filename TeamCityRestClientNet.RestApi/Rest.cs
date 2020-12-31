@@ -1,12 +1,28 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 using TeamCityRestClientNet.Api;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class ProjectsDto
+    public abstract class ListDto<T> where T : IdDto
     {
-        public List<ProjectDto> Project { get; set; } = new List<ProjectDto>();
+        [JsonIgnore]
+        [XmlIgnore]
+        public List<T> Items { get; set; } = new List<T>();
+        public int Count => Items.Count;
+        public string Href { get; set; }
+        public string NextHref { get; set; }
+    }
+
+    public class UserListDto : ListDto<UserDto>
+    {
+        public List<UserDto> User { get => Items; set => Items = value; }
+    }
+
+    public class ProjectsDto : ListDto<ProjectDto>
+    {
+        public List<ProjectDto> Project { get => Items; set => Items = value; }
     }
 
     public class BuildAgentsDto
@@ -39,13 +55,10 @@ namespace TeamCityRestClientNet.RestApi
         public string Id { get; set; }
     }
 
-    public class VcsRootListDto
+    public class VcsRootListDto : ListDto<VcsRootDto>
     {
-        public string Href { get; set; }
-        public string NextHref { get; set; }
-        
         [JsonProperty(PropertyName="vcs-root")]
-        public List<VcsRootDto> VcsRoot { get; set; }
+        public List<VcsRootDto> VcsRoot { get => Items; set => Items = value; }
     }
 
     public class VcsRootDto : IdDto
@@ -66,10 +79,6 @@ namespace TeamCityRestClientNet.RestApi
         public List<BuildDto> Build { get; set; } = new List<BuildDto>();
     }
 
-    public class UserListDto
-    {
-        public List<UserDto> User { get; set; } = new List<UserDto>();
-    }
 
     public class BuildDto : IdDto
     {
@@ -141,9 +150,9 @@ namespace TeamCityRestClientNet.RestApi
         public BuildDto Build { get; set; }
     }
 
-    public class BuildTypesDto
+    public class BuildTypesDto : ListDto<BuildTypeDto>
     {
-        public List<BuildTypeDto> BuildType { get; set; } = new List<BuildTypeDto>();
+        public List<BuildTypeDto> BuildType { get => Items; set => Items = value; }
     }
 
     public class TagDto

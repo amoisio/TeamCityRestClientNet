@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace TeamCityRestClientNet.FakeServer
 {
@@ -8,18 +9,20 @@ namespace TeamCityRestClientNet.FakeServer
     /// </summary>
     public class FakeServer
     {
-        public FakeServer()
+        private readonly ILogger _logger;
+        private readonly DataBuilder _data;
+        public FakeServer(ILogger logger)
         {
-            Users = new UserRepository();
-            VcsRoots = new VcsRootRepository();
-            Projects = new ProjectRepository();
-            BuildTypes = new BuildTypeRepository();
+            _logger = logger;
+            _logger.LogInformation("Setting up fake data.");
+            _data = new DataBuilder();
+            _data.Load();
         }
 
-        internal UserRepository Users { get; }
-        internal VcsRootRepository VcsRoots { get; }
-        internal ProjectRepository Projects { get; }
-        internal BuildTypeRepository BuildTypes { get; }
+        internal BuildTypeRepository BuildTypes => _data.BuildTypes;
+        internal ProjectRepository Projects => _data.Projects;
+        internal UserRepository Users => _data.Users;
+        internal VcsRootRepository VcsRoots => _data.VcsRoots;
 
         public object ResolveApiCall(ApiCall apiCall)
         {
@@ -76,9 +79,9 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators)
+                if (!apiCall.HasLocators) 
                     return this.Projects.All();
-                else
+                else 
                     return this.Projects.ById(apiCall.GetLocatorValue());
             } 
             else if (apiCall.Method == HttpMethod.Post)
@@ -87,7 +90,7 @@ namespace TeamCityRestClientNet.FakeServer
                     .ReadAsStringAsync()
                     .GetAwaiter()
                     .GetResult();
-
+                    
                 return this.Projects.Create(xmlString);
             }
             else if (apiCall.Method == HttpMethod.Delete)

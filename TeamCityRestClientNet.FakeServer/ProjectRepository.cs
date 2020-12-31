@@ -8,54 +8,8 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    class ProjectRepository : BaseRepository<ProjectDto>
+    class ProjectRepository : BaseRepository<ProjectDto, ProjectsDto>
     {
-        public static ProjectDto RootProject = new ProjectDto
-        {
-            Id = "_Root",
-            Name = "<Root project>"
-        };
-
-        public static ProjectDto RestClientProject = new ProjectDto
-        {
-            Id = "TeamCityRestClientNet",
-            ParentProjectId = "_Root",
-            Name = "TeamCity Rest Client .NET",
-            Parameters = new ParametersDto
-            {
-                Property = new List<ParameterDto>
-                {
-                    new ParameterDto("configuration_parameter", "6692e7bf-c9a4-4941-9e89-5dde9417f05f"),
-                }
-            }
-        };
-
-        public static ProjectDto TeamCityCliProject = new ProjectDto
-        {
-            Id = "TeamCityCliNet",
-            ParentProjectId = "_Root",
-            Name = "TeamCity CLI .NET"
-        };
-
-        public static ProjectDto Project1 = new ProjectDto
-        {
-            Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
-            ParentProjectId = "_Root",
-            Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
-        };
-
-        static ProjectRepository() { }
-        public ProjectRepository()
-            : base (project => project.Id, RootProject, RestClientProject, TeamCityCliProject, Project1) 
-        {
-            RootProject.Projects.Project.Add(RestClientProject);
-            TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeRepository.RestClient);
-            RootProject.Projects.Project.Add(TeamCityCliProject);
-            TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeRepository.TeamCityCli);
-            RootProject.Projects.Project.Add(Project1);
-        }
-
-        public ProjectsDto All() => new ProjectsDto { Project = AllItems() };
         public ProjectDto Create(string xmlString)
         {
             using (var strReader = new StringReader(xmlString))
