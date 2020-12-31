@@ -1,10 +1,54 @@
+using System;
 using System.Collections.Generic;
+using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
     class DataBuilder
     {
+        #region BuildAgents
+
+        public readonly BuildAgentDto Agent1 = new BuildAgentDto
+        {
+            Id = "1",
+            Name = "ip_172.17.0.3",
+            Connected = true,
+            Enabled = true,
+            Authorized = true,
+            Uptodate = true,
+            Ip = "172.17.0.3",
+            Properties = new ParametersDto
+            {
+                Property = new List<ParameterDto>
+                {
+                    new ParameterDto("env._", "/opt/buildagent/bin/agent.sh"),
+                    new ParameterDto("env.ASPNETCORE_URLS", "http://+:80"),
+                    new ParameterDto("env.CONFIG_FILE", "/data/teamcity_agent/conf/buildAgent.properties"),
+                    new ParameterDto("env.DEBIAN_FRONTEND", "noninteractive"),
+                    new ParameterDto("env.DOTNET_CLI_TELEMETRY_OPTOUT", "true"),
+                    new ParameterDto("env.DOTNET_RUNNING_IN_CONTAINER", "true"),
+                    new ParameterDto("env.DOTNET_SDK_VERSION", "3.1.403"),
+                    new ParameterDto("env.DOTNET_SKIP_FIRST_TIME_EXPERIENCE", "true"),
+                    new ParameterDto("env.DOTNET_USE_POLLING_FILE_WATCHER", "true"),
+                    new ParameterDto("env.GIT_SSH_VARIANT", "ssh")
+                }
+            }
+        };
+
+        #endregion
+
+        #region BuildAgentPools
+
+        public readonly BuildAgentPoolDto DefaultPool = new BuildAgentPoolDto
+        {
+            Id = "0",
+            Name = "Default"
+        };
+
+        #endregion
+
+        #region Users
         private readonly UserDto UserJohnDoe = new UserDto
         {
             Id = "1",
@@ -36,7 +80,9 @@ namespace TeamCityRestClientNet.FakeServer
             Username = "maccheese",
             Email = "maccheese@mailinator.com"
         };
+        #endregion
 
+        #region VcsRoots
         private readonly VcsRootDto VcsRestClientGit = new VcsRootDto
         {
             Id = "TeamCityRestClientNet_Bitbucket",
@@ -83,7 +129,9 @@ namespace TeamCityRestClientNet.FakeServer
             Id = "Vcs_AnotherOne",
             Name = "Vcs_AnotherOne"
         };
+        #endregion
 
+        #region BuildTypes
         private readonly BuildTypeDto BuildTypeRestClient = new BuildTypeDto
         {
             Id = "TeamCityRestClientNet_RestClient",
@@ -114,7 +162,9 @@ namespace TeamCityRestClientNet.FakeServer
                 }
             }
         };
+        #endregion
 
+        #region Projects
         private readonly ProjectDto RootProject = new ProjectDto
         {
             Id = "_Root",
@@ -162,6 +212,9 @@ namespace TeamCityRestClientNet.FakeServer
             ParentProjectId = "_Root",
             Name = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928"
         };
+        #endregion
+        
+        
         public DataBuilder()
         {
             Users = new UserRepository();
@@ -169,8 +222,28 @@ namespace TeamCityRestClientNet.FakeServer
             BuildTypes = new BuildTypeRepository();
             Projects = new ProjectRepository();
         }
+
         public void Load()
         {
+            var authComment = Agent1.AuthorizedInfo.Comment;
+            authComment.Timestamp = DateTime.UtcNow.AddDays(-14).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
+            authComment.Text = "Authorized";
+            authComment.User = UserJohnDoe;
+            var enabComment = Agent1.EnabledInfo.Comment;
+            enabComment.Timestamp = DateTime.UtcNow.AddDays(-13).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
+            enabComment.Text = "Enabled";
+            enabComment.User = UserJohnDoe;
+            Agent1.Pool = DefaultPool;
+            BuildAgents.Add(Agent1);
+
+            DefaultPool.Agents.Agent.Add(Agent1);
+            DefaultPool.Projects.Project.Add(RestClientProject);
+            DefaultPool.Projects.Project.Add(TeamCityCliProject);
+            DefaultPool.Projects.Project.Add(Project1);
+            DefaultPool.Projects.Project.Add(Project2);
+            DefaultPool.Projects.Project.Add(Project3);
+            BuildAgentPools.Add(DefaultPool);
+
             BuildTypes.Add(BuildTypeRestClient);
             BuildTypes.Add(BuildTypeTeamCityCli);
 
