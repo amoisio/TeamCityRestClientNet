@@ -15,11 +15,20 @@ namespace TeamCityRestClientNet.RestApi
         public string NextHref { get; set; }
     }
 
+    public class BuildAgentsDto : ListDto<BuildAgentDto>
+    {
+        public List<BuildAgentDto> Agent { get => Items; set => Items = value; }
+    }
+
+    public class BuildAgentPoolsDto : ListDto<BuildAgentPoolDto>
+    {
+        public List<BuildAgentPoolDto> AgentPool { get => Items; set => Items = value; }
+    }
+    
     public class ChangesDto : ListDto<ChangeDto>
     {
         public List<ChangeDto> Change { get => Items; set => Items = value; }
     }
-
 
     public class UserListDto : ListDto<UserDto>
     {
@@ -31,15 +40,7 @@ namespace TeamCityRestClientNet.RestApi
         public List<ProjectDto> Project { get => Items; set => Items = value; }
     }
 
-    public class BuildAgentsDto
-    {
-        public List<BuildAgentDto> Agent { get; set; } = new List<BuildAgentDto>();
-    }
-
-    public class BuildAgentPoolsDto
-    {
-        public List<BuildAgentPoolDto> AgentPool { get; set; } = new List<BuildAgentPoolDto>();
-    }
+    
 
     public class ArtifactFileListDto
     {

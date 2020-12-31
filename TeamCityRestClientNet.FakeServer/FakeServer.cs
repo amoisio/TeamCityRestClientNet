@@ -19,7 +19,10 @@ namespace TeamCityRestClientNet.FakeServer
             _data.Load();
         }
 
+        internal BuildAgentRepository BuildAgents => _data.BuildAgents;
+        internal BuildAgentPoolRepository BuildAgentPools => _data.BuildAgentPools;
         internal BuildTypeRepository BuildTypes => _data.BuildTypes;
+        internal ChangeRepository Changes => _data.Change;
         internal ProjectRepository Projects => _data.Projects;
         internal UserRepository Users => _data.Users;
         internal VcsRootRepository VcsRoots => _data.VcsRoots;
@@ -28,10 +31,13 @@ namespace TeamCityRestClientNet.FakeServer
         {
             object response = apiCall.Resource switch
             {
+                "agents" => Resolve(apiCall, BuildAgents),
+                "agentPools" => Resolve(apiCall, BuildAgentPools),
+                "buildTypes" => Resolve(apiCall, BuildTypes),
+                "changes" => Resolve(apiCall, Changes),
+                "projects" => ResolveProjects(apiCall),
                 "users" => ResolveUsers(apiCall),
                 "vcs-roots" => ResolveVcsRoots(apiCall),
-                "projects" => ResolveProjects(apiCall),
-                "buildTypes" => Resolve(apiCall, BuildTypes),
                 _ => throw new NotImplementedException()
             };
             return response;

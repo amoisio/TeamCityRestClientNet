@@ -183,9 +183,12 @@ namespace TeamCityRestClientNet.FakeServer
             VcsRoots.Add(Vcs4);
         }
 
+        public BuildAgentRepository BuildAgents { get; private set; }
+        public BuildAgentPoolRepository BuildAgentPools { get; private set; }
+        public BuildTypeRepository BuildTypes { get; private set; }
+        public ChangeRepository Change { get; private set; }
         public UserRepository Users { get; private set; }
         public VcsRootRepository VcsRoots { get; private set; }
-        public BuildTypeRepository BuildTypes { get; private set; }
         public ProjectRepository Projects { get; private set; }
 
     }
