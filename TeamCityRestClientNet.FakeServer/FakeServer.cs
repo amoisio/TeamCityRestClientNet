@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
@@ -14,7 +15,6 @@ namespace TeamCityRestClientNet.FakeServer
         public FakeServer(ILogger logger)
         {
             _logger = logger;
-            _logger.LogInformation("Setting up fake data.");
             _data = new DataBuilder();
             _data.Load();
         }
@@ -31,10 +31,31 @@ namespace TeamCityRestClientNet.FakeServer
                 "users" => ResolveUsers(apiCall),
                 "vcs-roots" => ResolveVcsRoots(apiCall),
                 "projects" => ResolveProjects(apiCall),
-                "buildTypes" => ResolveBuildTypes(apiCall),
+                "buildTypes" => Resolve(apiCall, BuildTypes),
                 _ => throw new NotImplementedException()
             };
             return response;
+        }
+
+        private object Resolve<TDto, TListDto>(ApiCall apiCall, BaseRepository<TDto, TListDto> repository)
+            where TDto : IdDto
+            where TListDto : ListDto<TDto>, new()
+        {
+            if (apiCall.Method == HttpMethod.Get)
+            {
+                if (!apiCall.HasLocators)
+                    return repository.All();
+                else
+                    return repository.ById(apiCall.GetLocatorValue());
+            } 
+            else if (apiCall.Method == HttpMethod.Delete)
+            {
+                return repository.Delete(apiCall.GetLocatorValue());
+            } 
+            else 
+            {
+                throw new NotSupportedException($"Method {apiCall.Method} not supported by generic Resolve.");
+            }
         }
 
         private object ResolveUsers(ApiCall apiCall)
@@ -109,22 +130,5 @@ namespace TeamCityRestClientNet.FakeServer
             }
             throw new NotImplementedException();
         }
-
-        private object ResolveBuildTypes(ApiCall apiCall)
-        {
-            if (apiCall.Method == HttpMethod.Get)
-            {
-                if (!apiCall.HasLocators)
-                    return this.BuildTypes.All();
-                else
-                    return this.BuildTypes.ById(apiCall.GetLocatorValue());
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-
     }
 }
