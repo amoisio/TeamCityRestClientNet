@@ -38,17 +38,6 @@ namespace TeamCityRestClientNet.Domain
             => this.Dto.VcsRootInstance
               .Let(rootDto => new VcsRootInstance(rootDto));
 
-        /// <summary>
-        /// Retrieves the first builds related to change.
-        /// </summary>
-        /// <returns>List of first builds.</returns>
-        public async Task<List<IBuild>> FirstBuilds()
-        {
-            var change = await Service.ChangeFirstBuilds(this.Id.stringId).ConfigureAwait(false);
-            var tasks = change.Build.Select(build => Build.Create(build.Id, Instance));
-            return (await Task.WhenAll(tasks).ConfigureAwait(false)).ToList();
-        }
-
         public string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null)
             => Instance.GetUserUrlPage(
                 "viewModification.html",

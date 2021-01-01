@@ -36,11 +36,6 @@ namespace TeamCityRestClientNet.Api
          * Web UI URL for user, especially useful for error and log messages
          */
         string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null);
-        /**
-         * Returns an uncertain amount of builds which contain the revision. The builds are not necessarily from the same
-         * configuration as the revision. The feature is experimental, see https://youtrack.jetbrains.com/issue/TW-24633
-         */
-        Task<List<IBuild>> FirstBuilds();
     }
 
     public interface IChangeLocator
