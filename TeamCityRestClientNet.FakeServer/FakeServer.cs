@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.FakeServer
         internal BuildAgentRepository BuildAgents => _data.BuildAgents;
         internal BuildAgentPoolRepository BuildAgentPools => _data.BuildAgentPools;
         internal BuildTypeRepository BuildTypes => _data.BuildTypes;
-        internal ChangeRepository Changes => _data.Change;
+        internal ChangeRepository Changes => _data.Changes;
         internal ProjectRepository Projects => _data.Projects;
         internal UserRepository Users => _data.Users;
         internal VcsRootRepository VcsRoots => _data.VcsRoots;

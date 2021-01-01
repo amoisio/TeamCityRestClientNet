@@ -80,6 +80,70 @@ namespace TeamCityRestClientNet.FakeServer
 
         #endregion
 
+        #region Changes
+
+        private readonly ChangeDto Change1 = new ChangeDto
+        {
+            Id = "1",
+            Username = "jodoe",
+            Version = "a9f57192-48d1-4e7a-b3f5-ebead0c6f8d6",
+            Comment = "Initial commit",
+            Date = DateTime.UtcNow.AddDays(-7).ToString(Constants.TEAMCITY_DATETIME_FORMAT),
+            User = new UserDto
+            {
+                Id = "1",
+                Name = "John Doe",
+                Username = "jodoe"
+            },
+            VcsRootInstance = new VcsRootInstanceDto
+            {
+                VcsRootId = "TeamCityRestClientNet_Bitbucket",
+                Name = "Bitbucket"
+            }
+        };
+
+        private readonly ChangeDto Change2 = new ChangeDto
+        {
+            Id = "2",
+            Username = "jodoe",
+            Version = "7d366624-138f-4ff6-9393-1e24556ffbf8",
+            Comment = "Add TeamCity fake data.",
+            Date = DateTime.UtcNow.AddDays(-6).ToString(Constants.TEAMCITY_DATETIME_FORMAT),
+            User = new UserDto
+            {
+                Id = "1",
+                Name = "John Doe",
+                Username = "jodoe"
+            },
+            VcsRootInstance = new VcsRootInstanceDto
+            {
+                VcsRootId = "TeamCityRestClientNet_Bitbucket",
+                Name = "Bitbucket"
+            }
+        };
+
+        private readonly ChangeDto Change3 = new ChangeDto
+        {
+            Id = "3",
+            Username = "jodoe",
+            Version = "c5e84027-bd12-41cb-8bc9-e0609b6a6d66",
+            Comment = "Add Changes unit tests",
+            Date = DateTime.UtcNow.AddDays(-4).ToString(Constants.TEAMCITY_DATETIME_FORMAT),
+            User = new UserDto
+            {
+                Id = "1",
+                Name = "John Doe",
+                Username = "jodoe"
+            },
+            VcsRootInstance = new VcsRootInstanceDto
+            {
+                VcsRootId = "TeamCityRestClientNet_Bitbucket",
+                Name = "Bitbucket"
+            }
+        };
+
+        #endregion
+
         #region Users
         private readonly UserDto UserJohnDoe = new UserDto
         {
@@ -287,6 +351,10 @@ namespace TeamCityRestClientNet.FakeServer
             BuildTypes.Add(BuildTypeRestClient);
             BuildTypes.Add(BuildTypeTeamCityCli);
 
+            Changes.Add(Change1);
+            Changes.Add(Change2);
+            Changes.Add(Change3);
+
             RootProject.Projects.Project.Add(RestClientProject);
             RootProject.Projects.Project.Add(TeamCityCliProject);
             RootProject.Projects.Project.Add(Project1);
@@ -316,7 +384,7 @@ namespace TeamCityRestClientNet.FakeServer
         public BuildAgentRepository BuildAgents { get; private set; }
         public BuildAgentPoolRepository BuildAgentPools { get; private set; }
         public BuildTypeRepository BuildTypes { get; private set; }
-        public ChangeRepository Change { get; private set; }
+        public ChangeRepository Changes { get; private set; }
         public UserRepository Users { get; private set; }
         public VcsRootRepository VcsRoots { get; private set; }
         public ProjectRepository Projects { get; private set; }
