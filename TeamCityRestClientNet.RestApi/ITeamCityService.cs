@@ -32,9 +32,7 @@ namespace TeamCityRestClientNet.RestApi
         [Get("/app/rest/investigations/{id}")]
         Task<InvestigationDto> Investigation(string id);
 
-        [Headers("Accept: application/json")]
-        [Get("/app/rest/changes")]
-        Task<ChangesDto> Changes(string locator, string fields);
+        
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/testOccurrences/")]
@@ -191,5 +189,9 @@ namespace TeamCityRestClientNet.RestApi
         [Headers("Accept: application/json")]
         [Get("/app/rest/changes/{id}/firstBuilds")]
         Task<BuildListDto> ChangeFirstBuilds([AliasAs("id")] string id);
+
+        [Headers("Accept: application/json")]
+        [Get("/app/rest/changes")]
+        Task<ChangesDto> Changes(string locator, string fields);
     }
 }
