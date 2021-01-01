@@ -4,6 +4,7 @@ using System.Linq;
 using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
+using System.Net.Http;
 
 namespace TeamCityRestClientNet.BuildAgents
 {
@@ -16,8 +17,23 @@ namespace TeamCityRestClientNet.BuildAgents
         {
             var agents = await _teamCity.BuildAgents.All();
             Assert.Collection(agents,
-                (agent) => Assert.Equal("ip_172.17.0.3", agent.Name));
+                (agent) => Assert.Equal("ip_172.17.0.3", agent.Name),
+                (agent) => Assert.Equal("Disabled build agent", agent.Name));
         }
+
+        [Fact]
+        public async Task GETs_the_agents_end_point()
+        {
+            var agents = await _teamCity.BuildAgents.All();
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+        }
+    }
+
+    public class EnabledBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
+    {
+        public EnabledBuildAgent(TeamCityFixture fixture) : base(fixture) { }
     }
 
     public class ExistingBuildAgent : TestsBase, IClassFixture<TeamCityFixture>

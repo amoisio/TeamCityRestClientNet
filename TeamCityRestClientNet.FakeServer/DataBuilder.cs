@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.FakeServer
     {
         #region BuildAgents
 
-        public readonly BuildAgentDto Agent1 = new BuildAgentDto
+        public readonly BuildAgentDto AgentEnabled = new BuildAgentDto
         {
             Id = "1",
             Name = "ip_172.17.0.3",
@@ -35,6 +35,31 @@ namespace TeamCityRestClientNet.FakeServer
                 }
             },
             EnabledInfo = new EnabledInfoDto(),
+            AuthorizedInfo = new AuthorizedInfoDto(),
+            Pool = new BuildAgentPoolDto
+            {
+                Id = "0",
+                Name = "Default"
+            }
+        };
+
+        public readonly BuildAgentDto AgentDisabled = new BuildAgentDto
+        {
+            Id = "2",
+            Name = "Disabled build agent",
+            Connected = true,
+            Enabled = false,
+            Authorized = true,
+            Uptodate = true,
+            Ip = "172.17.0.4",
+            Properties = new ParametersDto
+            {
+                Property = new List<ParameterDto>
+                {
+                    new ParameterDto("env.ASPNETCORE_URLS", "http://+:80"),
+                }
+            },
+            EnabledInfo = null,
             AuthorizedInfo = new AuthorizedInfoDto(),
             Pool = new BuildAgentPoolDto
             {
@@ -234,17 +259,24 @@ namespace TeamCityRestClientNet.FakeServer
 
         public void Load()
         {
-            var authComment = Agent1.AuthorizedInfo.Comment;
+            var authComment = AgentEnabled.AuthorizedInfo.Comment;
             authComment.Timestamp = DateTime.UtcNow.AddDays(-14).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             authComment.Text = "Authorized";
             authComment.User = UserJohnDoe;
-            var enabComment = Agent1.EnabledInfo.Comment;
+            var enabComment = AgentEnabled.EnabledInfo.Comment;
             enabComment.Timestamp = DateTime.UtcNow.AddDays(-13).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             enabComment.Text = "Enabled";
             enabComment.User = UserJohnDoe;
-            BuildAgents.Add(Agent1);
+            BuildAgents.Add(AgentEnabled);
 
-            DefaultPool.Agents.Agent.Add(Agent1);
+            authComment = AgentDisabled.AuthorizedInfo.Comment;
+            authComment.Timestamp = DateTime.UtcNow.AddDays(-24).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
+            authComment.Text = "Authorized disabled agent";
+            authComment.User = UserJaneDoe;
+            BuildAgents.Add(AgentDisabled);
+
+            DefaultPool.Agents.Agent.Add(AgentEnabled);
+            DefaultPool.Agents.Agent.Add(AgentDisabled);
             DefaultPool.Projects.Project.Add(RestClientProject);
             DefaultPool.Projects.Project.Add(TeamCityCliProject);
             DefaultPool.Projects.Project.Add(Project1);
