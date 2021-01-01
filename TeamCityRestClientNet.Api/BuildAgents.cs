@@ -36,6 +36,7 @@ namespace TeamCityRestClientNet.Api
     
     public interface IBuildAgentLocator
     {
+        Task<IBuildAgent> Agent(BuildAgentId id);
         Task<IEnumerable<IBuildAgent>> All();
     }
 

@@ -10,6 +10,14 @@ namespace TeamCityRestClientNet.Locators
     {
         public BuildAgentLocator(TeamCityServer instance) : base(instance) { }
 
+        /// <summary>
+        /// Retrieve a build agent from TeamCity by its id.
+        /// </summary>
+        /// <param name="id">Id of the build agent to retrieve.</param>
+        /// <returns>Matching build agent. Throws a Refit.ApiException if build agent not found.</returns>
+        public async Task<IBuildAgent> Agent(BuildAgentId id)
+            => await Domain.BuildAgent.Create(id.stringId, Instance).ConfigureAwait(false);
+
         public async Task<IEnumerable<IBuildAgent>> All()
         {
             var agents = await Service.Agents().ConfigureAwait(false);
