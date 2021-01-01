@@ -110,43 +110,8 @@ namespace TeamCityRestClientNet
 
         // TODO: comments + tests
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
-
         public override IUserLocator Users => new UserLocator(this);
-
-        /// <summary>
-        /// Retrieve a vcs root from TeamCity by id.
-        /// </summary>
-        /// <param name="id">Id of the vcs root to retrieve.</param>
-        /// <returns>Matching vcs root. Throws a Refit.ApiException if vcs root not found.</returns>
-        public override async Task<IVcsRoot> VcsRoot(VcsRootId id)
-        {
-            _logger.LogDebug($"Retrieving vcs root id:{id}.");
-            var fullDto = await Service.VcsRoot(id.stringId).ConfigureAwait(false);
-            return await Domain.VcsRoot.Create(fullDto, true, this).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Retrieves all vcs roots from TeamCity.
-        /// </summary>
-        /// <returns>All vcs roots defined in TeamCity.</returns>
-        public override IAsyncEnumerable<IVcsRoot> VcsRoots()
-        {
-            var sequence = new Paged<IVcsRoot, VcsRootListDto>(
-                 this,
-                 async () =>
-                 {
-                     _logger.LogDebug("Retrieving vcs roots.");
-                     return await Service.VcsRoots().ConfigureAwait(false);
-                 },
-                 async (list) =>
-                 {
-                     var tasks = list.VcsRoot.Select(root => Domain.VcsRoot.Create(root, false, this));
-                     var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
-                     return new Page<IVcsRoot>(dtos, list.NextHref);
-                 }
-             );
-            return sequence;
-        }
+        public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);
 
         internal string GetUserUrlPage(
             string pageName,

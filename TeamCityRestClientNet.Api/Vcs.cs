@@ -24,10 +24,6 @@ namespace TeamCityRestClientNet.Api
         string DefaultBranch { get; }
         Task Delete();
     }
-    public interface IVcsRootLocator
-    {
-        IAsyncEnumerable<IVcsRoot> All();
-    }
 
     public struct VcsRootType
     {
@@ -44,5 +40,11 @@ namespace TeamCityRestClientNet.Api
     {
         VcsRootId VcsRootId { get; }
         string Name { get; }
+    }
+
+    public interface IVcsRootLocator
+    {
+        Task<IVcsRoot> VcsRoot(VcsRootId id);
+        IAsyncEnumerable<IVcsRoot> All();
     }
 }

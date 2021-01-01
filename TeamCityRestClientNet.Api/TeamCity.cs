@@ -24,8 +24,7 @@ namespace TeamCityRestClientNet.Api
         public abstract Task<IProject> RootProject();
         public abstract ITestRunsLocator TestRuns { get; }
         public abstract IUserLocator Users { get; }
-        public abstract Task<IVcsRoot> VcsRoot(VcsRootId id);
-        public abstract IAsyncEnumerable<IVcsRoot> VcsRoots();
+        public abstract IVcsRootLocator VcsRoots { get; }
     }
 
     public class TeamCityException : Exception
