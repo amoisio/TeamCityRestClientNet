@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_disabled()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("1"));
 
             await agent.Disable();
             
@@ -49,7 +49,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task PUTs_the_agents_end_point_with_id_and_disabled_set()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("1"));
 
             await agent.Disable();
 
@@ -68,7 +68,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_enabled()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("2"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("2"));
 
             await agent.Enable();
 
@@ -79,7 +79,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task PUTs_the_agents_end_point_with_id_and_enabled_set()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("1"));
 
             await agent.Enable();
 
@@ -99,7 +99,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_retrieved()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("1"));
 
             var authorizedUser = await agent.AuthorizedInfo.User;
             Assert.Equal("John Doe", authorizedUser.Name);
@@ -127,7 +127,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task GETs_the_agents_end_point_with_id()
         {
-            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            var agent = await _teamCity.BuildAgents.BuildAgent(new BuildAgentId("1"));
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
             Assert.True(ApiCall.HasLocators);
@@ -137,7 +137,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgents.Agent(new BuildAgentId("not.found")));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgents.BuildAgent(new BuildAgentId("not.found")));
         }
     }
 }

@@ -15,13 +15,13 @@ namespace TeamCityRestClientNet.Locators
         /// </summary>
         /// <param name="id">Id of the build agent to retrieve.</param>
         /// <returns>Matching build agent. Throws a Refit.ApiException if build agent not found.</returns>
-        public async Task<IBuildAgent> Agent(BuildAgentId id)
+        public async Task<IBuildAgent> BuildAgent(BuildAgentId id)
             => await Domain.BuildAgent.Create(id.stringId, Instance).ConfigureAwait(false);
 
         public async Task<IEnumerable<IBuildAgent>> All()
         {
             var agents = await Service.Agents().ConfigureAwait(false);
-            var tasks = agents.Agent.Select(agent => BuildAgent.Create(agent.Id, Instance));
+            var tasks = agents.Agent.Select(agent => Domain.BuildAgent.Create(agent.Id, Instance));
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
