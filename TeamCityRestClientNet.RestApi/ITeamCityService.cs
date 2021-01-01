@@ -151,7 +151,7 @@ namespace TeamCityRestClientNet.RestApi
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools/{locator}")]
-        Task<BuildAgentPoolDto> AgentPools([AliasAs("locator")] string agentLocator = null);
+        Task<BuildAgentPoolDto> AgentPool([AliasAs("locator")] string agentPoolLocator);
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/problemOccurrences")]

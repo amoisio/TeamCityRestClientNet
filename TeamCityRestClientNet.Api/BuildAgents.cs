@@ -65,6 +65,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildAgentPoolLocator
     {
+        Task<IBuildAgentPool> AgentPool(BuildAgentPoolId id);
         Task<IEnumerable<IBuildAgentPool>> All();
     }
 }

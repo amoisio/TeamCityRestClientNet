@@ -4,13 +4,14 @@ using System.Linq;
 using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
+using System.Net.Http;
+using TeamCityRestClientNet.FakeServer;
 
 namespace TeamCityRestClientNet.BuildAgentPools
 {
-    [Collection("TeamCity Collection")]
-    public class BuildAgentPoolList : _TestsBase 
+    public class BuildAgentPoolList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public BuildAgentPoolList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildAgentPoolList(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Contains_all_build_agent_pools()
@@ -19,28 +20,50 @@ namespace TeamCityRestClientNet.BuildAgentPools
             Assert.Collection(agentPools, 
                 (pool) => Assert.Equal("Default", pool.Name));
         }
+
+        [Fact]
+        public async Task GETs_the_agent_pools_end_point()
+        {
+            var agents = await _teamCity.BuildAgentPools.All();
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
+        }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingBuildAgentPool : _TestsBase
+    public class ExistingBuildAgentPool : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingBuildAgentPool(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingBuildAgentPool(TeamCityFixture fixture) : base(fixture) { }
 
-        // TODO: Reimplement once end-point is supported in client.
-        // [Fact]
-        // public async Task BuildAgentPool_includes_test_system_agent_and_projects()
-        // {
-        //     var agentPools = await _teamCity.BuildAgentPools.All();
-        //     var defaultPool = agentPools.First();
+        [Fact]
+        public async Task Can_be_retrieved()
+        {
+            var agentPool = await _teamCity.BuildAgentPools.AgentPool(new BuildAgentPoolId("0"));
 
-        //     var agents = await defaultPool.Agents;
-        //     Assert.NotEmpty(agents);
-        //     Assert.Contains(agents, a => a.Name == "ip_172.17.0.3");
+            var agents = await agentPool.Agents;
+            Assert.NotEmpty(agents);
+            Assert.Contains(agents, a => a.Name == "ip_172.17.0.3");
 
-        //     var projects = await defaultPool.Projects;
-        //     Assert.NotEmpty(projects);
-        //     Assert.Contains(projects, a => a.Id.stringId == "TeamCityCliNet");
-        //     Assert.Contains(projects, a => a.Id.stringId == "TeamCityRestClientNet");
-        // }
+            var projects = await agentPool.Projects;
+            Assert.NotEmpty(projects);
+            Assert.Contains(projects, a => a.Id.stringId == "TeamCityCliNet");
+            Assert.Contains(projects, a => a.Id.stringId == "TeamCityRestClientNet");
+        }
+
+        [Fact]
+        public async Task GETs_the_agent_pools_end_point_with_id()
+        {
+            var agent = await _teamCity.BuildAgentPools.AgentPool(new BuildAgentPoolId("0"));
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
+            Assert.True(ApiCall.HasLocators);
+            Assert.Equal("0", ApiCall.GetLocatorValue());
+        }
+
+        [Fact]
+        public async Task Throws_ApiException_if_id_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgentPools.AgentPool(new BuildAgentPoolId("not.found")));
+        }
     }
 }

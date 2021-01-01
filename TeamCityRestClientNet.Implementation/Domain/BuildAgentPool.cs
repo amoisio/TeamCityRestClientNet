@@ -39,7 +39,7 @@ namespace TeamCityRestClientNet.Domain
 
         public static async Task<BuildAgentPool> Create(string idString, TeamCityServer instance)
         {
-            var dto = await instance.Service.AgentPools($"id:{idString}").ConfigureAwait(false);
+            var dto = await instance.Service.AgentPool($"id:{idString}").ConfigureAwait(false);
             return new BuildAgentPool(dto, instance);
         }
 
