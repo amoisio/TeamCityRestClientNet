@@ -111,42 +111,7 @@ namespace TeamCityRestClientNet
         // TODO: comments + tests
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
 
-        /// <summary>
-        /// Retrieve a user from TeamCity by user id.
-        /// </summary>
-        /// <param name="id">Id of the user to retrieve.</param>
-        /// <returns>Matching user. Throws a Refit.ApiException if user not found.</returns>
-        public override async Task<IUser> User(UserId id)
-        {
-            _logger.LogDebug($"Retrieving user id:{id}.");
-            return await Domain.User.Create(id.stringId, this).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Retrieve a user from TeamCity by username.
-        /// </summary>
-        /// <param name="username">Username of the user to retrieve.</param>
-        /// <returns>Matching user. Throws a Refit.ApiException if user not found.</returns>
-        public override async Task<IUser> User(string username)
-        {
-            _logger.LogDebug($"Retrieving user username:{username}.");
-            var fullDto = await Service.Users($"username:{username}").ConfigureAwait(false);
-            return await Domain.User.Create(fullDto, true, this).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Retrieves all users from TeamCity.
-        /// </summary>
-        /// <returns>All users defined in TeamCity.</returns>
-        public override async IAsyncEnumerable<IUser> Users()
-        {
-            _logger.LogDebug("Retrieving users.");
-            var userListDto = await Service.Users().ConfigureAwait(false);
-            foreach (var dto in userListDto.User)
-            {
-                yield return await Domain.User.Create(dto, false, this).ConfigureAwait(false);
-            }
-        }
+        public override IUserLocator Users => new UserLocator(this);
 
         /// <summary>
         /// Retrieve a vcs root from TeamCity by id.

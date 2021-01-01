@@ -34,4 +34,11 @@ namespace TeamCityRestClientNet.Api
         DateTimeOffset Timestamp { get; }
         string Text { get; }
     }
+
+    public interface IUserLocator
+    {
+        Task<IUser> User(UserId id);
+        Task<IUser> User(string userName);
+        IAsyncEnumerable<IUser> All();
+    }
 }
