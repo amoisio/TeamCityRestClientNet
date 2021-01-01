@@ -34,6 +34,62 @@ namespace TeamCityRestClientNet.BuildAgents
     public class EnabledBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
     {
         public EnabledBuildAgent(TeamCityFixture fixture) : base(fixture) { }
+
+        [Fact]
+        public async Task Can_be_disabled()
+        {
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+
+            await agent.Disable();
+            
+            var agents = await _teamCity.BuildAgents.All();
+            Assert.Contains(agents, (agent) => agent.Id.stringId == "1" && !agent.Enabled);
+        }
+
+        [Fact]
+        public async Task PUTs_the_agents_end_point_with_id_and_disabled_set()
+        {
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+
+            await agent.Disable();
+
+            Assert.Equal(HttpMethod.Put, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+            Assert.Equal("1", ApiCall.GetLocatorValue());
+            Assert.Equal("enabled", ApiCall.Property);
+            Assert.Equal("false", ApiCall.Content);
+        }
+    }
+
+    public class DisabledBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
+    {
+        public DisabledBuildAgent(TeamCityFixture fixture) : base(fixture) { }
+
+        [Fact]
+        public async Task Can_be_enabled()
+        {
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("2"));
+
+            await agent.Enable();
+
+            var agents = await _teamCity.BuildAgents.All();
+            Assert.Contains(agents, (agent) => agent.Id.stringId == "2" && agent.Enabled);
+        }
+
+        [Fact]
+        public async Task PUTs_the_agents_end_point_with_id_and_enabled_set()
+        {
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+
+            await agent.Enable();
+
+            Assert.Equal(HttpMethod.Put, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+            Assert.Equal("1", ApiCall.GetLocatorValue());
+            Assert.Equal("enabled", ApiCall.Property);
+            Assert.Equal("true", ApiCall.Content);
+        }
+
     }
 
     public class ExistingBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
@@ -41,56 +97,47 @@ namespace TeamCityRestClientNet.BuildAgents
         public ExistingBuildAgent(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
-        public async Task Can_be_disabled()
+        public async Task Can_be_retrieved()
         {
-            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
 
-            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
-            var agents = await _teamCity.BuildAgents.All();
+            var authorizedUser = await agent.AuthorizedInfo.User;
+            Assert.Equal("John Doe", authorizedUser.Name);
+            Assert.Equal("john.doe@mailinator.com", authorizedUser.Email);
+            Assert.Equal("jodoe", authorizedUser.Username);
+            Assert.NotEqual(default(DateTimeOffset), agent.AuthorizedInfo.Timestamp);
+            Assert.Equal("Authorized", agent.AuthorizedInfo.Text);
 
-            Assert.All(agents, agent => Assert.False(agent.Enabled));
+            Assert.True(agent.Connected);
+            Assert.True(agent.Enabled);
 
-            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
+            var enabledUser = await agent.EnabledInfo.User;
+            Assert.Equal("John Doe", enabledUser.Name);
+            Assert.Equal("john.doe@mailinator.com", enabledUser.Email);
+            Assert.Equal("jodoe", enabledUser.Username);
+            Assert.NotEqual(default(DateTimeOffset), agent.EnabledInfo.Timestamp);
+            Assert.Equal("Enabled", agent.EnabledInfo.Text);
+
+            Assert.Equal("172.17.0.3", agent.IpAddress);
+            Assert.Equal("ip_172.17.0.3", agent.Name);
+            Assert.False(agent.Outdated);
+            Assert.NotEmpty(agent.Parameters);
         }
 
         [Fact]
-        public async Task Can_be_enabled()
+        public async Task GETs_the_agents_end_point_with_id()
         {
-            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
-
-            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
-            var agents = await _teamCity.BuildAgents.All();
-
-            Assert.All(agents, agent => Assert.True(agent.Enabled));
+            var agent = await _teamCity.BuildAgents.Agent(new BuildAgentId("1"));
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+            Assert.True(ApiCall.HasLocators);
+            Assert.Equal("1", ApiCall.GetLocatorValue());
         }
 
-        // TODO: Reimplement once end-point single agent query is supported in client        
-        // [Fact]
-        // public async Task BuildAgents_includes_test_system_agent()
-        // {
-        //     var agents = await _teamCity.BuildAgents.All();
-        //     var agent = agents.First();
-
-        //     var authorizedUser = await agent.AuthorizedInfo.User;
-        //     Assert.Equal("Aleksi Moisio", authorizedUser.Name);
-        //     Assert.Equal("aleksi.moisio30@gmail.com", authorizedUser.Email);
-        //     Assert.Equal("amoisio", authorizedUser.Username);
-        //     Assert.NotEqual(default(DateTimeOffset), agent.AuthorizedInfo.Timestamp);
-
-        //     Assert.True(agent.Connected);
-        //     Assert.True(agent.Enabled);
-
-        //     var enabledUser = await agent.EnabledInfo.User;
-        //     Assert.Equal("Aleksi Moisio", enabledUser.Name);
-        //     Assert.Equal("aleksi.moisio30@gmail.com", enabledUser.Email);
-        //     Assert.Equal("amoisio", enabledUser.Username);
-        //     Assert.NotEqual(default(DateTimeOffset), agent.EnabledInfo.Timestamp);
-        //     Assert.Equal("Enabled", agent.EnabledInfo.Text);
-
-        //     Assert.Equal("172.17.0.3", agent.IpAddress);
-        //     Assert.Equal("ip_172.17.0.3", agent.Name);
-        //     Assert.False(agent.Outdated);
-        //     Assert.NotEmpty(agent.Parameters);
-        // }
+        [Fact]
+        public async Task Throws_ApiException_if_id_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgents.Agent(new BuildAgentId("not.found")));
+        }
     }
 }

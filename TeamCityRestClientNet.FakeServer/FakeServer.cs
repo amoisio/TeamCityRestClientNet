@@ -31,7 +31,7 @@ namespace TeamCityRestClientNet.FakeServer
         {
             object response = apiCall.Resource switch
             {
-                "agents" => Resolve(apiCall, BuildAgents),
+                "agents" => ResolveAgents(apiCall),
                 "agentPools" => Resolve(apiCall, BuildAgentPools),
                 "buildTypes" => Resolve(apiCall, BuildTypes),
                 "changes" => Resolve(apiCall, Changes),
@@ -53,14 +53,36 @@ namespace TeamCityRestClientNet.FakeServer
                     return repository.All();
                 else
                     return repository.ById(apiCall.GetLocatorValue());
-            } 
+            }
             else if (apiCall.Method == HttpMethod.Delete)
             {
                 return repository.Delete(apiCall.GetLocatorValue());
-            } 
-            else 
+            }
+            else
             {
                 throw new NotSupportedException($"Method {apiCall.Method} not supported by generic Resolve.");
+            }
+        }
+
+        private object ResolveAgents(ApiCall apiCall)
+        {
+            if (apiCall.Method == HttpMethod.Put)
+            {
+                var id = apiCall.GetLocatorValue();
+                if (apiCall.Content == "false")
+                {
+                    return BuildAgents.Disable(id);
+                } 
+                else if (apiCall.Content == "true")
+                {
+                    return BuildAgents.Enable(id);
+                }
+                else
+                    throw new NotImplementedException();
+            }
+            else
+            {
+                return Resolve<BuildAgentDto, BuildAgentsDto>(apiCall, BuildAgents);
             }
         }
 
@@ -91,12 +113,12 @@ namespace TeamCityRestClientNet.FakeServer
                     .GetResult();
 
                 return this.VcsRoots.Create(xmlString);
-            } 
+            }
             else if (apiCall.Method == HttpMethod.Delete)
             {
                 return this.VcsRoots.Delete(apiCall.GetLocatorValue());
             }
-            else 
+            else
             {
                 throw new NotImplementedException();
             }
@@ -106,24 +128,24 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators) 
+                if (!apiCall.HasLocators)
                     return this.Projects.All();
-                else 
+                else
                     return this.Projects.ById(apiCall.GetLocatorValue());
-            } 
+            }
             else if (apiCall.Method == HttpMethod.Post)
             {
                 var xmlString = apiCall.Request.Content
                     .ReadAsStringAsync()
                     .GetAwaiter()
                     .GetResult();
-                    
+
                 return this.Projects.Create(xmlString);
             }
             else if (apiCall.Method == HttpMethod.Delete)
             {
                 return this.Projects.Delete(apiCall.GetLocatorValue());
-            } 
+            }
             else if (apiCall.Method == HttpMethod.Put)
             {
                 if (apiCall.Property == "parameters")
@@ -132,7 +154,7 @@ namespace TeamCityRestClientNet.FakeServer
                     var name = apiCall.Descriptor;
                     var value = apiCall.Content;
                     return this.Projects.SetParameter(id, name, value);
-                } 
+                }
             }
             throw new NotImplementedException();
         }
