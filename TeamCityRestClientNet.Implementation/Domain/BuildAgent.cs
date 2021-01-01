@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Domain
 
         public static async Task<IBuildAgent> Create(string idString, TeamCityServer instance)
         {
-            var dto = await instance.Service.Agents($"id:{idString}").ConfigureAwait(false);
+            var dto = await instance.Service.Agent($"id:{idString}").ConfigureAwait(false);
             return new BuildAgent(dto, instance);
         }
 
@@ -73,13 +73,13 @@ namespace TeamCityRestClientNet.Domain
 
         public async Task Enable()
         {
-            await Service.ToggleAgents($"id:{IdString}", true).ConfigureAwait(false);
+            await Service.EnableAgent($"id:{IdString}", true).ConfigureAwait(false);
             Dto.Enabled = true;
         }
 
         public async Task Disable()
         {
-            await Service.ToggleAgents($"id:{IdString}", false).ConfigureAwait(false);
+            await Service.EnableAgent($"id:{IdString}", false).ConfigureAwait(false);
             Dto.Enabled = false;
         }
 
