@@ -26,13 +26,4 @@ namespace TeamCityRestClientNet.Api
         public abstract IUserLocator Users { get; }
         public abstract IVcsRootLocator VcsRoots { get; }
     }
-
-    public class TeamCityException : Exception
-    {
-        public TeamCityException(string message = null, Exception cause = null)
-            : base(message, cause)
-        {
-
-        }
-    }
 }
