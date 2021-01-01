@@ -85,20 +85,9 @@ namespace TeamCityRestClientNet
         /// <returns>Locator used for interacting with builds.</returns>
         public override IBuildLocator Builds => new BuildLocator(this);
 
-        // TODO: This seems suspect...
-        public override async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
-        {
-            var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
-            return await Domain.Change.Create(dto, true, this).ConfigureAwait(false);
-        }
+        public override IChangeLocator Changes => new ChangeLocator(this);
 
-        /// <summary>
-        /// Retrieve a change from TeamCity by change id.
-        /// </summary>
-        /// <param name="id">Id of the change to retrieve.</param>
-        /// <returns>Matching change. Throws a Refit.ApiException if change not found.</returns>
-        public override async Task<IChange> Change(ChangeId id)
-            => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, this).ConfigureAwait(false);
+        
 
         // TODO: comments + tests
         public override IInvestigationLocator Investigations

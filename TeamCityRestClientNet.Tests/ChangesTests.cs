@@ -4,54 +4,67 @@ using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
 using TeamCityRestClientNet.Tests;
-using TeamCityRestClientNet.Tools;
+using System.Net.Http;
 
 namespace TeamCityRestClientNet.Changes
 {
-    [Collection("TeamCity Collection")]
-    public class ChangeList : _TestsBase 
+    public class ChangeList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ChangeList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ChangeList(TeamCityFixture fixture) : base(fixture) { }
 
-        // TODO: implement tests once end-point is supported in client.
+        [Fact]
+        public async Task Contains_all_changes()
+        {
+            var changes = await _teamCity.Changes.All().ToListAsync();
+
+            Assert.Contains(changes, change => change.Id.stringId == "1" && change.Username == "jodoe");
+            Assert.Contains(changes, change => change.Id.stringId == "2" && change.Username == "jodoe");
+        }
+
+        [Fact]
+        public async Task GETs_the_changes_end_point()
+        {
+            await _teamCity.Changes.All().ToListAsync();
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/changes", ApiCall.RequestPath);
+        }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingChange : _TestsBase
+    public class ExistingChange : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingChange(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public ExistingChange(TeamCityFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
-            var change = await _teamCity.Change(new ChangeId("1"));
-            Assert.Equal("Add project properties for nuget generation.", change.Comment.Trim());
-            Assert.Equal(Utilities.ParseTeamCity("20201201T155303+0000"), change.DateTime);
+            var change = await _teamCity.Changes.Change(new ChangeId("1"));
+            Assert.Equal("Initial commit", change.Comment.Trim());
             Assert.Equal("1", change.Id.stringId);
             var user = await change.User;
-            Assert.Equal("amoisio", user.Username);
-            Assert.Equal("Aleksi Moisio", user.Name);
+            Assert.Equal("jodoe", user.Username);
+            Assert.Equal("John Doe", user.Name);
             Assert.Equal("1", user.Id.stringId);
-            Assert.Equal("aleksi.moisio30", change.Username);
+            Assert.Equal("jodoe", change.Username);
             Assert.Equal("Bitbucket", change.VcsRootInstance.Name);
-            Assert.Equal("3f5917db0229261ff6c99561618155f8d35d3cf6", change.Version);
+            Assert.Equal("a9f57192-48d1-4e7a-b3f5-ebead0c6f8d6", change.Version);
         }
 
         [Fact]
-        public async Task Retrieval_throws_ApiException_if_id_is_not_found()
+        public async Task GETs_the_changes_end_point_with_id()
         {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Change(new ChangeId("999991")));
+            var change = await _teamCity.Changes.Change(new ChangeId("1"));
+
+            Assert.Equal(HttpMethod.Get, ApiCall.Method);
+            Assert.StartsWith("/app/rest/changes", ApiCall.RequestPath);
+            Assert.True(ApiCall.HasLocators);
+            Assert.Equal("1", ApiCall.GetLocatorValue());
         }
 
         [Fact]
-        public async Task First_builds_can_be_retrieved()
+        public async Task Throws_ApiException_if_id_is_not_found()
         {
-            var change = await _teamCity.Change(new ChangeId("2"));
-
-            var build = (await change.FirstBuilds()).First();
-            Assert.Equal("11", build.BuildNumber);
-            Assert.Equal(BuildStatus.SUCCESS, build.Status.Value);
-            Assert.Equal(BuildState.FINISHED, build.State);
-        } 
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Changes.Change(new ChangeId("999991")));
+        }
     }
 }

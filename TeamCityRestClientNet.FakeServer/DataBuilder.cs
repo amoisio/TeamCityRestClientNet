@@ -316,6 +316,7 @@ namespace TeamCityRestClientNet.FakeServer
             BuildAgents = new BuildAgentRepository();
             BuildAgentPools = new BuildAgentPoolRepository();
             BuildTypes = new BuildTypeRepository();
+            Changes = new ChangeRepository();
             Projects = new ProjectRepository();
             Users = new UserRepository();
             VcsRoots = new VcsRootRepository();
