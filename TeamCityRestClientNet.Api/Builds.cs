@@ -17,6 +17,12 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
+    public interface IBranch
+    {
+        string Name { get; }
+        bool IsDefault { get; }
+    }
+
     public interface IBuild
     {
         BuildId Id { get; }
