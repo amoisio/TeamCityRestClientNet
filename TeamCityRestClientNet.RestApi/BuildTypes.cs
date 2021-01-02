@@ -6,7 +6,7 @@ namespace TeamCityRestClientNet.RestApi
     public class BuildTypesDto : ListDto<BuildTypeDto>
     {
         [JsonProperty(PropertyName = "buildType")]
-        public override List<BuildTypeDto> Items { get; set; }
+        public override List<BuildTypeDto> Items { get; set; } = new List<BuildTypeDto>();
     }
 
     public class BuildTypeDto : IdDto

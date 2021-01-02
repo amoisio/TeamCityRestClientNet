@@ -6,7 +6,7 @@ namespace TeamCityRestClientNet.RestApi
     public class BuildAgentListDto : ListDto<BuildAgentDto>
     {
         [JsonProperty(PropertyName = "agent")]
-        public override List<BuildAgentDto> Items { get; set; }
+        public override List<BuildAgentDto> Items { get; set; } = new List<BuildAgentDto>();
     }
 
     public class BuildAgentDto : IdDto

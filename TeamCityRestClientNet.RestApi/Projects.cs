@@ -7,7 +7,7 @@ namespace TeamCityRestClientNet.RestApi
     public class ProjectListDto : ListDto<ProjectDto>
     {
         [JsonProperty(PropertyName = "project")]
-        public override List<ProjectDto> Items { get; set; }
+        public override List<ProjectDto> Items { get; set; } = new List<ProjectDto>();
     }
 
     public class ProjectDto : IdDto

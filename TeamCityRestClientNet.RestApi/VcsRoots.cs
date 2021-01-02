@@ -8,7 +8,7 @@ namespace TeamCityRestClientNet.RestApi
     public class VcsRootListDto : ListDto<VcsRootDto>
     {
         [JsonProperty(PropertyName = "vcs-root")]
-        public override List<VcsRootDto> Items { get; set;}
+        public override List<VcsRootDto> Items { get; set; } = new List<VcsRootDto>();
     }
 
     public class VcsRootDto : IdDto

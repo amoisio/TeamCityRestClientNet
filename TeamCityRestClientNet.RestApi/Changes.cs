@@ -6,7 +6,7 @@ namespace TeamCityRestClientNet.RestApi
     public class ChangesDto : ListDto<ChangeDto>
     {
         [JsonProperty(PropertyName = "change")]
-        public override List<ChangeDto> Items { get; set; }
+        public override List<ChangeDto> Items { get; set; } = new List<ChangeDto>();
     }
 
     public class ChangeDto : IdDto
