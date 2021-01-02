@@ -33,13 +33,13 @@ namespace TeamCityRestClientNet.Domain
                     return new InProject(project);
 
                 /* neither teamcity.jetbrains nor buildserver contain more then one assignment build type */
-                if (scope.BuildTypes?.BuildType != null && scope.BuildTypes.BuildType.Count > 1)
+                if (scope.BuildTypes?.Items != null && scope.BuildTypes.Items.Count > 1)
                 {
                     throw new Exception("more then one buildType");
                 }
 
                 var buildConfiguration = scope.BuildTypes != null
-                    ? await BuildConfiguration.Create(scope.BuildTypes.BuildType[0].Id, instance).ConfigureAwait(false)
+                    ? await BuildConfiguration.Create(scope.BuildTypes.Items[0].Id, instance).ConfigureAwait(false)
                     : null;
 
                 if (buildConfiguration != null)

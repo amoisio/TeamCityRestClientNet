@@ -42,7 +42,7 @@ namespace TeamCityRestClientNet.Locators
                  },
                  async (list) =>
                  {
-                     var tasks = list.VcsRoot.Select(root => Domain.VcsRoot.Create(root, false, Instance));
+                     var tasks = list.Items.Select(root => Domain.VcsRoot.Create(root, false, Instance));
                      var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
                      return new Page<IVcsRoot>(dtos, list.NextHref);
                  }

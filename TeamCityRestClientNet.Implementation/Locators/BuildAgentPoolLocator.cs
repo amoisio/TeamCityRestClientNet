@@ -21,7 +21,7 @@ namespace TeamCityRestClientNet.Locators
         public async Task<IEnumerable<IBuildAgentPool>> All()
         {
             var pools = await Service.AgentPools().ConfigureAwait(false);
-            var tasks = pools.AgentPool.Select(pool => Domain.BuildAgentPool.Create(pool.Id, Instance));
+            var tasks = pools.Items.Select(pool => Domain.BuildAgentPool.Create(pool.Id, Instance));
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }

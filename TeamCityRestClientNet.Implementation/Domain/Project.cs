@@ -21,7 +21,7 @@ namespace TeamCityRestClientNet.Domain
         {
             this.ChildProjects = new AsyncLazy<List<IProject>>(async () 
                 => {
-                    var tasks = dto.Projects.Project
+                    var tasks = dto.Projects.Items
                         .Select(proj => Project.Create(proj, false, instance));
                     var projects = await Task.WhenAll(tasks).ConfigureAwait(false);
                     return projects.ToList();
@@ -29,7 +29,7 @@ namespace TeamCityRestClientNet.Domain
 
             this.BuildConfigurations = new AsyncLazy<List<IBuildConfiguration>>(async ()
                 => {
-                    var tasks = dto.BuildTypes.BuildType
+                    var tasks = dto.BuildTypes.Items
                         .Select(type => BuildConfiguration.Create(type.Id, instance));
                     var configs = await Task.WhenAll(tasks).ConfigureAwait(false);
                     return configs.ToList();                    

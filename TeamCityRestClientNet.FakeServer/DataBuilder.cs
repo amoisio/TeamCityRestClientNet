@@ -340,13 +340,13 @@ namespace TeamCityRestClientNet.FakeServer
             authComment.User = UserJaneDoe;
             BuildAgents.Add(AgentDisabled);
 
-            DefaultPool.Agents.Agent.Add(AgentEnabled);
-            DefaultPool.Agents.Agent.Add(AgentDisabled);
-            DefaultPool.Projects.Project.Add(RestClientProject);
-            DefaultPool.Projects.Project.Add(TeamCityCliProject);
-            DefaultPool.Projects.Project.Add(Project1);
-            DefaultPool.Projects.Project.Add(Project2);
-            DefaultPool.Projects.Project.Add(Project3);
+            DefaultPool.Agents.Items.Add(AgentEnabled);
+            DefaultPool.Agents.Items.Add(AgentDisabled);
+            DefaultPool.Projects.Items.Add(RestClientProject);
+            DefaultPool.Projects.Items.Add(TeamCityCliProject);
+            DefaultPool.Projects.Items.Add(Project1);
+            DefaultPool.Projects.Items.Add(Project2);
+            DefaultPool.Projects.Items.Add(Project3);
             BuildAgentPools.Add(DefaultPool);
 
             BuildTypes.Add(BuildTypeRestClient);
@@ -356,15 +356,15 @@ namespace TeamCityRestClientNet.FakeServer
             Changes.Add(Change2);
             Changes.Add(Change3);
 
-            RootProject.Projects.Project.Add(RestClientProject);
-            RootProject.Projects.Project.Add(TeamCityCliProject);
-            RootProject.Projects.Project.Add(Project1);
-            RootProject.Projects.Project.Add(Project2);
-            RootProject.Projects.Project.Add(Project3);
+            RootProject.Projects.Items.Add(RestClientProject);
+            RootProject.Projects.Items.Add(TeamCityCliProject);
+            RootProject.Projects.Items.Add(Project1);
+            RootProject.Projects.Items.Add(Project2);
+            RootProject.Projects.Items.Add(Project3);
             Projects.Add(RootProject);
-            RestClientProject.BuildTypes.BuildType.Add(BuildTypeRestClient);
+            RestClientProject.BuildTypes.Items.Add(BuildTypeRestClient);
             Projects.Add(RestClientProject);
-            TeamCityCliProject.BuildTypes.BuildType.Add(BuildTypeTeamCityCli);
+            TeamCityCliProject.BuildTypes.Items.Add(BuildTypeTeamCityCli);
             Projects.Add(TeamCityCliProject);
             Projects.Add(Project1);
             Projects.Add(Project2);

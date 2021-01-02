@@ -25,7 +25,7 @@ namespace TeamCityRestClientNet.Locators
                  },
                  async (list) =>
                  {
-                     var tasks = list.Change.Select(change => Domain.Change.Create(change, false, Instance));
+                     var tasks = list.Items.Select(change => Domain.Change.Create(change, false, Instance));
                      var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
                      return new Page<IChange>(dtos, list.NextHref);
                  }

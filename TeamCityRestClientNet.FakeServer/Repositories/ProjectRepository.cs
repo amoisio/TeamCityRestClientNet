@@ -27,7 +27,7 @@ namespace TeamCityRestClientNet.FakeServer
 
                 var dto = newDto.ToProjectDto();
                 var parent = ById(dto.ParentProjectId);
-                parent.Projects.Project.Add(dto);
+                parent.Projects.Items.Add(dto);
                 _itemsById.Add(dto.Id, dto);
                 return dto;
             }
@@ -37,7 +37,7 @@ namespace TeamCityRestClientNet.FakeServer
         {
             var toDelete = base.Delete(id);
             var parent = ById(toDelete.ParentProjectId);
-            parent.Projects.Project.Remove(toDelete);
+            parent.Projects.Items.Remove(toDelete);
             return toDelete;
         }
 

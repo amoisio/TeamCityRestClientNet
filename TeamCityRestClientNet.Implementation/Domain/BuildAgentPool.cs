@@ -17,7 +17,7 @@ namespace TeamCityRestClientNet.Domain
             this.Projects = new AsyncLazy<List<IProject>>(async ()
                 => {
                     var tasks = this.Dto.Projects
-                        ?.Project
+                        ?.Items
                         ?.Select(project => Project.Create(project, false, Instance));
                     
                     return tasks != null
@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Domain
             this.Agents = new AsyncLazy<List<IBuildAgent>>(async ()
                 => {
                     var tasks = this.Dto.Agents
-                        ?.Agent
+                        ?.Items
                         ?.Select(agent => BuildAgent.Create(agent.Id, Instance));
                     
                     return tasks != null

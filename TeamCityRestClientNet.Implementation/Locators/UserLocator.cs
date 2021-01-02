@@ -45,7 +45,7 @@ namespace TeamCityRestClientNet.Locators
         {
             // _logger.LogDebug("Retrieving users.");
             var userListDto = await Service.Users().ConfigureAwait(false);
-            foreach (var dto in userListDto.User)
+            foreach (var dto in userListDto.Items)
             {
                 yield return await Domain.User.Create(dto, false, Instance).ConfigureAwait(false);
             }

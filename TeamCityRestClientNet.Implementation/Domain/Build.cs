@@ -23,7 +23,7 @@ namespace TeamCityRestClientNet.Domain
                     $"build:{IdString}",
                     "change(id,version,username,user,date,comment,vcsRootInstance)").ConfigureAwait(false);
 
-                var tasks = changes.Change
+                var tasks = changes.Items
                     ?.Select(dto => Change.Create(dto, true, instance));
 
                 return (await Task.WhenAll(tasks).ConfigureAwait(false))
