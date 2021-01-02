@@ -5,7 +5,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    class BuildAgentRepository : BaseRepository<BuildAgentDto, BuildAgentsDto>
+    class BuildAgentRepository : BaseRepository<BuildAgentDto, BuildAgentListDto>
     {
         public BuildAgentDto Enable(string id)
         {

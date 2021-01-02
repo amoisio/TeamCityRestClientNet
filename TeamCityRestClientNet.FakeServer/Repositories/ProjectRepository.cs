@@ -8,7 +8,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    class ProjectRepository : BaseRepository<ProjectDto, ProjectsDto>
+    class ProjectRepository : BaseRepository<ProjectDto, ProjectListDto>
     {
         public ProjectDto Create(string xmlString)
         {

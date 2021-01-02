@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.RestApi
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agents")]
-        Task<BuildAgentsDto> Agents();
+        Task<BuildAgentListDto> Agents();
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agents/{locator}")]
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.RestApi
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools")]
-        Task<BuildAgentPoolsDto> AgentPools();
+        Task<BuildAgentPoolListDto> AgentPools();
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools/{locator}")]

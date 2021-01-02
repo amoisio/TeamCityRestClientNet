@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class BuildAgentsDto : ListDto<BuildAgentDto>
+    public class BuildAgentListDto : ListDto<BuildAgentDto>
     {
         [JsonProperty(PropertyName = "agent")]
         public override List<BuildAgentDto> Items { get; set; }

@@ -82,7 +82,7 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else
             {
-                return Resolve<BuildAgentDto, BuildAgentsDto>(apiCall, BuildAgents);
+                return Resolve<BuildAgentDto, BuildAgentListDto>(apiCall, BuildAgents);
             }
         }
 

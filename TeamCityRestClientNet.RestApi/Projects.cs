@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class ProjectsDto : ListDto<ProjectDto>
+    public class ProjectListDto : ListDto<ProjectDto>
     {
         [JsonProperty(PropertyName = "project")]
         public override List<ProjectDto> Items { get; set; }
@@ -15,7 +15,7 @@ namespace TeamCityRestClientNet.RestApi
         public string Name { get; set; }
         public string ParentProjectId { get; set; }
         public bool? Archived { get; set; }
-        public ProjectsDto Projects { get; set; } = new ProjectsDto();
+        public ProjectListDto Projects { get; set; } = new ProjectListDto();
         public ParametersDto Parameters { get; set; } = new ParametersDto();
         public BuildTypesDto BuildTypes { get; set; } = new BuildTypesDto();
     }
