@@ -21,4 +21,30 @@ namespace TeamCityRestClientNet.RestApi
     {
         public List<NameValuePropertyDto> Property { get; set; } = new List<NameValuePropertyDto>();
     }
+
+    public class TriggersDto
+    {
+        public List<TriggerDto> Trigger { get; set; } = new List<TriggerDto>();
+    }
+
+    public class TriggerDto
+    {
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public ParametersDto Properties { get; set; } = new ParametersDto();
+    }
+
+    public class ArtifactDependenciesDto
+    {
+        public List<ArtifactDependencyDto> ArtifactDependency { get; set; } = new List<ArtifactDependencyDto>();
+    }
+
+    public class ArtifactDependencyDto : IdDto
+    {
+        public string Type { get; set; }
+        public bool? Disabled { get; set; } = false;
+        public bool? Inherited { get; set; } = false;
+        public ParametersDto Properties { get; set; } = new ParametersDto();
+        public BuildTypeDto SourceBuildType { get; set; } = new BuildTypeDto();
+    }
 }

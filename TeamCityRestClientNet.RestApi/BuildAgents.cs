@@ -23,4 +23,28 @@ namespace TeamCityRestClientNet.RestApi
         public BuildAgentPoolDto Pool { get; set; }
         public BuildDto Build { get; set; }
     }
+
+    public class EnabledInfoDto
+    {
+        public EnabledInfoCommentDto Comment { get; set; } = new EnabledInfoCommentDto();
+    }
+
+    public class EnabledInfoCommentDto
+    {
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
+    }
+
+    public class AuthorizedInfoDto
+    {
+        public AuthorizedInfoCommentDto Comment { get; set; } = new AuthorizedInfoCommentDto();
+    }
+
+    public class AuthorizedInfoCommentDto
+    {
+        public UserDto User { get; set; }
+        public string Timestamp { get; set; }
+        public string Text { get; set; }
+    }
 }
