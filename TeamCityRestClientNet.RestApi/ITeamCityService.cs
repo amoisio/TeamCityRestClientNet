@@ -18,6 +18,8 @@ namespace TeamCityRestClientNet.RestApi
         [Get("/downloadBuildLog.html")]
         Task<Stream> BuildLog([AliasAs("buildId")] string id);
 
+        #region Agents
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/agents")]
         Task<BuildAgentsDto> Agents();
@@ -30,6 +32,10 @@ namespace TeamCityRestClientNet.RestApi
         [Put("/app/rest/agents/{locator}/enabled")]
         Task EnableAgent([AliasAs("locator")] string agentlocator, [Body(BodySerializationMethod.Serialized)] bool enable);
 
+        #endregion
+
+        #region Agent Pools
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools")]
         Task<BuildAgentPoolsDto> AgentPools();
@@ -37,6 +43,10 @@ namespace TeamCityRestClientNet.RestApi
         [Headers("Accept: application/json")]
         [Get("/app/rest/agentPools/{locator}")]
         Task<BuildAgentPoolDto> AgentPool([AliasAs("locator")] string agentPoolLocator);
+
+        #endregion
+
+        #region Build Queue
 
         [Headers("Accept: application/json")]
         [Post("/app/rest/buildQueue")]
@@ -49,6 +59,10 @@ namespace TeamCityRestClientNet.RestApi
         [Headers("Accept: application/json")]
         [Get("/app/rest/buildQueue")]
         Task<BuildListDto> QueuedBuilds(string locator);
+
+        #endregion
+
+        #region Builds
 
         [Headers("Accept: application/json")]
         [Post("/app/rest/builds/{id}")]
@@ -98,6 +112,10 @@ namespace TeamCityRestClientNet.RestApi
         [Delete("/app/rest/builds/{id}/pin/")]
         Task Unpin([AliasAs("id")] string buildId, [Body] string comment);
 
+        #endregion
+
+        #region Build Types
+
         [Headers("Accept: application/json", "Content-Type: application/xml")]
         [Post("/app/rest/buildTypes")]
         Task<BuildTypeDto> CreateBuildType([Body] string buildTypeXml);
@@ -124,6 +142,10 @@ namespace TeamCityRestClientNet.RestApi
         [Put("/app/rest/buildTypes/{id}/settings/{name}")]
         Task SetBuildTypeSettings([AliasAs("id")] string buildTypeId, string name, [Body] string value);
 
+        #endregion
+
+        #region Changes
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/changes/{id},{version}")]
         Task<ChangeDto> Change([AliasAs("id")] string buildType, [AliasAs("version")] string version);
@@ -136,6 +158,10 @@ namespace TeamCityRestClientNet.RestApi
         [Get("/app/rest/changes")]
         Task<ChangesDto> Changes(string locator, string fields);
 
+        #endregion
+
+        #region Investigations
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/investigations")]
         Task<InvestigationListDto> Investigations([AliasAs("locator")] string investigationLocator);
@@ -144,9 +170,13 @@ namespace TeamCityRestClientNet.RestApi
         [Get("/app/rest/investigations/{id}")]
         Task<InvestigationDto> Investigation(string id);
 
+        #endregion
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/problemOccurrences")]
         Task<BuildProblemOccurrencesDto> ProblemOccurrences(string locator, string fields);
+
+        #region Projects
 
         [Headers("Accept: application/json", "Content-Type: application/xml")]
         [Post("/app/rest/projects")]
@@ -163,9 +193,13 @@ namespace TeamCityRestClientNet.RestApi
         [Delete("/app/rest/projects/{locator}")]
         Task DeleteProject([AliasAs("locator")] string projectLocator);
 
+        #endregion
+
         [Headers("Accept: application/json")]
         [Get("/app/rest/testOccurrences/")]
         Task<TestOccurrencesDto> TestOccurrences(string locator, string fields);
+
+        #region Users
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/users")]
@@ -174,6 +208,10 @@ namespace TeamCityRestClientNet.RestApi
         [Headers("Accept: application/json")]
         [Get("/app/rest/users/{locator}")]
         Task<UserDto> Users([AliasAs("locator")] string userLocator);
+
+        #endregion
+
+        #region Vcs Roots
 
         [Headers("Accept: application/json", "Content-Type: application/xml")]
         [Post("/app/rest/vcs-roots")]
@@ -190,5 +228,7 @@ namespace TeamCityRestClientNet.RestApi
         [Headers("Accept: application/json")]
         [Delete("/app/rest/vcs-roots/{locator}")]
         Task DeleteVcsRoot([AliasAs("locator")] string vcsRootLocator);
+
+        #endregion
     }
 }
