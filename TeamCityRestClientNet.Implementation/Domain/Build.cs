@@ -161,7 +161,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public IAsyncEnumerable<IBuildProblemOccurrence> BuildProblems() {
-            var sequence = new Paged<IBuildProblemOccurrence, BuildProblemOccurrencesDto>(
+            var sequence = new Paged<IBuildProblemOccurrence, BuildProblemOccurrenceListDto>(
                 Instance,
                 async () => await Service.ProblemOccurrences(
                     $"build:(id:{Id.stringId})",
@@ -169,7 +169,7 @@ namespace TeamCityRestClientNet.Domain
                 ,
                 async (list) =>
                 {
-                    var occurrences = list.ProblemOccurrence.Select(dto => new BuildProblemOccurrence(dto, Instance));
+                    var occurrences = list.Items.Select(dto => new BuildProblemOccurrence(dto, Instance));
                     var page = new Page<IBuildProblemOccurrence>(occurrences.ToArray(), list.NextHref);
                     return await Task.FromResult(page);
                 }
