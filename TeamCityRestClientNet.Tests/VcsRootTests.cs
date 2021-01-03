@@ -51,7 +51,7 @@ namespace TeamCityRestClientNet.VcsRoots
                 VcsRootType.GIT,
                 new Dictionary<string, string>());
 
-            var vcs = await _teamCity.VcsRoots.VcsRoot(new Id(vcsId));
+            var vcs = await _teamCity.VcsRoots.ById(vcsId);
             Assert.Equal(vcsId, vcs.Id.StringId);
             Assert.Equal(vcsId, vcs.Name);
             // TODO: Add vcs root type check
@@ -116,7 +116,7 @@ namespace TeamCityRestClientNet.VcsRoots
         public async Task Can_be_retrieved_with_id()
         {
             var rootId = new Id("TeamCityRestClientNet_Bitbucket");
-            var root = await _teamCity.VcsRoots.VcsRoot(rootId);
+            var root = await _teamCity.VcsRoots.ById(rootId);
             Assert.Equal(rootId.StringId, root.Id.StringId);
             Assert.Equal("Bitbucket", root.Name);
             Assert.Equal("refs/heads/master", root.DefaultBranch);
@@ -128,14 +128,14 @@ namespace TeamCityRestClientNet.VcsRoots
         {
             var rootId = new Id("Not_found");
 
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoots.VcsRoot(rootId));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoots.ById(rootId));
         }
 
         [Fact]
         public async Task GETs_vcsroot_end_point_with_id_locator()
         {
             var rootId = new Id("TeamCityRestClientNet_Bitbucket");
-            var root = await _teamCity.VcsRoots.VcsRoot(rootId);
+            var root = await _teamCity.VcsRoots.ById(rootId);
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);

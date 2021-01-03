@@ -7,7 +7,7 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
-    class VcsRootLocator : Locator, IVcsRootLocator
+    class VcsRootLocator : Locator<IVcsRoot>, IVcsRootLocator
     {
         public VcsRootLocator(TeamCityServer instance) : base(instance) { }
 
@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.Locators
         /// </summary>
         /// <param name="id">Id of the vcs root to retrieve.</param>
         /// <returns>Matching vcs root. Throws a Refit.ApiException if vcs root not found.</returns>
-        public async Task<IVcsRoot> VcsRoot(Id id)
+        public override async Task<IVcsRoot> ById(Id id)
         {
             // _logger.LogDebug($"Retrieving vcs root id:{id}.");
             var fullDto = await Service.VcsRoot(id.StringId).ConfigureAwait(false);
@@ -27,14 +27,13 @@ namespace TeamCityRestClientNet.Locators
         /// Retrieves all vcs roots from TeamCity.
         /// </summary>
         /// <returns>All vcs roots defined in TeamCity.</returns>
-        public IAsyncEnumerable<IVcsRoot> All()
+        public override IAsyncEnumerable<IVcsRoot> All(string initialLocator = null)
         {
-            var sequence = new Paged2<IVcsRoot, VcsRootDto, VcsRootListDto>(
+            return new Paged2<IVcsRoot, VcsRootDto, VcsRootListDto>(
                 Instance,
                 () => Service.VcsRoots(),
                 (dto) => Domain.VcsRoot.Create(dto, false, Instance)
             );
-            return sequence;
         }
     }
 }

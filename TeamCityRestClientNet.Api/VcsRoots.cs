@@ -30,9 +30,5 @@ namespace TeamCityRestClientNet.Api
         string Name { get; }
     }
 
-    public interface IVcsRootLocator
-    {
-        Task<IVcsRoot> VcsRoot(Id id);
-        IAsyncEnumerable<IVcsRoot> All();
-    }
+    public interface IVcsRootLocator : ILocator<IVcsRoot> { }
 }
