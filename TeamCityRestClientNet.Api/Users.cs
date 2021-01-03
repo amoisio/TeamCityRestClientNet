@@ -5,20 +5,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct UserId
+    public interface IUser : IIdentifiable
     {
-        public UserId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IUser
-    {
-        UserId Id { get; }
         string Username { get; }
         string Name { get; }
         string Email { get; }
@@ -35,10 +23,8 @@ namespace TeamCityRestClientNet.Api
         string Text { get; }
     }
 
-    public interface IUserLocator
+    public interface IUserLocator : ILocator<IUser>
     {
-        Task<IUser> User(UserId id);
-        Task<IUser> User(string userName);
-        IAsyncEnumerable<IUser> All();
+        Task<IUser> ByUsername(string userName);
     }
 }

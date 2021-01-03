@@ -7,22 +7,19 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
-    class UserLocator : Locator, IUserLocator
+    class UserLocator : Locator<IUser>, IUserLocator
     {
-        public UserLocator(TeamCityServer instance) : base(instance)
-        {
-
-        }
+        public UserLocator(TeamCityServer instance) : base(instance) { }
 
         // <summary>
         /// Retrieve a user from TeamCity by user id.
         /// </summary>
         /// <param name="id">Id of the user to retrieve.</param>
         /// <returns>Matching user. Throws a Refit.ApiException if user not found.</returns>
-        public async Task<IUser> User(UserId id)
+        public override async Task<IUser> ById(Id id)
         {
             // _logger.LogDebug($"Retrieving user id:{id}.");
-            return await Domain.User.Create(id.stringId, Instance).ConfigureAwait(false);
+            return await Domain.User.Create(id.StringId, Instance).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -30,7 +27,7 @@ namespace TeamCityRestClientNet.Locators
         /// </summary>
         /// <param name="username">Username of the user to retrieve.</param>
         /// <returns>Matching user. Throws a Refit.ApiException if user not found.</returns>
-        public async Task<IUser> User(string username)
+        public async Task<IUser> ByUsername(string username)
         {
             // _logger.LogDebug($"Retrieving user username:{username}.");
             var fullDto = await Service.Users($"username:{username}").ConfigureAwait(false);
@@ -41,7 +38,7 @@ namespace TeamCityRestClientNet.Locators
         /// Retrieves all users from TeamCity.
         /// </summary>
         /// <returns>All users defined in TeamCity.</returns>
-        public async IAsyncEnumerable<IUser> All()
+        public override async IAsyncEnumerable<IUser> All(string initialLocator = null)
         {
             // _logger.LogDebug("Retrieving users.");
             var userListDto = await Service.Users().ConfigureAwait(false);

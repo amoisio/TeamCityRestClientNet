@@ -52,8 +52,8 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
-            var userId = new UserId("1");
-            var user = await _teamCity.Users.User(userId);
+            var userId = new Id("1");
+            var user = await _teamCity.Users.ById(userId);
             Assert.Equal(userId, user.Id);
             Assert.Equal("john.doe@mailinator.com", user.Email);
             Assert.Equal("John Doe", user.Name);
@@ -64,15 +64,15 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
-            var userId = new UserId("9999");
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.User(userId));
+            var userId = new Id("9999");
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ById(userId));
         }
 
         [Fact]
         public async Task Can_be_retrieved_with_exact_username()
         {
-            var user = await _teamCity.Users.User("dunkin");
-            Assert.Equal(new UserId("3"), user.Id);
+            var user = await _teamCity.Users.ByUsername("dunkin");
+            Assert.Equal(new Id("3"), user.Id);
             Assert.Equal("dunkin@mailinator.com", user.Email);
             Assert.Equal("Dunkin' Donuts", user.Name);
             Assert.Equal("dunkin", user.Username);
@@ -82,13 +82,13 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task Throws_ApiException_if_exact_username_not_found()
         {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.User("not.found"));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ByUsername("not.found"));
         }
 
         [Fact]
         public async Task GETs_users_end_point_with_id_locator()
         {
-            var user = await _teamCity.Users.User(new UserId("1"));
+            var user = await _teamCity.Users.ById(new Id("1"));
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
@@ -99,7 +99,7 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task GETs_users_end_point_with_username_locator()
         {
-            var user = await _teamCity.Users.User("jadoe");
+            var user = await _teamCity.Users.ByUsername("jadoe");
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);

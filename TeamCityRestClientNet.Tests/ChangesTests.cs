@@ -44,7 +44,7 @@ namespace TeamCityRestClientNet.Changes
             var user = await change.User;
             Assert.Equal("jodoe", user.Username);
             Assert.Equal("John Doe", user.Name);
-            Assert.Equal("1", user.Id.stringId);
+            Assert.Equal("1", user.Id.StringId);
             Assert.Equal("jodoe", change.Username);
             Assert.Equal("Bitbucket", change.VcsRootInstance.Name);
             Assert.Equal("a9f57192-48d1-4e7a-b3f5-ebead0c6f8d6", change.Version);

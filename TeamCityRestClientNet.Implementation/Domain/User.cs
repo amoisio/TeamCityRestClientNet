@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet.Domain
             return new User(fullDto, instance);
         }
 
-        public UserId Id => new UserId(IdString);
+        public Id Id => new Id(IdString);
         public string Username => Dto.Username;
         public string Name => Dto.Name;
         public string Email => Dto.Email;
@@ -28,6 +28,6 @@ namespace TeamCityRestClientNet.Domain
             => Instance.GetUserUrlPage("admin/editUser.html", userId: Id);
 
         public override string ToString()
-            => $"User(id={Id.stringId}, username={Username})";
+            => $"User(id={Id}, username={Username})";
     }
 }
