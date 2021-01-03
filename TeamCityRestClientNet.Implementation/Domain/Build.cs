@@ -61,7 +61,7 @@ namespace TeamCityRestClientNet.Domain
 
             if (String.IsNullOrEmpty(dto.BuildType.Name))
             {
-                dto.BuildType.Name = (await instance.BuildConfiguration(dto.BuildTypeId).ConfigureAwait(false)).Name;
+                dto.BuildType.Name = (await instance.BuildConfigurations.BuildConfiguration(new BuildConfigurationId(dto.BuildTypeId)).ConfigureAwait(false)).Name;
             }
 
             return new Build(dto, instance);
