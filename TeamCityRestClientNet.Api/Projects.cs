@@ -34,7 +34,7 @@ namespace TeamCityRestClientNet.Api
          * See properties example from existing VCS roots via inspection of the following url:
          * https://teamcity/app/rest/vcs-roots/id:YourVcsRootId
          */
-        Task<IVcsRoot> CreateVcsRoot(VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties);
+        Task<IVcsRoot> CreateVcsRoot(Id id, string name, VcsRootType type, IDictionary<string, string> properties);
         Task<IProject> CreateProject(ProjectId id, string name);
         Task Delete();
         /**

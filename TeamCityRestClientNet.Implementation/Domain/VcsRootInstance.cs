@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Domain
             _dto = dto;
         }
 
-        public VcsRootId VcsRootId => new VcsRootId(_dto.VcsRootId.SelfOrNullRef());
+        public Id VcsRootId => new Id(_dto.VcsRootId.SelfOrNullRef());
         public string Name => _dto.Name.SelfOrNullRef();
         public override string ToString()
             => $"VcsRootInstanceImpl(id={VcsRootId}, name={Name})";

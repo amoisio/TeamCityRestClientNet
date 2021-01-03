@@ -5,20 +5,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct VcsRootId
+    public interface IVcsRoot : IIdentifiable
     {
-        public VcsRootId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IVcsRoot
-    {
-        VcsRootId Id { get; }
         string Name { get; }
         string Url { get; }
         string DefaultBranch { get; }
@@ -38,13 +26,13 @@ namespace TeamCityRestClientNet.Api
 
     public interface IVcsRootInstance
     {
-        VcsRootId VcsRootId { get; }
+        Id VcsRootId { get; }
         string Name { get; }
     }
 
     public interface IVcsRootLocator
     {
-        Task<IVcsRoot> VcsRoot(VcsRootId id);
+        Task<IVcsRoot> VcsRoot(Id id);
         IAsyncEnumerable<IVcsRoot> All();
     }
 }

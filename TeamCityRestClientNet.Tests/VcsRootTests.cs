@@ -21,7 +21,7 @@ namespace TeamCityRestClientNet.VcsRoots
         public async Task Contains_all_VcsRoots()
         {
             var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
-            Assert.Contains(vcsRoots, (root) => root.Id.stringId == "TeamCityRestClientNet_Bitbucket");
+            Assert.Contains(vcsRoots, (root) => root.Id.StringId == "TeamCityRestClientNet_Bitbucket");
         }
 
         [Fact]
@@ -46,13 +46,13 @@ namespace TeamCityRestClientNet.VcsRoots
             var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
 
             await project.CreateVcsRoot(
-                new VcsRootId(vcsId),
+                new Id(vcsId),
                 vcsId,
                 VcsRootType.GIT,
                 new Dictionary<string, string>());
 
-            var vcs = await _teamCity.VcsRoots.VcsRoot(new VcsRootId(vcsId));
-            Assert.Equal(vcsId, vcs.Id.stringId);
+            var vcs = await _teamCity.VcsRoots.VcsRoot(new Id(vcsId));
+            Assert.Equal(vcsId, vcs.Id.StringId);
             Assert.Equal(vcsId, vcs.Name);
             // TODO: Add vcs root type check
             // TODO: Add parameter checks
@@ -65,7 +65,7 @@ namespace TeamCityRestClientNet.VcsRoots
 
             var vcsRootId = "-----TeamCityRestClientNet_Bitbucket";
             await Assert.ThrowsAsync<Refit.ApiException>(
-                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+                () => project.CreateVcsRoot(new Id(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace TeamCityRestClientNet.VcsRoots
 
             var vcsRootId = "TeamCityRestClientNet_Bitbucket";
             await Assert.ThrowsAsync<Refit.ApiException>(
-                () => project.CreateVcsRoot(new VcsRootId(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+                () => project.CreateVcsRoot(new Id(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace TeamCityRestClientNet.VcsRoots
             var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
 
             await project.CreateVcsRoot(
-                new VcsRootId(vcsId),
+                new Id(vcsId),
                 vcsId,
                 VcsRootType.GIT,
                 new Dictionary<string, string>());
@@ -115,9 +115,9 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
-            var rootId = new VcsRootId("TeamCityRestClientNet_Bitbucket");
+            var rootId = new Id("TeamCityRestClientNet_Bitbucket");
             var root = await _teamCity.VcsRoots.VcsRoot(rootId);
-            Assert.Equal(rootId, root.Id);
+            Assert.Equal(rootId.StringId, root.Id.StringId);
             Assert.Equal("Bitbucket", root.Name);
             Assert.Equal("refs/heads/master", root.DefaultBranch);
             Assert.Equal("https://noexist@bitbucket.org/joedoe/teamcityrestclientnet.git", root.Url);
@@ -126,7 +126,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task Retrieval_throws_ApiException_if_id_not_found()
         {
-            var rootId = new VcsRootId("Not_found");
+            var rootId = new Id("Not_found");
 
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoots.VcsRoot(rootId));
         }
@@ -134,7 +134,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task GETs_vcsroot_end_point_with_id_locator()
         {
-            var rootId = new VcsRootId("TeamCityRestClientNet_Bitbucket");
+            var rootId = new Id("TeamCityRestClientNet_Bitbucket");
             var root = await _teamCity.VcsRoots.VcsRoot(rootId);
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
@@ -149,13 +149,13 @@ namespace TeamCityRestClientNet.VcsRoots
             var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
 
             var toDelete = vcsRoots
-                .First(root => root.Id.stringId.StartsWith("Vcs_"));
+                .First(root => root.Id.StringId.StartsWith("Vcs_"));
 
             await toDelete.Delete();
 
             vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
             
-            Assert.DoesNotContain(vcsRoots, root => root.Id.stringId == toDelete.Id.stringId);
+            Assert.DoesNotContain(vcsRoots, root => root.Id == toDelete.Id);
         }
 
         [Fact]
@@ -164,14 +164,14 @@ namespace TeamCityRestClientNet.VcsRoots
             var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
 
             var toDelete = vcsRoots
-                .First(root => root.Id.stringId.StartsWith("Vcs_"));
+                .First(root => root.Id.StringId.StartsWith("Vcs_"));
                 
             await toDelete.Delete();
 
             Assert.Equal(HttpMethod.Delete, ApiCall.Method);
             Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
             Assert.True(ApiCall.HasLocators);
-            Assert.Equal(toDelete.Id.stringId, ApiCall.GetLocatorValue());
+            Assert.Equal(toDelete.Id.StringId, ApiCall.GetLocatorValue());
         }
     }
 }

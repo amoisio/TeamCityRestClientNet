@@ -109,12 +109,12 @@ namespace TeamCityRestClientNet.Domain
         /// <param name="properties">Vcs root properties.</param>
         /// <returns>Created VCS root.</returns>
         public async Task<IVcsRoot> CreateVcsRoot(
-            VcsRootId id, string name, VcsRootType type, IDictionary<string, string> properties)
+            Id id, string name, VcsRootType type, IDictionary<string, string> properties)
         {
             var xmlDto = new NewVcsRoot
             {
                 Name = name,
-                Id = id.stringId,
+                Id = id.StringId,
                 VcsName = type.stringType,
                 Project = new ReferenceDto
                 {

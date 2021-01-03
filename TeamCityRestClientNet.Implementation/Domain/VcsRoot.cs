@@ -19,7 +19,7 @@ namespace TeamCityRestClientNet.Domain
                 ?? new Dictionary<string, string>();
         }
 
-        public static async Task<VcsRoot> Create(VcsRootDto dto, bool isFullDto, TeamCityServer instance)
+        public static async Task<IVcsRoot> Create(VcsRootDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
                 ? dto
@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Domain
             return new VcsRoot(fullDto, instance);
         }
         public Dictionary<string, string> Properties { get; }
-        public VcsRootId Id => new VcsRootId(IdString);
+        public Id Id => new Id(IdString);
         public string Name => Dto.Name.SelfOrNullRef();
         public string Url => GetNameValueProperty("url");
         public string DefaultBranch => GetNameValueProperty("branch");
@@ -40,7 +40,7 @@ namespace TeamCityRestClientNet.Domain
             => $"VcsRoot(id={Id}, name={Name}, url={Url})";
         public async Task Delete()
         {
-            await Service.DeleteVcsRoot($"id:{Id.stringId}").ConfigureAwait(false);
+            await Service.DeleteVcsRoot($"id:{Id}").ConfigureAwait(false);
         }
     }
 }
