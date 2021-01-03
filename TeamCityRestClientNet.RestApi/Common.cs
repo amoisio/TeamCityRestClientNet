@@ -3,7 +3,16 @@ using System.Xml.Serialization;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public abstract class ListDto<T> where T : IdDto
+    public interface IListDto<T>
+    {
+        List<T> Items { get; set; }
+        int Count { get; }
+        string Href { get; set; }
+        string NextHref { get; set; }
+    }
+
+    public abstract class ListDto<T> : IListDto<T>
+        where T : IdDto
     {
         public abstract List<T> Items { get; set; }
         public int Count => Items.Count;
