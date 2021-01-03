@@ -68,12 +68,8 @@ namespace TeamCityRestClientNet
         /// <returns>Locator used for interacting with build agent pools.</returns>
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
-        public override async Task<IBuildConfiguration> BuildConfiguration(string id)
-            => await Domain.BuildConfiguration.Create(id, this).ConfigureAwait(false);
-
-        public override async Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id)
-            => await BuildConfiguration(id.stringId).ConfigureAwait(false);
-
+        public override IBuildConfigurationLocator BuildConfigurations => new BuildConfigurationLocator(this);
+       
         public override IBuildQueue BuildQueue => new BuildQueue(this);
 
         public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)

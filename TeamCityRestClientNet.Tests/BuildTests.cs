@@ -165,31 +165,31 @@ namespace TeamCityRestClientNet.Builds
         // }
 
 
-        [Fact]
-        public async Task Can_contain_running_builds_only()
-        {
-            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-            var newBuild = await config.RunBuild();
+        // // // [Fact]
+        // // // public async Task Can_contain_running_builds_only()
+        // // // {
+        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
 
-            var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
+        // // //     var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
 
-            Assert.All(onlyRunning, build => Assert.Equal(BuildState.RUNNING, build.State));
-        }
+        // // //     Assert.All(onlyRunning, build => Assert.Equal(BuildState.RUNNING, build.State));
+        // // // }
 
-        [Fact]
-        public async Task Can_include_running_builds()
-        {
-            await TeamCityHelpers.EnableAllAgents(_teamCity);
+        // // // [Fact]
+        // // // public async Task Can_include_running_builds()
+        // // // {
+        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity);
 
-            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-            var newBuild = await config.RunBuild();
+        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
 
-            var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
+        // // //     var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
 
-            Assert.Contains(inclRunning, build => build.State == BuildState.RUNNING);
-            Assert.Contains(inclRunning, build => build.State == BuildState.FINISHED);
+        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.RUNNING);
+        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.FINISHED);
 
-        }
+        // // // }
 
         // [Fact]
         // public async Task Can_contain_builds_from_specific_configuration_only()
@@ -210,29 +210,29 @@ namespace TeamCityRestClientNet.Builds
             BuildState.RUNNING /* Running if agent can start the build immediatelly */
         };
 
-        [Fact]
-        public async Task Can_be_started_for_a_branch()
-        {
-            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-            var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
+        // // // [Fact]
+        // // // public async Task Can_be_started_for_a_branch()
+        // // // {
+        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
 
-            Assert.Contains(_buildingStates, state => state == build.State);
-        }
+        // // //     Assert.Contains(_buildingStates, state => state == build.State);
+        // // // }
 
-        [Fact]
-        public async Task Can_be_seen_on_the_build_queue()
-        {
-            await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
+        // // // [Fact]
+        // // // public async Task Can_be_seen_on_the_build_queue()
+        // // // {
+        // // //     await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
 
-            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-            var newBuild = await config.RunBuild();
+        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
 
-            var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
+        // // //     var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
 
-            Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
+        // // //     Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
 
-            await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
-        }
+        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
+        // // // }
     }
 
     [Collection("TeamCity Collection")]
@@ -240,22 +240,22 @@ namespace TeamCityRestClientNet.Builds
     {
         public RunningBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
-        [Fact]
-        public async Task Can_be_cancelled()
-        {
-            var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
-            var newBuild = await config.RunBuild();
+        // // // [Fact]
+        // // // public async Task Can_be_cancelled()
+        // // // {
+        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
 
-            await Task.Delay(500).ConfigureAwait(false);
+        // // //     await Task.Delay(500).ConfigureAwait(false);
 
-            var comment = $"Cancelled-{Guid.NewGuid()}";
-            await newBuild.Cancel(comment);
+        // // //     var comment = $"Cancelled-{Guid.NewGuid()}";
+        // // //     await newBuild.Cancel(comment);
 
-            await Task.Delay(500).ConfigureAwait(false);
+        // // //     await Task.Delay(500).ConfigureAwait(false);
 
-            var cancelledBuilds = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
-            Assert.Contains(cancelledBuilds, build => build.CanceledInfo.Text == comment);
-        }
+        // // //     var cancelledBuilds = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+        // // //     Assert.Contains(cancelledBuilds, build => build.CanceledInfo.Text == comment);
+        // // // }
     }
 
     [Collection("TeamCity Collection")]

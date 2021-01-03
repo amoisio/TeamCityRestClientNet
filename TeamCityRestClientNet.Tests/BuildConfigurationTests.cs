@@ -6,18 +6,25 @@ using System.Linq;
 
 namespace TeamCityRestClientNet.Tests
 {
-    [Collection("TeamCity Collection")]
-    public class BuildConfigurationTests : _TestsBase
+    public class BuildConfigurationList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public BuildConfigurationTests(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
+        public BuildConfigurationList(TeamCityFixture fixture) : base(fixture) { }
 
         // [Fact]
-        // public async Task VcsRoots_query_returns_all_vcsroots()
+        // public async Task Contains_all_build_configurations()
         // {
-        //     var vcsRoots = await _teamCity.BuildConfiguration()
-        //     Assert.NotEmpty(vcsRoots);
+        //     var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
+        //     Assert.Contains(vcsRoots, (root) => root.Id.stringId == "TeamCityRestClientNet_Bitbucket");
         // }
 
+        // [Fact]
+        // public async Task GETs_the_vcsroots_end_point()
+        // {
+        //     var users = await _teamCity.VcsRoots.All().ToListAsync();
+
+        //     Assert.Equal(HttpMethod.Get, ApiCall.Method);
+        //     Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
+        // }
         // [Fact]
         // public async Task VcsRoot_query_returns_the_matching_vcsroot()
         // {
@@ -27,6 +34,17 @@ namespace TeamCityRestClientNet.Tests
         //     Assert.Equal("Bitbucket", root.Name);
         //     Assert.Equal("refs/heads/master", root.DefaultBranch);
         //     Assert.Equal("https://amoisio@bitbucket.org/amoisio/teamcityrestclientnet.git", root.Url);
+        // }
+    }
+
+    public class ExistingBuildConfiguration : TestsBase, IClassFixture<TeamCityFixture>
+    {
+        public ExistingBuildConfiguration(TeamCityFixture fixture) : base(fixture) { }
+
+        // [Fact]
+        // public async Task Can_be_retrieved_with_id()
+        // {
+        //     _teamCity.BuildConfiguration()
         // }
     }
 }

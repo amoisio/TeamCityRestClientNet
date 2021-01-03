@@ -15,6 +15,12 @@ namespace TeamCityRestClientNet.Api
         public override string ToString() => this.stringId;
     }
 
+    public interface IBuildConfigurationLocator
+    {
+        Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id);
+        IAsyncEnumerable<IBuildConfiguration> All();
+    }
+
     public interface IBuildConfiguration
     {
         BuildConfigurationId Id { get; }
