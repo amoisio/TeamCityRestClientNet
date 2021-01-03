@@ -48,7 +48,7 @@ namespace TeamCityRestClientNet.Locators
 
             }
 
-            var sequence = new Paged<ITestRun, TestOccurrencesDto>(
+            var sequence = new Paged<ITestRun, TestOccurrenceListDto>(
                 Instance,
                 async () =>
                 {
@@ -62,7 +62,7 @@ namespace TeamCityRestClientNet.Locators
                 {
                     return await Task.Run(() =>
                     {
-                        var runs = list.TestOccurrence.Select(test => new TestRun(test)).ToArray();
+                        var runs = list.Items.Select(test => new TestRun(test)).ToArray();
                         return new Page<ITestRun>(
                             runs,
                             list.NextHref

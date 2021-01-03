@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class TestOccurrencesDto
+    public class TestOccurrenceListDto : ListDto<TestOccurrenceDto>
     {
-        public string NextHref { get; set; }
-        public List<TestOccurrenceDto> TestOccurrence { get; set; } = new List<TestOccurrenceDto>();
+        [JsonProperty(PropertyName = "testOccurrence")]
+        public override List<TestOccurrenceDto> Items { get; set; } = new List<TestOccurrenceDto>();
     }
 
-    public class TestOccurrenceDto
+    public class TestOccurrenceDto : IdDto
     {
         public string Name { get; set; }
         public string Status { get; set; }
@@ -26,8 +27,8 @@ namespace TeamCityRestClientNet.RestApi
         public const string FILTER = "testOccurrence(name,status,ignored,muted,currentlyMuted,newFailure,duration,ignoreDetails,details,firstFailed(id),nextFixed(id),build(id),test(id))";
     }
 
-    public class TestDto
+    public class TestDto : IdDto
     {
-        public string Id { get; set; }
+        
     }
 }

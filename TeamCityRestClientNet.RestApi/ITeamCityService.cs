@@ -197,7 +197,7 @@ namespace TeamCityRestClientNet.RestApi
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/testOccurrences")]
-        Task<TestOccurrencesDto> TestOccurrences(string locator, string fields);
+        Task<TestOccurrenceListDto> TestOccurrences(string locator, string fields);
 
         #region Users
 
