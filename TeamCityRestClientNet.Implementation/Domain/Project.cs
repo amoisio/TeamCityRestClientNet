@@ -147,7 +147,7 @@ namespace TeamCityRestClientNet.Domain
                 projectId: Id,
                 branch: branch);
 
-        public string GetTestHomeUrl(TestId testId)
+        public string GetTestHomeUrl(Id testId)
             => Instance.GetUserUrlPage(
                 "project.html",
                 projectId: Id,

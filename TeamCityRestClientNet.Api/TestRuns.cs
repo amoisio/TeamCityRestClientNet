@@ -3,17 +3,6 @@ using System.Collections.Generic;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct TestId
-    {
-        public TestId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
     public interface ITestRun
     {
         string Name { get; }
@@ -40,7 +29,7 @@ namespace TeamCityRestClientNet.Api
         BuildId BuildId { get; }
         BuildId? FixedIn { get; }
         BuildId? FirstFailedIn { get; }
-        TestId TestId { get; }
+        Id TestId { get; }
     }
     
     public interface ITestRunsLocator
@@ -48,7 +37,7 @@ namespace TeamCityRestClientNet.Api
         ITestRunsLocator LimitResults(int count);
         ITestRunsLocator PageSize(int pageSize);
         ITestRunsLocator ForBuild(BuildId buildId);
-        ITestRunsLocator ForTest(TestId testId);
+        ITestRunsLocator ForTest(Id testId);
         ITestRunsLocator ForProject(Id projectId);
         ITestRunsLocator WithStatus(TestStatus testStatus);
         /**

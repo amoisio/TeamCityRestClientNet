@@ -92,7 +92,7 @@ namespace TeamCityRestClientNet
             string tab = null,
             Id? projectId = null,
             BuildId? buildId = null,
-            TestId? testNameId = null,
+            Id? testNameId = null,
             Id? userId = null,
             Id? modId = null,
             bool? personal = null,
@@ -108,7 +108,7 @@ namespace TeamCityRestClientNet
             if (buildId.HasValue)
                 param.Add($"buildId={WebUtility.UrlEncode(buildId.Value.stringId)}");
             if (testNameId.HasValue)
-                param.Add($"testNameId={WebUtility.UrlEncode(testNameId.Value.stringId)}");
+                param.Add($"testNameId={WebUtility.UrlEncode(testNameId.Value.StringId)}");
             if (userId.HasValue)
                 param.Add($"userId={WebUtility.UrlEncode(userId.Value.StringId)}");
             if (modId.HasValue)

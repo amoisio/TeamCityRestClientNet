@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.Api
         string Comment { get; }
         InvestigationResolveMethod ResolveMethod { get; }
         InvestigationTargetType TargetType { get; }
-        List<TestId> TestIds { get; }
+        List<Id> TestIds { get; }
         List<BuildProblemId> ProblemIds { get; }
         AsyncLazy<IInvestigationScope> Scope { get; }
     }

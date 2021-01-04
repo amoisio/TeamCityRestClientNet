@@ -44,7 +44,7 @@ namespace TeamCityRestClientNet.Domain
                 ? default(BuildId?)
                 : new BuildId(_dto.FirstFailed.SelfOrNullRef().Id.SelfOrNullRef());
 
-        public TestId TestId => new TestId(_dto.Test.SelfOrNullRef().Id.SelfOrNullRef());
+        public Id TestId => new Id(_dto.Test.SelfOrNullRef().Id.SelfOrNullRef());
 
         public override string ToString() =>
             $"Test(name={Name}, status={Status}, duration={Duration}, details={Details})";

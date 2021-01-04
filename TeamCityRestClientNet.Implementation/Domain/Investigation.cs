@@ -92,8 +92,8 @@ namespace TeamCityRestClientNet.Domain
             }
         }
 
-        public List<TestId> TestIds
-            => Dto.Target?.Tests?.Test.Select(t => new TestId(t.Id)).ToList();
+        public List<Id> TestIds
+            => Dto.Target?.Tests?.Test.Select(t => new Id(t.Id)).ToList();
 
         public List<BuildProblemId> ProblemIds
             => Dto.Target?.Problems?.Problem?.Select(p => new BuildProblemId(p.Id)).ToList();

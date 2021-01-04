@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Api
          * Web UI URL for user, especially useful for error and log messages
          */
         string GetHomeUrl(string branch = null);
-        string GetTestHomeUrl(TestId testId);
+        string GetTestHomeUrl(Id testId);
         AsyncLazy<List<IProject>> ChildProjects { get; }
         AsyncLazy<List<IBuildType>> BuildTypes { get; }
         List<IParameter> Parameters { get; }
