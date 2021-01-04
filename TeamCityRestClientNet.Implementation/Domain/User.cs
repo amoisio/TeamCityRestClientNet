@@ -20,7 +20,6 @@ namespace TeamCityRestClientNet.Domain
             return new User(fullDto, instance);
         }
 
-        public Id Id => new Id(IdString);
         public string Username => Dto.Username;
         public string Name => Dto.Name;
         public string Email => Dto.Email;

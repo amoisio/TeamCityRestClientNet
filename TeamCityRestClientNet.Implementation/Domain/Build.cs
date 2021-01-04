@@ -67,7 +67,6 @@ namespace TeamCityRestClientNet.Domain
             return new Build(dto, instance);
         }
 
-        public Id Id => new Id(this.IdString);
         public Id BuildTypeId => new Id(this.Dto.BuildTypeId);
         public string BuildNumber => this.Dto.Number;
         public BuildStatus? Status => this.Dto.Status;

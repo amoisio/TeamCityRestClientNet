@@ -45,7 +45,6 @@ namespace TeamCityRestClientNet.Domain
             return new Project(fullDto, instance);
         }
 
-        public Id Id => new Id(IdString);
         public string Name => Dto.Name.SelfOrNullRef();
         public bool Archived => Dto.Archived ?? false;
         public Id? ParentProjectId

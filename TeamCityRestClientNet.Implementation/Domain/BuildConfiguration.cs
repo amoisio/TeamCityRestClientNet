@@ -52,7 +52,6 @@ namespace TeamCityRestClientNet.Domain
             return new BuildType(fullDto, instance);
         }
 
-        public Id Id => new Id(IdString);
         public string Name => NotNull(dto => dto.Name);
         public Id ProjectId => new Id(NotNull(dto => dto.ProjectId));
         public bool Paused => this.Dto.Paused ?? false;

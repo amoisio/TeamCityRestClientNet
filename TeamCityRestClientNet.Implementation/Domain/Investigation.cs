@@ -62,7 +62,6 @@ namespace TeamCityRestClientNet.Domain
             return new Investigation(dto, instance);
         }
 
-        public Id Id => new Id(IdString);
         public InvestigationState State => Dto.State ?? throw new NullReferenceException();
         public AsyncLazy<IUser> Assignee { get; }
         public AsyncLazy<IUser> Reporter { get; }

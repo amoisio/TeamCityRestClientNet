@@ -1,4 +1,5 @@
 using System;
+using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Domain
@@ -29,7 +30,7 @@ namespace TeamCityRestClientNet.Domain
         /// </summary>
         protected TDto Dto { get; private set; }
         protected string IdString => this.Dto.Id;
-
+        public Id Id => new Id(IdString);
         protected T NotNull<T>(Func<TDto, T> getter)
             => getter(this.Dto)
             ?? throw new NullReferenceException();
