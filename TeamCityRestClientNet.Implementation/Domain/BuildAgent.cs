@@ -32,7 +32,7 @@ namespace TeamCityRestClientNet.Domain
             return new BuildAgent(dto, instance);
         }
 
-        public BuildAgentId Id => new BuildAgentId(IdString);
+        public Id Id => new Id(IdString);
         public string Name => Dto.Name.SelfOrNullRef();
         public AsyncLazy<IBuildAgentPool> Pool { get; }
         public bool Connected => Dto.Connected.Value;
@@ -67,7 +67,7 @@ namespace TeamCityRestClientNet.Domain
                 );
         public AsyncLazy<IBuild> CurrentBuild { get; }
         public string GetHomeUrl()
-            => $"{Instance.ServerUrl}/agentDetails.html?id={Id.stringId}";
+            => $"{Instance.ServerUrl}/agentDetails.html?id={Id}";
 
         public override string ToString() => $"BuildAgent(id={Id}, name={Name})";
 

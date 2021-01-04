@@ -4,20 +4,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct BuildAgentId
+    public interface IBuildAgent : IIdentifiable
     {
-        public BuildAgentId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IBuildAgent
-    {
-        BuildAgentId Id { get; }
         string Name { get; }
         AsyncLazy<IBuildAgentPool> Pool { get; }
         bool Connected { get; }
@@ -34,11 +22,7 @@ namespace TeamCityRestClientNet.Api
         string GetHomeUrl();
     }
     
-    public interface IBuildAgentLocator
-    {
-        Task<IBuildAgent> BuildAgent(BuildAgentId id);
-        Task<IEnumerable<IBuildAgent>> All();
-    }
+    public interface IBuildAgentLocator : ILocator<IBuildAgent> { }
 
     public interface IBuildAgentEnabledInfo : IInfo { }
 

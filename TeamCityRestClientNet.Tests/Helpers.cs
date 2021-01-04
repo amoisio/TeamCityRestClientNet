@@ -26,23 +26,5 @@ namespace TeamCityRestClientNet.Tests
                 await build.Cancel();
             }
         }
-
-        public static async Task EnableAllAgents(TeamCity teamCity)
-        {
-            var agents = await teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Enable();
-            }
-        }
-
-        public static async Task DisableAllAgents(TeamCity teamCity)
-        {
-            var agents = await teamCity.BuildAgents.All();
-            foreach (var agent in agents)
-            {
-                await agent.Disable();
-            }
-        }
     }
 }
