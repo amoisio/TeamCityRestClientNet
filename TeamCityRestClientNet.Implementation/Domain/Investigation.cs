@@ -98,8 +98,8 @@ namespace TeamCityRestClientNet.Domain
         public List<Id> TestIds
             => Dto.Target?.Tests?.Test.Select(t => new Id(t.Id)).ToList();
 
-        public List<BuildProblemId> ProblemIds
-            => Dto.Target?.Problems?.Problem?.Select(p => new BuildProblemId(p.Id)).ToList();
+        public List<Id> ProblemIds
+            => Dto.Target?.Problems?.Problem?.Select(p => new Id(p.Id)).ToList();
 
         public AsyncLazy<IInvestigationScope> Scope { get; }
 

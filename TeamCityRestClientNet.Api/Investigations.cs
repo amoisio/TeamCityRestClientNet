@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Api
         InvestigationResolveMethod ResolveMethod { get; }
         InvestigationTargetType TargetType { get; }
         List<Id> TestIds { get; }
-        List<BuildProblemId> ProblemIds { get; }
+        List<Id> ProblemIds { get; }
         AsyncLazy<IInvestigationScope> Scope { get; }
     }
 

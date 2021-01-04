@@ -2,17 +2,6 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct BuildProblemId
-    {
-        public BuildProblemId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-    
     public struct BuildProblemType
     {
         public BuildProblemType(string stringId)
@@ -30,9 +19,8 @@ namespace TeamCityRestClientNet.Api
         public readonly static BuildProblemType FAILED_TESTS = new BuildProblemType("TC_FAILED_TESTS");
     }
 
-    public interface IBuildProblem
+    public interface IBuildProblem : IIdentifiable
     {
-        BuildProblemId Id { get; }
         BuildProblemType Type { get; }
         string Identity { get; }
     }

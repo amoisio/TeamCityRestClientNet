@@ -12,11 +12,11 @@ namespace TeamCityRestClientNet.Domain
             _dto = dto;
         }
 
-        public BuildProblemId Id => new BuildProblemId(_dto.Id);
+        public Id Id => new Id(_dto.Id);
         public BuildProblemType Type => new BuildProblemType(_dto.Type);
         public string Identity => _dto.Identity;
 
         public override string ToString()
-            => $"BuildProblem(id={Id.stringId},type={Type},identity={Identity})";
+            => $"BuildProblem(id={Id},type={Type},identity={Identity})";
     }
 }
