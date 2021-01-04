@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.Api
     {
         string Version { get; }
         string VcsBranchName { get; }
-        IVcsRootInstance VcsRootInstance { get; }
+        AsyncLazy<IVcsRootInstance> VcsRootInstance { get; }
     }
 
     public interface IChange : IIdentifiable
@@ -19,7 +19,7 @@ namespace TeamCityRestClientNet.Api
         AsyncLazy<IUser> User { get; }
         DateTimeOffset DateTime { get; }
         string Comment { get; }
-        IVcsRootInstance VcsRootInstance { get; }
+        AsyncLazy<IVcsRootInstance> VcsRootInstance { get; }
         /**
          * Web UI URL for user, especially useful for error and log messages
          */

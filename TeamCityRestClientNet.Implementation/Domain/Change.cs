@@ -17,6 +17,9 @@ namespace TeamCityRestClientNet.Domain
         {
             this.User = new AsyncLazy<IUser>(async ()
                 => await Domain.User.Create(IdString, Instance).ConfigureAwait(false));
+
+            this.VcsRootInstance = new AsyncLazy<IVcsRootInstance>(async ()
+                => await Domain.VcsRootInstance.Create(this.Dto.VcsRootInstance, false, Instance).ConfigureAwait(false));
         }
 
         public static async Task<IChange> Create(ChangeDto dto, bool isFullDto, TeamCityServer instance)
@@ -33,9 +36,7 @@ namespace TeamCityRestClientNet.Domain
         public DateTimeOffset DateTime 
             => Utilities.ParseTeamCity(this.Dto.Date.SelfOrNullRef()).Value;
         public string Comment => this.Dto.Comment.SelfOrNullRef();
-        public IVcsRootInstance VcsRootInstance 
-            => this.Dto.VcsRootInstance
-              .Let(rootDto => new VcsRootInstance(rootDto));
+        public AsyncLazy<IVcsRootInstance> VcsRootInstance { get; }
 
         public string GetHomeUrl(Id? specificBuildTypeId = null, bool? includePersonalBuilds = null)
             => Instance.GetUserUrlPage(

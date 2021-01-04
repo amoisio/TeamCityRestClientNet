@@ -23,12 +23,13 @@ namespace TeamCityRestClientNet.Api
         public readonly static VcsRootType GIT = new VcsRootType("jetbrains.git");
         public readonly string stringType;
     }
+    public interface IVcsRootLocator : ILocator<IVcsRoot> { }
 
-    public interface IVcsRootInstance
+    public interface IVcsRootInstance : IIdentifiable
     {
         Id VcsRootId { get; }
         string Name { get; }
     }
 
-    public interface IVcsRootLocator : ILocator<IVcsRoot> { }
+    public interface IVcsRootInstanceLocator : ILocator<IVcsRootInstance> { }
 }

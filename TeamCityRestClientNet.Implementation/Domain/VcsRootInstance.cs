@@ -1,20 +1,29 @@
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.RestApi;
 using TeamCityRestClientNet.Extensions;
+using System.Threading.Tasks;
 
 namespace TeamCityRestClientNet.Domain
 {
-    class VcsRootInstance : IVcsRootInstance
+    class VcsRootInstance : Base<VcsRootInstanceDto>, IVcsRootInstance
     {
-        private readonly VcsRootInstanceDto _dto;
-
-        public VcsRootInstance(VcsRootInstanceDto dto)
+        private VcsRootInstance(VcsRootInstanceDto fullDto, TeamCityServer instance)
+            : base(fullDto, instance)
         {
-            _dto = dto;
+            
         }
 
-        public Id VcsRootId => new Id(_dto.VcsRootId.SelfOrNullRef());
-        public string Name => _dto.Name.SelfOrNullRef();
+        public static async Task<IVcsRootInstance> Create(VcsRootInstanceDto dto, bool isFullDto, TeamCityServer instance)
+        {
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.VcsRootInstance(dto.Id).ConfigureAwait(false);
+
+            return new VcsRootInstance(fullDto, instance);
+        }
+
+        public Id VcsRootId => new Id(Dto.VcsRootId.SelfOrNullRef());
+        public string Name => Dto.Name.SelfOrNullRef();
         public override string ToString()
             => $"VcsRootInstanceImpl(id={VcsRootId}, name={Name})";
     }

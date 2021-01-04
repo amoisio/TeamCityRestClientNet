@@ -238,5 +238,17 @@ namespace TeamCityRestClientNet.RestApi
         Task DeleteVcsRoot([AliasAs("locator")] string vcsRootLocator);
 
         #endregion
+
+        #region Vcs Root Instances
+
+        [Headers("Accept: application/json")]
+        [Get("/app/rest/vcs-root-instances")]
+        Task<VcsRootInstanceListDto> VcsRootInstances();
+
+        [Headers("Accept: application/json")]
+        [Get("/app/rest/vcs-root-instances/{id}")]
+        Task<VcsRootInstanceDto> VcsRootInstance(string id);
+
+        #endregion
     }
 }

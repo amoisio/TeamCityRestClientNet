@@ -129,7 +129,7 @@ namespace TeamCityRestClientNet.Domain
         public List<IRevision> Revisions
             => this.Dto.Revisions
                 ?.Revision
-                ?.Select(rev => new Revision(rev))
+                ?.Select(rev => new Revision(rev, Instance))
                 .ToList<IRevision>()
                 ?? throw new NullReferenceException();
 

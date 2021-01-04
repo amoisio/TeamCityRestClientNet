@@ -17,7 +17,13 @@ namespace TeamCityRestClientNet.RestApi
         public NameValuePropertiesDto Properties { get; set; }
     }
 
-    public class VcsRootInstanceDto
+    public class VcsRootInstanceListDto : ListDto<VcsRootInstanceDto>
+    {
+        [JsonProperty(PropertyName = "vcs-root-instance")]
+        public override List<VcsRootInstanceDto> Items { get; set; } = new List<VcsRootInstanceDto>();
+    }
+
+    public class VcsRootInstanceDto : IdDto
     {
         public string VcsRootId { get; set; }
         public string Name { get; set; }
