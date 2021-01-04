@@ -46,7 +46,7 @@ namespace TeamCityRestClientNet.Domain
 
         public BuildConfigurationId Id => new BuildConfigurationId(IdString);
         public string Name => NotNull(dto => dto.Name);
-        public ProjectId ProjectId => new ProjectId(NotNull(dto => dto.ProjectId));
+        public Id ProjectId => new Id(NotNull(dto => dto.ProjectId));
         public bool Paused => this.Dto.Paused ?? false;
         public AsyncLazy<List<string>> BuildTags { get; }
         public AsyncLazy<List<IFinishBuildTrigger>> FinishBuildTriggers { get; }

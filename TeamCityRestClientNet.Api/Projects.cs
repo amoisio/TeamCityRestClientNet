@@ -4,23 +4,12 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct ProjectId
-    {
-        public ProjectId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
     public interface IProject
     {
-        ProjectId Id { get; }
+        Id Id { get; }
         string Name { get; }
         bool Archived { get; }
-        ProjectId? ParentProjectId { get; }
+        Id? ParentProjectId { get; }
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
@@ -35,7 +24,7 @@ namespace TeamCityRestClientNet.Api
          * https://teamcity/app/rest/vcs-roots/id:YourVcsRootId
          */
         Task<IVcsRoot> CreateVcsRoot(Id id, string name, VcsRootType type, IDictionary<string, string> properties);
-        Task<IProject> CreateProject(ProjectId id, string name);
+        Task<IProject> CreateProject(Id id, string name);
         Task Delete();
         /**
          * XML in the same format as

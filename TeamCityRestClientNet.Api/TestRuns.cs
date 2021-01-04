@@ -49,7 +49,7 @@ namespace TeamCityRestClientNet.Api
         ITestRunsLocator PageSize(int pageSize);
         ITestRunsLocator ForBuild(BuildId buildId);
         ITestRunsLocator ForTest(TestId testId);
-        ITestRunsLocator ForProject(ProjectId projectId);
+        ITestRunsLocator ForProject(Id projectId);
         ITestRunsLocator WithStatus(TestStatus testStatus);
         /**
          * If expandMultipleInvocations is enabled, individual runs of tests, which were executed several

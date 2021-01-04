@@ -72,7 +72,7 @@ namespace TeamCityRestClientNet
        
         public override IBuildQueue BuildQueue => new BuildQueue(this);
 
-        public override IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId projectId)
+        public override IAsyncEnumerable<IBuild> QueuedBuilds(Id projectId)
             => new BuildQueue(this).QueuedBuilds(projectId);
 
         /// <summary>
@@ -94,15 +94,15 @@ namespace TeamCityRestClientNet
         /// </summary>
         /// <param name="id">Id of the project to retrieve.</param>
         /// <returns>Matching project. Throws a Refit.ApiException if project not found.</returns>
-        public override async Task<IProject> Project(ProjectId id)
-            => await Domain.Project.Create(new ProjectDto { Id = id.stringId }, false, this).ConfigureAwait(false);
+        public override async Task<IProject> Project(Id id)
+            => await Domain.Project.Create(new ProjectDto { Id = id.StringId }, false, this).ConfigureAwait(false);
 
         /// <summary>
         /// Retrieves the root project.
         /// </summary>
         /// <returns>The root project.</returns>
         public override async Task<IProject> RootProject()
-            => await Project(new ProjectId("_Root")).ConfigureAwait(false);
+            => await Project(new Id("_Root")).ConfigureAwait(false);
 
         // TODO: comments + tests
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
@@ -112,7 +112,7 @@ namespace TeamCityRestClientNet
         internal string GetUserUrlPage(
             string pageName,
             string tab = null,
-            ProjectId? projectId = null,
+            Id? projectId = null,
             BuildId? buildId = null,
             TestId? testNameId = null,
             Id? userId = null,
@@ -126,7 +126,7 @@ namespace TeamCityRestClientNet
             if (tab != null)
                 param.Add($"tab={WebUtility.UrlEncode(tab)}");
             if (projectId.HasValue)
-                param.Add($"projectId={WebUtility.UrlEncode(projectId.Value.stringId)}");
+                param.Add($"projectId={WebUtility.UrlEncode(projectId.Value.StringId)}");
             if (buildId.HasValue)
                 param.Add($"buildId={WebUtility.UrlEncode(buildId.Value.stringId)}");
             if (testNameId.HasValue)

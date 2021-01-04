@@ -32,7 +32,7 @@ namespace TeamCityRestClientNet.Api
     public interface IInvestigationLocator
     {
         IInvestigationLocator LimitResults(int count);
-        IInvestigationLocator ForProject(ProjectId projectId);
+        IInvestigationLocator ForProject(Id projectId);
         IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
         Task<IEnumerable<IInvestigation>> All();
     }

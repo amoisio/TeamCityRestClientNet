@@ -45,11 +45,11 @@ namespace TeamCityRestClientNet.Domain
             return new Project(fullDto, instance);
         }
 
-        public ProjectId Id => new ProjectId(IdString);
+        public Id Id => new Id(IdString);
         public string Name => Dto.Name.SelfOrNullRef();
         public bool Archived => Dto.Archived ?? false;
-        public ProjectId? ParentProjectId
-            => Dto.ParentProjectId.Let(id => new ProjectId(Dto.ParentProjectId));
+        public Id? ParentProjectId
+            => Dto.ParentProjectId.Let(id => new Id(Dto.ParentProjectId));
         public AsyncLazy<List<IProject>> ChildProjects { get; }
         public AsyncLazy<List<IBuildConfiguration>> BuildConfigurations { get; }
         public List<IParameter> Parameters
@@ -72,15 +72,15 @@ namespace TeamCityRestClientNet.Domain
         /// <param name="id">Id of the new project.</param>
         /// <param name="name">Name of the new project</param>
         /// <returns>The created project. Throws an ApiException is project cannot be created.</returns>
-        public async Task<IProject> CreateProject(ProjectId id, string name)
+        public async Task<IProject> CreateProject(Id id, string name)
         {
             var xmlDto = new NewProjectDescriptionDto
             {
                 Name = name,
-                Id = id.stringId,
+                Id = id.StringId,
                 ParentProject = new ProjectLocatorDto
                 {
-                    Locator = $"id:{Id.stringId}"
+                    Locator = $"id:{Id}"
                 }
             };
 
@@ -97,7 +97,7 @@ namespace TeamCityRestClientNet.Domain
 
         public async Task Delete()
         {
-            await Service.DeleteProject($"id:{Id.stringId}").ConfigureAwait(false);
+            await Service.DeleteProject($"id:{Id}").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace TeamCityRestClientNet.Domain
         public async Task SetParameter(string name, string value)
         {
             //         LOG.info("Setting parameter $name=$value in ProjectId=$idString")
-            await Service.SetProjectParameter(Id.stringId, name, value).ConfigureAwait(false);
+            await Service.SetProjectParameter(Id.StringId, name, value).ConfigureAwait(false);
         }
 
         public override string ToString()

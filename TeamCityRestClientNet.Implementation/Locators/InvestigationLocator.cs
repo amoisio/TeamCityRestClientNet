@@ -11,7 +11,7 @@ namespace TeamCityRestClientNet.Locators
     {
         private int? limitResult;
         private InvestigationTargetType? targetType;
-        private ProjectId? affectedProjectId;
+        private Id? affectedProjectId;
 
         public InvestigationLocator(TeamCityServer instance) : base(instance) 
         {
@@ -39,7 +39,7 @@ namespace TeamCityRestClientNet.Locators
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        public IInvestigationLocator ForProject(ProjectId projectId)
+        public IInvestigationLocator ForProject(Id projectId)
         {
             this.affectedProjectId = projectId;
             return this;

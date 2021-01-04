@@ -17,7 +17,7 @@ namespace TeamCityRestClientNet.Locators
         private int? _pageSize;
         private BuildId? _buildId;
         private TestId? _testId;
-        private ProjectId? _affectedProjectId;
+        private Id? _affectedProjectId;
         private TestStatus? _testStatus;
         private bool _expandMultipleInvocations = false;
 
@@ -87,7 +87,7 @@ namespace TeamCityRestClientNet.Locators
             return this;
         }
 
-        public ITestRunsLocator ForProject(ProjectId projectId)
+        public ITestRunsLocator ForProject(Id projectId)
         {
             this._affectedProjectId = projectId;
             return this;

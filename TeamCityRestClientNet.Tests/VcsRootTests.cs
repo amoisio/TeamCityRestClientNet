@@ -104,7 +104,7 @@ namespace TeamCityRestClientNet.VcsRoots
             Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
             Assert.Equal(vcsId, body.Id);
             Assert.Equal(vcsId, body.Name);
-            Assert.Equal(project.Id.stringId, body.Project.Id);
+            Assert.Equal(project.Id.StringId, body.Project.Id);
         }
     }
 

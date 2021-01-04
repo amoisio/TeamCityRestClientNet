@@ -46,8 +46,8 @@ namespace TeamCityRestClientNet.BuildAgentPools
 
             var projects = await agentPool.Projects;
             Assert.NotEmpty(projects);
-            Assert.Contains(projects, a => a.Id.stringId == "TeamCityCliNet");
-            Assert.Contains(projects, a => a.Id.stringId == "TeamCityRestClientNet");
+            Assert.Contains(projects, a => a.Id.StringId == "TeamCityCliNet");
+            Assert.Contains(projects, a => a.Id.StringId == "TeamCityRestClientNet");
         }
 
         [Fact]

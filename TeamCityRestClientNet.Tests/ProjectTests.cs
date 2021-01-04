@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.Projects
         {
             var rootProject = await _teamCity.RootProject();
 
-            Assert.Equal("_Root", rootProject.Id.stringId);
+            Assert.Equal("_Root", rootProject.Id.StringId);
             Assert.Equal("<Root project>", rootProject.Name);
         }
 
@@ -44,9 +44,9 @@ namespace TeamCityRestClientNet.Projects
             var childProjects = await rootProject.ChildProjects;
 
             Assert.Contains(childProjects, p => p.Name == "TeamCity CLI .NET");
-            Assert.Contains(childProjects, p => p.Id.stringId == "TeamCityCliNet");
+            Assert.Contains(childProjects, p => p.Id.StringId == "TeamCityCliNet");
             Assert.Contains(childProjects, p => p.Name == "TeamCity Rest Client .NET");
-            Assert.Contains(childProjects, p => p.Id.stringId == "TeamCityRestClientNet");
+            Assert.Contains(childProjects, p => p.Id.StringId == "TeamCityRestClientNet");
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace TeamCityRestClientNet.Projects
             var rootProject = await _teamCity.RootProject();
             var childProjects = await rootProject.ChildProjects;
 
-            var childIds = childProjects.Select(p => p.Id.stringId);
+            var childIds = childProjects.Select(p => p.Id.StringId);
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
@@ -73,9 +73,9 @@ namespace TeamCityRestClientNet.Projects
             var project = await _teamCity.RootProject();
             
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            var returnedProject = await project.CreateProject(new ProjectId(projectId), projectId);
+            var returnedProject = await project.CreateProject(new Id(projectId), projectId);
 
-            var newProject = await _teamCity.Project(new ProjectId(projectId));
+            var newProject = await _teamCity.Project(new Id(projectId));
             Assert.NotNull(newProject);
             Assert.Equal(projectId, newProject.Name);
             Assert.Equal(projectId, returnedProject.Name);
@@ -87,7 +87,7 @@ namespace TeamCityRestClientNet.Projects
             var project = await _teamCity.RootProject();
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
 
-            await project.CreateProject(new ProjectId(projectId), projectId);
+            await project.CreateProject(new Id(projectId), projectId);
 
             NewProjectDescriptionDto body;
             var bodyStr = ApiCall.Content;
@@ -111,7 +111,7 @@ namespace TeamCityRestClientNet.Projects
             var project = await _teamCity.RootProject();
 
             var projectId = $"---{Guid.NewGuid().ToString().Replace('-', '_')}";
-            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new ProjectId(projectId), projectId));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new Id(projectId), projectId));
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace TeamCityRestClientNet.Projects
             var project = await _teamCity.RootProject();
 
             var projectId = "TeamCityRestClientNet";
-            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new ProjectId(projectId), projectId));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new Id(projectId), projectId));
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace TeamCityRestClientNet.Projects
             var project = (await root.ChildProjects).First();
 
             var newProjectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            await project.CreateProject(new ProjectId(newProjectId), newProjectId);
+            await project.CreateProject(new Id(newProjectId), newProjectId);
 
             project = await _teamCity.Project(project.Id);
             var childProjects = await project.ChildProjects;
@@ -144,7 +144,7 @@ namespace TeamCityRestClientNet.Projects
             var project = (await root.ChildProjects).First();
             
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
-            await project.CreateProject(new ProjectId(projectId), projectId);
+            await project.CreateProject(new Id(projectId), projectId);
 
             NewProjectDescriptionDto body;
             var bodyStr = ApiCall.Content;
@@ -171,7 +171,7 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            var project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
 
             Assert.Equal("TeamCity Rest Client .NET", project.Name);
         }
@@ -179,23 +179,23 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task GETs_the_projects_end_point_with_project_id()
         {
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            var project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
-            Assert.Equal("TeamCityRestClientNet", project.Id.stringId);
+            Assert.Equal("TeamCityRestClientNet", project.Id.StringId);
         }
 
         [Fact]
         public async Task Retrieval_throws_ApiException_if_id_is_not_found()
         {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Project(new ProjectId("Not.Found")));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Project(new Id("Not.Found")));
         }
 
         [Fact]
         public async Task Parameters_can_be_retrieved()
         {
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            var project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
 
             Assert.Collection(project.Parameters,
                 (param) => Assert.Equal("configuration_parameter", param.Name));
@@ -204,12 +204,12 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task Existing_parameter_value_can_be_changed()
         {
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            var project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
 
             var newValue = Guid.NewGuid().ToString();
             await project.SetParameter("configuration_parameter", newValue);
 
-            project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
             Assert.Collection(project.Parameters,
                 (param) => {
                     Assert.Equal("configuration_parameter", param.Name);
@@ -220,7 +220,7 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task PUTs_the_project_parameters_end_point_with_changed_value()
         {
-            var project = await _teamCity.Project(new ProjectId("TeamCityRestClientNet"));
+            var project = await _teamCity.Project(new Id("TeamCityRestClientNet"));
 
             var newValue = Guid.NewGuid().ToString();
             await project.SetParameter("configuration_parameter", newValue);
@@ -241,14 +241,14 @@ namespace TeamCityRestClientNet.Projects
             var childProjects = await rootProject.ChildProjects;
 
             var toDelete = childProjects
-                .First(project => project.Id.stringId.StartsWith("Project_"));
+                .First(project => project.Id.StringId.StartsWith("Project_"));
 
             await toDelete.Delete();
 
             rootProject = await _teamCity.RootProject();
             childProjects = await rootProject.ChildProjects;
             
-            Assert.DoesNotContain(childProjects, project => project.Id.stringId == toDelete.Id.stringId);
+            Assert.DoesNotContain(childProjects, project => project.Id.StringId == toDelete.Id.StringId);
         }
 
         [Fact]
@@ -258,14 +258,14 @@ namespace TeamCityRestClientNet.Projects
             var childProjects = await rootProject.ChildProjects;
 
             var toDelete = childProjects
-                .First(project => project.Id.stringId.StartsWith("Project_"));
+                .First(project => project.Id.StringId.StartsWith("Project_"));
 
             await toDelete.Delete();
 
             Assert.Equal(HttpMethod.Delete, ApiCall.Method);
             Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
             Assert.True(ApiCall.HasLocators);
-            Assert.Equal(toDelete.Id.stringId, ApiCall.GetLocatorValue());
+            Assert.Equal(toDelete.Id.StringId, ApiCall.GetLocatorValue());
         }
     }
 }

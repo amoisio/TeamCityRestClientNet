@@ -17,10 +17,10 @@ namespace TeamCityRestClientNet.Domain
             this._instance = instance;
         }
 
-        public IAsyncEnumerable<IBuild> QueuedBuilds(ProjectId? projectId = null)
+        public IAsyncEnumerable<IBuild> QueuedBuilds(Id? projectId = null)
         {
             var parameters = projectId.HasValue
-                ? new List<string>{ $"project:{projectId.Value.stringId}" }
+                ? new List<string>{ $"project:{projectId.Value}" }
                 : new List<string>();
 
             var sequence = new Paged<IBuild, BuildListDto>(
