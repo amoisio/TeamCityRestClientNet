@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using TeamCityRestClientNet.Api;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class BuildListDto
+    public class BuildListDto : ListDto<BuildDto>
     {
-        public string NextHref { get; set; }
-        public List<BuildDto> Build { get; set; } = new List<BuildDto>();
+        [JsonProperty(PropertyName ="build")]
+        public override List<BuildDto> Items { get; set; } = new List<BuildDto>();
     }
 
     public class BuildDto : IdDto

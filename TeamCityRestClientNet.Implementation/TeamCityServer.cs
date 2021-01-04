@@ -46,8 +46,8 @@ namespace TeamCityRestClientNet
 
         public string ServerUrlBase { get; }
 
-        public override async Task<IBuild> Build(BuildId id)
-            => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
+        public override async Task<IBuild> Build(Id buildId)
+            => await Domain.Build.Create(buildId.StringId, this).ConfigureAwait(false);
 
         public override async Task<IBuild> Build(Id buildTypeId, string number)
             => await new BuildLocator(this)
@@ -91,7 +91,7 @@ namespace TeamCityRestClientNet
             string pageName,
             string tab = null,
             Id? projectId = null,
-            BuildId? buildId = null,
+            Id? buildId = null,
             Id? testNameId = null,
             Id? userId = null,
             Id? modId = null,
@@ -106,7 +106,7 @@ namespace TeamCityRestClientNet
             if (projectId.HasValue)
                 param.Add($"projectId={WebUtility.UrlEncode(projectId.Value.StringId)}");
             if (buildId.HasValue)
-                param.Add($"buildId={WebUtility.UrlEncode(buildId.Value.stringId)}");
+                param.Add($"buildId={WebUtility.UrlEncode(buildId.Value.StringId)}");
             if (testNameId.HasValue)
                 param.Add($"testNameId={WebUtility.UrlEncode(testNameId.Value.StringId)}");
             if (userId.HasValue)

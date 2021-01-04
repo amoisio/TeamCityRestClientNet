@@ -19,12 +19,12 @@ namespace TeamCityRestClientNet.Builds
             var builds = await _teamCity.Builds.All().ToListAsync();
 
             Assert.Contains(builds, (build) =>
-                build.Id.stringId == "12"
+                build.Id.StringId == "12"
                 && build.Status == BuildStatus.SUCCESS
                 && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
 
             Assert.Contains(builds, (build) =>
-                build.Id.stringId == "13"
+                build.Id.StringId == "13"
                 && build.Status == BuildStatus.FAILURE
                 && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
         }
@@ -267,7 +267,7 @@ namespace TeamCityRestClientNet.Builds
         public async Task Can_be_retrieved_as_latest_build()
         {
             var builds = await _teamCity.Builds.All().ToListAsync();
-            var latest = builds.OrderByDescending(b => Int32.Parse(b.Id.stringId)).First();
+            var latest = builds.OrderByDescending(b => Int32.Parse(b.Id.StringId)).First();
 
             var latestBuild = await _teamCity.Builds.Latest();
 

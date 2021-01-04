@@ -26,9 +26,9 @@ namespace TeamCityRestClientNet.Api
          * Newly failed test or not
          */
         bool NewFailure { get; }
-        BuildId BuildId { get; }
-        BuildId? FixedIn { get; }
-        BuildId? FirstFailedIn { get; }
+        Id BuildId { get; }
+        Id? FixedIn { get; }
+        Id? FirstFailedIn { get; }
         Id TestId { get; }
     }
     
@@ -36,7 +36,7 @@ namespace TeamCityRestClientNet.Api
     {
         ITestRunsLocator LimitResults(int count);
         ITestRunsLocator PageSize(int pageSize);
-        ITestRunsLocator ForBuild(BuildId buildId);
+        ITestRunsLocator ForBuild(Id buildId);
         ITestRunsLocator ForTest(Id testId);
         ITestRunsLocator ForProject(Id projectId);
         ITestRunsLocator WithStatus(TestStatus testStatus);

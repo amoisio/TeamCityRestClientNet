@@ -34,15 +34,15 @@ namespace TeamCityRestClientNet.Domain
         public bool CurrentlyMuted => _dto.CurrentlyMuted ?? false;
         public bool Muted => _dto.Muted ?? false;
         public bool NewFailure => _dto.NewFailure ?? false;
-        public BuildId BuildId => new BuildId(_dto.Build.SelfOrNullRef().Id.SelfOrNullRef());
-        public BuildId? FixedIn => 
+        public Id BuildId => new Id(_dto.Build.SelfOrNullRef().Id.SelfOrNullRef());
+        public Id? FixedIn => 
             (_dto.NextFixed?.Id == null)
-                ? default(BuildId?)
-                : new BuildId(_dto.NextFixed.SelfOrNullRef().Id.SelfOrNullRef());
-        public BuildId? FirstFailedIn =>
+                ? default(Id?)
+                : new Id(_dto.NextFixed.SelfOrNullRef().Id.SelfOrNullRef());
+        public Id? FirstFailedIn =>
             (_dto.FirstFailed?.Id == null)
-                ? default(BuildId?)
-                : new BuildId(_dto.FirstFailed.SelfOrNullRef().Id.SelfOrNullRef());
+                ? default(Id?)
+                : new Id(_dto.FirstFailed.SelfOrNullRef().Id.SelfOrNullRef());
 
         public Id TestId => new Id(_dto.Test.SelfOrNullRef().Id.SelfOrNullRef());
 

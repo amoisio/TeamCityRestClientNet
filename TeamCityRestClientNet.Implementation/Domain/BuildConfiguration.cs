@@ -124,7 +124,7 @@ namespace TeamCityRestClientNet.Domain
 
             var triggeredBuildDto = await Service.TriggerBuild(request).ConfigureAwait(false);
             return await Instance.Build(
-                new BuildId(
+                new Id(
                     triggeredBuildDto.Id?.ToString()
                     ?? throw new NullReferenceException())).ConfigureAwait(false);
         }

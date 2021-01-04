@@ -9,7 +9,7 @@ namespace TeamCityRestClientNet.Api
     /// </summary>
     public abstract class TeamCity
     {
-        public abstract Task<IBuild> Build(BuildId id);
+        public abstract Task<IBuild> Build(Id buildId);
         public abstract Task<IBuild> Build(Id buildTypeId, string number);
         public abstract IBuildLocator Builds { get; }
         public abstract IBuildAgentLocator BuildAgents { get; }

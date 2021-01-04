@@ -34,7 +34,7 @@ namespace TeamCityRestClientNet.Domain
             this.SnapshotDependencies = new AsyncLazy<List<IBuild>>(async () 
                 => {
                     var tasks = fullDto.SnapshotDependencies
-                        ?.Build
+                        ?.Items
                         ?.Select(dto => Build.Create(dto.Id, instance));
             
                     return tasks != null 
@@ -67,7 +67,7 @@ namespace TeamCityRestClientNet.Domain
             return new Build(dto, instance);
         }
 
-        public BuildId Id => new BuildId(this.IdString);
+        public Id Id => new Id(this.IdString);
         public Id BuildTypeId => new Id(this.Dto.BuildTypeId);
         public string BuildNumber => this.Dto.Number;
         public BuildStatus? Status => this.Dto.Status;
@@ -164,7 +164,7 @@ namespace TeamCityRestClientNet.Domain
             var sequence = new Paged<IBuildProblemOccurrence, BuildProblemOccurrenceListDto>(
                 Instance,
                 async () => await Service.ProblemOccurrences(
-                    $"build:(id:{Id.stringId})",
+                    $"build:(id:{Id})",
                     "$long,problemOccurrence($long)").ConfigureAwait(false)
                 ,
                 async (list) =>
@@ -190,7 +190,7 @@ namespace TeamCityRestClientNet.Domain
                 Comment = comment,
                 ReaddIntoQueue = reAddIntoQueue
             };
-            await Service.CancelBuild(Id.stringId, request).ConfigureAwait(false);
+            await Service.CancelBuild(Id.StringId, request).ConfigureAwait(false);
         }
 
         private const int ARTIFACT_BUFFER = 512 * 1024;
@@ -210,7 +210,7 @@ namespace TeamCityRestClientNet.Domain
 
         public async Task<Stream> OpenArtifactStream(string artifactPath)
         {
-            return await Service.ArtifactContent(Id.stringId, artifactPath).ConfigureAwait(false);
+            return await Service.ArtifactContent(Id.StringId, artifactPath).ConfigureAwait(false);
         }
 
         public async Task DownloadArtifact(string artifactPath, FileInfo outputFile)
@@ -267,7 +267,7 @@ namespace TeamCityRestClientNet.Domain
         public async Task DownloadBuildLog(FileInfo outputFile)
         {
             // LOG.info("Downloading build log from build ${getHomeUrl()} to $output")
-            var logStream = await Service.BuildLog(Id.stringId).ConfigureAwait(false);
+            var logStream = await Service.BuildLog(Id.StringId).ConfigureAwait(false);
             await SaveToFile(logStream, outputFile).ConfigureAwait(false);
             // LOG.debug("Build log from build ${getHomeUrl()} downloaded to $output")
         }
@@ -317,7 +317,7 @@ namespace TeamCityRestClientNet.Domain
             var locator = $"recursive:{recursive},hidden:{hidden}";
             var fields = $"file({ArtifactFileDto.FIELDS})";
             var artifacts = await Service
-                .ArtifactChildren(Id.stringId, parentPath, locator, fields)
+                .ArtifactChildren(Id.StringId, parentPath, locator, fields)
                 .ConfigureAwait(false);
 
             return artifacts.File
@@ -337,7 +337,7 @@ namespace TeamCityRestClientNet.Domain
         public async Task<List<IParameter>> GetResultingParameters()
         {
             var props = await Service
-                .ResultingProperties(Id.stringId)
+                .ResultingProperties(Id.StringId)
                 .ConfigureAwait(false);
             return props.Property
                 .Select(prop => new Parameter(prop))

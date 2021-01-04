@@ -6,26 +6,14 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct BuildId
-    {
-        public BuildId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
     public interface IBranch
     {
         string Name { get; }
         bool IsDefault { get; }
     }
 
-    public interface IBuild
+    public interface IBuild : IIdentifiable
     {
-        BuildId Id { get; }
         Id BuildTypeId { get; }
         string BuildNumber { get; }
         BuildStatus? Status { get; }
@@ -85,7 +73,7 @@ namespace TeamCityRestClientNet.Api
         Task<List<IParameter>> GetResultingParameters();
     }
 
-    public interface IBuildLocator
+    public interface IBuildLocator : ILocator<IBuild>
     {
         IBuildLocator FromBuildType(Id buildTypeId);
         IBuildLocator WithNumber(string buildNumber);
@@ -93,7 +81,7 @@ namespace TeamCityRestClientNet.Api
          * Filters builds to include only ones which are built on top of the specified revision.
          */
         IBuildLocator WithVcsRevision(string vcsRevision);
-        IBuildLocator SnapshotDependencyTo(BuildId buildId);
+        IBuildLocator SnapshotDependencyTo(Id buildId);
         /**
          * By default only successful builds are returned, call this method to include failed builds as well.
          */
@@ -123,7 +111,6 @@ namespace TeamCityRestClientNet.Api
         IBuildLocator Since(DateTimeOffset date);
         IBuildLocator Until(DateTimeOffset date);
         Task<IBuild> Latest();
-        IAsyncEnumerable<IBuild> All();
     }
 
     public interface IBuildCommentInfo : IInfo { }

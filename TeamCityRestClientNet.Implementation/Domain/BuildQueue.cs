@@ -33,21 +33,21 @@ namespace TeamCityRestClientNet.Domain
                     return await _instance.Service.QueuedBuilds(buildLocator).ConfigureAwait(false);
                 }, 
                 async (list) => {
-                    var tasks = list.Build.Select(build => Build.Create(build.Id, _instance));
+                    var tasks = list.Items.Select(build => Build.Create(build.Id, _instance));
                     var builds = await Task.WhenAll(tasks).ConfigureAwait(false);
                     return new Page<IBuild>(builds, list.NextHref);
                 });
             return sequence;
         }
 
-        public async Task RemoveBuild(BuildId id, string comment = "", bool reAddIntoQueue = false)
+        public async Task RemoveBuild(Id id, string comment = "", bool reAddIntoQueue = false)
         {
             var request = new BuildCancelRequestDto
             {
                 Comment = comment,
                 ReaddIntoQueue = reAddIntoQueue
             };
-            await _instance.Service.RemoveQueuedBuild(id.stringId, request).ConfigureAwait(false);
+            await _instance.Service.RemoveQueuedBuild(id.StringId, request).ConfigureAwait(false);
         }
     }
 }

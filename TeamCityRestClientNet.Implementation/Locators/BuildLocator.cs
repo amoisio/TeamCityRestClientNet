@@ -12,10 +12,10 @@ using TeamCityRestClientNet.Domain;
 
 namespace TeamCityRestClientNet.Locators
 {
-    class BuildLocator : Locator, IBuildLocator
+    class BuildLocator : Locator<IBuild>, IBuildLocator
     {
         private Id? _buildTypeId;
-        private BuildId? _snapshotDependencyTo;
+        private Id? _snapshotDependencyTo;
         private string _number;
         private string _vcsRevision;
         private DateTimeOffset? _since;
@@ -45,7 +45,7 @@ namespace TeamCityRestClientNet.Locators
             return this;
         }
 
-        public IBuildLocator SnapshotDependencyTo(BuildId buildId)
+        public IBuildLocator SnapshotDependencyTo(Id buildId)
         {
             _snapshotDependencyTo = buildId;
             return this;
@@ -171,13 +171,16 @@ namespace TeamCityRestClientNet.Locators
             return await LimitResults(1).All().FirstOrDefaultAsync();
         }
 
-        public IAsyncEnumerable<IBuild> All()
+        public override async Task<IBuild> ById(Id id)
+            => await Domain.Build.Create(id.StringId, Instance).ConfigureAwait(false);
+
+        public override IAsyncEnumerable<IBuild> All(string initialLocator = null)
         {
             int? count = Utility.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
 
             var parameters = Utility.ListOfNotNull(
                 _buildTypeId?.StringId.Let("buildType:{0}"),
-                _snapshotDependencyTo?.stringId.Let("snapshotDependency:(to:(id:{0}))"),
+                _snapshotDependencyTo?.StringId.Let("snapshotDependency:(to:(id:{0}))"),
                 _number.Let("number:{0}"),
                 _running.Let("running:{0}"),
                 _canceled.Let("canceled:{0}"),
@@ -200,21 +203,12 @@ namespace TeamCityRestClientNet.Locators
             {
                 throw new ArgumentException("At least one parameter should be specified");
             }
+            var query = String.Join(",", parameters);
 
-            var sequence = new Paged<IBuild, BuildListDto>(
+            var sequence = new Paged2<IBuild, BuildDto, BuildListDto>(
                 Instance,
-                async () =>
-                {
-                    var query = String.Join(",", parameters);
-                    // LOG.debug("Retrieving builds from ${instance.serverUrl} using query '$IBuildLocator'")
-                    return await Service.Builds(query);
-                },
-                async (list) => 
-                {
-                    var tasks = list.Build.Select(IdDto => Build.Create(IdDto.Id, Instance));
-                    var builds = await Task.WhenAll(tasks).ConfigureAwait(false);
-                    return new Page<IBuild>(builds, list.NextHref);
-                }
+                () => Service.Builds(query),
+                (dto) => Domain.Build.Create(dto.Id, Instance)
             );
 
             var limitResults1 = _limitResults;
@@ -222,8 +216,5 @@ namespace TeamCityRestClientNet.Locators
                 ? sequence.Take(limitResults1.Value)
                 : sequence;
         }
-
-        public async Task<List<IBuild>> List() 
-            => await All().ToListAsync();
     }
 }
