@@ -31,4 +31,9 @@ namespace TeamCityRestClientNet.FakeServer
             }
         }
     }
+
+    class VcsRootInstanceRepository : BaseRepository<VcsRootInstanceDto, VcsRootInstanceListDto>
+    {
+        
+    }
 }

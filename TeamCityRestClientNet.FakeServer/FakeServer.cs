@@ -26,6 +26,7 @@ namespace TeamCityRestClientNet.FakeServer
         internal ProjectRepository Projects => _data.Projects;
         internal UserRepository Users => _data.Users;
         internal VcsRootRepository VcsRoots => _data.VcsRoots;
+        internal VcsRootInstanceRepository VcsRootInstances => _data.VcsRootInstances;
 
         public object ResolveApiCall(ApiCall apiCall)
         {
@@ -38,6 +39,7 @@ namespace TeamCityRestClientNet.FakeServer
                 "projects" => ResolveProjects(apiCall),
                 "users" => ResolveUsers(apiCall),
                 "vcs-roots" => ResolveVcsRoots(apiCall),
+                "vcs-root-instances" => Resolve(apiCall, VcsRootInstances),
                 _ => throw new NotImplementedException()
             };
             return response;

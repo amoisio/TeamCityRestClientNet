@@ -97,6 +97,7 @@ namespace TeamCityRestClientNet.FakeServer
             },
             VcsRootInstance = new VcsRootInstanceDto
             {
+                Id = "3",
                 VcsRootId = "TeamCityRestClientNet_Bitbucket",
                 Name = "Bitbucket"
             }
@@ -117,6 +118,7 @@ namespace TeamCityRestClientNet.FakeServer
             },
             VcsRootInstance = new VcsRootInstanceDto
             {
+                Id = "3",
                 VcsRootId = "TeamCityRestClientNet_Bitbucket",
                 Name = "Bitbucket"
             }
@@ -137,6 +139,7 @@ namespace TeamCityRestClientNet.FakeServer
             },
             VcsRootInstance = new VcsRootInstanceDto
             {
+                Id = "3",
                 VcsRootId = "TeamCityRestClientNet_Bitbucket",
                 Name = "Bitbucket"
             }
@@ -225,6 +228,7 @@ namespace TeamCityRestClientNet.FakeServer
             Id = "Vcs_AnotherOne",
             Name = "Vcs_AnotherOne"
         };
+
         #endregion
 
         #region BuildTypes
@@ -310,6 +314,12 @@ namespace TeamCityRestClientNet.FakeServer
         };
         #endregion
         
+        private readonly VcsRootInstanceDto VcsInstance1 = new VcsRootInstanceDto
+        {
+            Id = "3",
+            VcsRootId = "TeamCityRestClientNet_Bitbucket",
+            Name = "Bitbucket"
+        };
         
         public DataBuilder()
         {
@@ -320,6 +330,7 @@ namespace TeamCityRestClientNet.FakeServer
             Projects = new ProjectRepository();
             Users = new UserRepository();
             VcsRoots = new VcsRootRepository();
+            VcsRootInstances = new VcsRootInstanceRepository();
         }
 
         public void Load()
@@ -380,6 +391,8 @@ namespace TeamCityRestClientNet.FakeServer
             VcsRoots.Add(Vcs2);
             VcsRoots.Add(Vcs3);
             VcsRoots.Add(Vcs4);
+
+            VcsRootInstances.Add(VcsInstance1);
         }
 
         public BuildAgentRepository BuildAgents { get; private set; }
@@ -388,6 +401,7 @@ namespace TeamCityRestClientNet.FakeServer
         public ChangeRepository Changes { get; private set; }
         public UserRepository Users { get; private set; }
         public VcsRootRepository VcsRoots { get; private set; }
+        public VcsRootInstanceRepository VcsRootInstances { get; private set; }
         public ProjectRepository Projects { get; private set; }
 
     }
