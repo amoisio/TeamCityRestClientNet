@@ -183,6 +183,10 @@ namespace TeamCityRestClientNet.RestApi
         Task<ProjectDto> CreateProject([Body] string projectDescriptionXml);
 
         [Headers("Accept: application/json")]
+        [Get("/app/rest/projects")]
+        Task<ProjectListDto> Projects();
+
+        [Headers("Accept: application/json")]
         [Get("/app/rest/projects/{id}")]
         Task<ProjectDto> Project(string id);
 

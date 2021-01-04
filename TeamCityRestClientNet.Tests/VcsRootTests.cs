@@ -41,7 +41,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task Can_be_created_for_root_project()
         {
-            var project = await _teamCity.RootProject();
+            var project = await _teamCity.Projects.RootProject();
 
             var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
 
@@ -61,7 +61,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task Creation_throws_ApiException_if_id_is_invalid()
         {
-            var project = await _teamCity.RootProject();
+            var project = await _teamCity.Projects.RootProject();
 
             var vcsRootId = "-----TeamCityRestClientNet_Bitbucket";
             await Assert.ThrowsAsync<Refit.ApiException>(
@@ -71,7 +71,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task Creation_throws_ApiException_if_id_already_exists()
         {
-            var project = await _teamCity.RootProject();
+            var project = await _teamCity.Projects.RootProject();
 
             var vcsRootId = "TeamCityRestClientNet_Bitbucket";
             await Assert.ThrowsAsync<Refit.ApiException>(
@@ -81,7 +81,7 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task POSTs_the_vcsroots_end_point_with_new_vcs_root_body()
         {
-            var project = await _teamCity.RootProject();
+            var project = await _teamCity.Projects.RootProject();
 
             var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
 

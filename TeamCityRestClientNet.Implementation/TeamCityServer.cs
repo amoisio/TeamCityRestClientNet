@@ -80,31 +80,9 @@ namespace TeamCityRestClientNet
         /// </summary>
         /// <returns>Locator used for interacting with builds.</returns>
         public override IBuildLocator Builds => new BuildLocator(this);
-
         public override IChangeLocator Changes => new ChangeLocator(this);
-
-        
-
-        // TODO: comments + tests
-        public override IInvestigationLocator Investigations
-            => new InvestigationLocator(this);
-
-        /// <summary>
-        /// Retrieve a project from TeamCity by project id.
-        /// </summary>
-        /// <param name="id">Id of the project to retrieve.</param>
-        /// <returns>Matching project. Throws a Refit.ApiException if project not found.</returns>
-        public override async Task<IProject> Project(Id id)
-            => await Domain.Project.Create(new ProjectDto { Id = id.StringId }, false, this).ConfigureAwait(false);
-
-        /// <summary>
-        /// Retrieves the root project.
-        /// </summary>
-        /// <returns>The root project.</returns>
-        public override async Task<IProject> RootProject()
-            => await Project(new Id("_Root")).ConfigureAwait(false);
-
-        // TODO: comments + tests
+        public override IInvestigationLocator Investigations => new InvestigationLocator(this);
+        public override IProjectLocator Projects => new ProjectLocator(this);
         public override ITestRunsLocator TestRuns => new TestRunsLocator(this);
         public override IUserLocator Users => new UserLocator(this);
         public override IVcsRootLocator VcsRoots => new VcsRootLocator(this);

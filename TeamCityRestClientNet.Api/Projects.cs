@@ -4,9 +4,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public interface IProject
+    public interface IProject : IIdentifiable
     {
-        Id Id { get; }
         string Name { get; }
         bool Archived { get; }
         Id? ParentProjectId { get; }
@@ -32,5 +31,10 @@ namespace TeamCityRestClientNet.Api
          * returns
          */
         Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml);
+    }
+
+    public interface IProjectLocator : ILocator<IProject>
+    {
+        Task<IProject> RootProject();
     }
 }

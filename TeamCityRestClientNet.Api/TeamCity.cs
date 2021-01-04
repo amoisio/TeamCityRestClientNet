@@ -19,8 +19,7 @@ namespace TeamCityRestClientNet.Api
         public abstract IAsyncEnumerable<IBuild> QueuedBuilds(Id projectId);
         public abstract IChangeLocator Changes { get; }
         public abstract IInvestigationLocator Investigations { get; }
-        public abstract Task<IProject> Project(Id id);
-        public abstract Task<IProject> RootProject();
+        public abstract IProjectLocator Projects { get; }
         public abstract ITestRunsLocator TestRuns { get; }
         public abstract IUserLocator Users { get; }
         public abstract IVcsRootLocator VcsRoots { get; }
