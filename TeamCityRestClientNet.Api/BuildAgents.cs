@@ -28,28 +28,12 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildAgentAuthorizedInfo : IInfo { }
 
-    public struct BuildAgentPoolId
+    public interface IBuildAgentPool : IIdentifiable
     {
-        public BuildAgentPoolId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IBuildAgentPool
-    {
-        BuildAgentPoolId Id { get; }
         string Name { get; }
         AsyncLazy<List<IProject>> Projects { get; }
         AsyncLazy<List<IBuildAgent>> Agents { get; }
     }
 
-    public interface IBuildAgentPoolLocator
-    {
-        Task<IBuildAgentPool> BuildAgentPool(BuildAgentPoolId id);
-        Task<IEnumerable<IBuildAgentPool>> All();
-    }
+    public interface IBuildAgentPoolLocator : ILocator<IBuildAgentPool> { }
 }

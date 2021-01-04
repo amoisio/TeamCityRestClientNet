@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task Contains_all_build_agent_pools()
         {
-            var agentPools = await _teamCity.BuildAgentPools.All();
+            var agentPools = await _teamCity.BuildAgentPools.All().ToListAsync();
             Assert.Collection(agentPools, 
                 (pool) => Assert.Equal("Default", pool.Name));
         }
@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task GETs_the_agent_pools_end_point()
         {
-            var agents = await _teamCity.BuildAgentPools.All();
+            var agents = await _teamCity.BuildAgentPools.All().ToListAsync();
 
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task Can_be_retrieved()
         {
-            var agentPool = await _teamCity.BuildAgentPools.BuildAgentPool(new BuildAgentPoolId("0"));
+            var agentPool = await _teamCity.BuildAgentPools.ById(new Id("0"));
 
             var agents = await agentPool.Agents;
             Assert.NotEmpty(agents);
@@ -53,7 +53,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task GETs_the_agent_pools_end_point_with_id()
         {
-            var agent = await _teamCity.BuildAgentPools.BuildAgentPool(new BuildAgentPoolId("0"));
+            var agent = await _teamCity.BuildAgentPools.ById(new Id("0"));
             Assert.Equal(HttpMethod.Get, ApiCall.Method);
             Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
             Assert.True(ApiCall.HasLocators);
@@ -63,7 +63,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
-            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgentPools.BuildAgentPool(new BuildAgentPoolId("not.found")));
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgentPools.ById(new Id("not.found")));
         }
     }
 }

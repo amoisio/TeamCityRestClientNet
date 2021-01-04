@@ -43,9 +43,9 @@ namespace TeamCityRestClientNet.Domain
             return new BuildAgentPool(dto, instance);
         }
 
-        public BuildAgentPoolId Id => new BuildAgentPoolId(IdString);
+        public Id Id => new Id(IdString);
         public string Name => NotNull(dto => dto.Name);
-       public AsyncLazy<List<IProject>> Projects { get; }
+        public AsyncLazy<List<IProject>> Projects { get; }
         public AsyncLazy<List<IBuildAgent>> Agents { get; }
 
         public override string ToString()
