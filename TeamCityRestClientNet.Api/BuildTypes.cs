@@ -4,26 +4,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct BuildConfigurationId
+    public interface IBuildType : IIdentifiable 
     {
-        public BuildConfigurationId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IBuildConfigurationLocator
-    {
-        Task<IBuildConfiguration> BuildConfiguration(BuildConfigurationId id);
-        IAsyncEnumerable<IBuildConfiguration> All();
-    }
-
-    public interface IBuildConfiguration
-    {
-        BuildConfigurationId Id { get; }
         string Name { get; }
         Id ProjectId { get; }
         bool Paused { get; }
@@ -51,9 +33,11 @@ namespace TeamCityRestClientNet.Api
 
     public interface IFinishBuildTrigger
     {
-        BuildConfigurationId InitiatedBuildConfiguration { get; }
+        Id InitiatedBuildTypeId { get; }
         bool AfterSuccessfulBuildOnly { get; }
         HashSet<string> IncludedBranchPatterns { get; }
         HashSet<string> ExcludedBranchPatterns { get; }
     }
+
+    public interface IBuildTypeLocator : ILocator<IBuildType> { }
 }

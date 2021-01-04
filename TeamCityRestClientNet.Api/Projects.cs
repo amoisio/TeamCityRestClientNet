@@ -15,7 +15,7 @@ namespace TeamCityRestClientNet.Api
         string GetHomeUrl(string branch = null);
         string GetTestHomeUrl(TestId testId);
         AsyncLazy<List<IProject>> ChildProjects { get; }
-        AsyncLazy<List<IBuildConfiguration>> BuildConfigurations { get; }
+        AsyncLazy<List<IBuildType>> BuildTypes { get; }
         List<IParameter> Parameters { get; }
         Task SetParameter(string name, string value);
         /**
@@ -30,7 +30,7 @@ namespace TeamCityRestClientNet.Api
          * https://teamcity/app/rest/buildTypes/YourBuildConfigurationId
          * returns
          */
-        Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml);
+        Task<IBuildType> CreateBuildType(string buildTypeDescriptionXml);
     }
 
     public interface IProjectLocator : ILocator<IProject>

@@ -68,10 +68,10 @@ namespace TeamCityRestClientNet.Api
         }
     }
 
-    public class InBuildConfiguration : IInvestigationScope
+    public class InBuildType : IInvestigationScope
     {
-        private readonly IBuildConfiguration configuration;
-        public InBuildConfiguration(IBuildConfiguration configuration)
+        private readonly IBuildType configuration;
+        public InBuildType(IBuildType configuration)
         {
             this.configuration = configuration;
         }

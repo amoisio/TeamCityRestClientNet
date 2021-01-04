@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.RestApi;
@@ -9,14 +8,11 @@ namespace TeamCityRestClientNet.Locators
 {
     class ChangeLocator : Locator<IChange>, IChangeLocator
     {
-        public ChangeLocator(TeamCityServer instance) : base(instance)
-        {
+        public ChangeLocator(TeamCityServer instance) : base(instance) { }
 
-        }
-        // TODO: This seems suspect...
-        public async Task<IChange> ByBuildConfigurationId(BuildConfigurationId buildConfigurationId, string vcsRevision)
+        public async Task<IChange> ByBuildTypeId(Id buildTypeId, string vcsRevision)
         {
-            var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
+            var dto = await Service.Change(buildTypeId.StringId, vcsRevision).ConfigureAwait(false);
             return await Domain.Change.Create(dto, true, Instance).ConfigureAwait(false);
         }
 

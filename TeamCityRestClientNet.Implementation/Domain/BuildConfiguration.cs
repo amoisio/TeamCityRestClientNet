@@ -10,9 +10,9 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Domain
 {
-    class BuildConfiguration : Base<BuildTypeDto>, IBuildConfiguration
+    class BuildType : Base<BuildTypeDto>, IBuildType
     {
-        private BuildConfiguration(BuildTypeDto dto, TeamCityServer instance)
+        private BuildType(BuildTypeDto dto, TeamCityServer instance)
             : base(dto, instance)
         {
             this.BuildTags = new AsyncLazy<List<string>>(async ()
@@ -38,13 +38,21 @@ namespace TeamCityRestClientNet.Domain
                     ?? new List<IArtifactDependency>());
         }
 
-        public static async Task<IBuildConfiguration> Create(string idString, TeamCityServer instance)
+        public static async Task<IBuildType> Create(string idString, TeamCityServer instance)
         {
-            var dto = await instance.Service.BuildConfiguration(idString).ConfigureAwait(false);
-            return new BuildConfiguration(dto, instance);
+            var dto = await instance.Service.BuildType(idString).ConfigureAwait(false);
+            return new BuildType(dto, instance);
         }
 
-        public BuildConfigurationId Id => new BuildConfigurationId(IdString);
+        public static async Task<IBuildType> Create(BuildTypeDto dto, bool isFullDto, TeamCityServer instance)
+        {
+            var fullDto = isFullDto
+                ? dto
+                : await instance.Service.BuildType($"id:{dto.Id}").ConfigureAwait(false);
+            return new BuildType(fullDto, instance);
+        }
+
+        public Id Id => new Id(IdString);
         public string Name => NotNull(dto => dto.Name);
         public Id ProjectId => new Id(NotNull(dto => dto.ProjectId));
         public bool Paused => this.Dto.Paused ?? false;
@@ -124,7 +132,7 @@ namespace TeamCityRestClientNet.Domain
         public async Task SetParameter<T>(string name, T value)
         {
             var valueStr = value.ToString();
-            //  LOG.info("Setting parameter $name=$value in BuildConfigurationId=$idString")
+            //  LOG.info("Setting parameter $name=$value in BuildTypeId=$idString")
             await Service.SetBuildTypeParameter(IdString, name, valueStr).ConfigureAwait(false);
             SetSetting(name, valueStr);
         }
@@ -139,6 +147,6 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public override string ToString()
-            => $"BuildConfiguration(id={IdString},name={Name})";
+            => $"BuildType(id={IdString},name={Name})";
     }
 }

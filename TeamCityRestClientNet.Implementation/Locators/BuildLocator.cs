@@ -14,7 +14,7 @@ namespace TeamCityRestClientNet.Locators
 {
     class BuildLocator : Locator, IBuildLocator
     {
-        private BuildConfigurationId? _buildConfigurationId;
+        private Id? _buildTypeId;
         private BuildId? _snapshotDependencyTo;
         private string _number;
         private string _vcsRevision;
@@ -39,10 +39,9 @@ namespace TeamCityRestClientNet.Locators
         private DateTimeOffset? UntilUTC => _until?.ToUniversalTime();
         private string TeamCityUntil => UntilUTC?.ToString(TeamCityServer.TEAMCITY_DATETIME_FORMAT);
 
-
-        public IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId)
+        public IBuildLocator FromBuildType(Id buildTypeId)
         {
-            _buildConfigurationId = buildConfigurationId;
+            _buildTypeId = buildTypeId;
             return this;
         }
 
@@ -177,7 +176,7 @@ namespace TeamCityRestClientNet.Locators
             int? count = Utility.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
 
             var parameters = Utility.ListOfNotNull(
-                _buildConfigurationId?.stringId.Let("buildType:{0}"),
+                _buildTypeId?.StringId.Let("buildType:{0}"),
                 _snapshotDependencyTo?.stringId.Let("snapshotDependency:(to:(id:{0}))"),
                 _number.Let("number:{0}"),
                 _running.Let("running:{0}"),

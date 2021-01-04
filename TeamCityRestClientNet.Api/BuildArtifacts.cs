@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IArtifactDependency
     {
-        AsyncLazy<IBuildConfiguration> DependsOnBuildConfiguration { get; }
+        AsyncLazy<IBuildType> DependsOnBuildType { get; }
         string Branch { get; }
         List<IArtifactRule> ArtifactRules { get; }
         bool CleanDestinationDirectory { get; }

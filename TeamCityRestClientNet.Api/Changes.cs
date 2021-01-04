@@ -23,11 +23,11 @@ namespace TeamCityRestClientNet.Api
         /**
          * Web UI URL for user, especially useful for error and log messages
          */
-        string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null);
+        string GetHomeUrl(Id? specificBuildTypeId = null, bool? includePersonalBuilds = null);
     }
 
     public interface IChangeLocator : ILocator<IChange>
     {
-        Task<IChange> ByBuildConfigurationId(BuildConfigurationId buildConfigurationId, string vcsRevision);
+        Task<IChange> ByBuildTypeId(Id buildTypeId, string vcsRevision);
     }
 }

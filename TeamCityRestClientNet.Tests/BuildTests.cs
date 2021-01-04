@@ -168,7 +168,7 @@ namespace TeamCityRestClientNet.Builds
         // // // [Fact]
         // // // public async Task Can_contain_running_builds_only()
         // // // {
-        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
         // // //     var newBuild = await config.RunBuild();
 
         // // //     var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
@@ -181,7 +181,7 @@ namespace TeamCityRestClientNet.Builds
         // // // {
         // // //     await TeamCityHelpers.EnableAllAgents(_teamCity);
 
-        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
         // // //     var newBuild = await config.RunBuild();
 
         // // //     var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
@@ -213,7 +213,7 @@ namespace TeamCityRestClientNet.Builds
         // // // [Fact]
         // // // public async Task Can_be_started_for_a_branch()
         // // // {
-        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
         // // //     var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
 
         // // //     Assert.Contains(_buildingStates, state => state == build.State);
@@ -224,7 +224,7 @@ namespace TeamCityRestClientNet.Builds
         // // // {
         // // //     await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
 
-        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
         // // //     var newBuild = await config.RunBuild();
 
         // // //     var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
@@ -243,7 +243,7 @@ namespace TeamCityRestClientNet.Builds
         // // // [Fact]
         // // // public async Task Can_be_cancelled()
         // // // {
-        // // //     var config = await _teamCity.BuildConfiguration("TeamCityRestClientNet_RestClient");
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
         // // //     var newBuild = await config.RunBuild();
 
         // // //     await Task.Delay(500).ConfigureAwait(false);

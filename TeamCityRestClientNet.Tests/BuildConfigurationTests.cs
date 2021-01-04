@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace TeamCityRestClientNet.Tests
 {
-    public class BuildConfigurationList : TestsBase, IClassFixture<TeamCityFixture>
+    public class BuildTypeList : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public BuildConfigurationList(TeamCityFixture fixture) : base(fixture) { }
+        public BuildTypeList(TeamCityFixture fixture) : base(fixture) { }
 
         // [Fact]
         // public async Task Contains_all_build_configurations()
@@ -37,14 +37,14 @@ namespace TeamCityRestClientNet.Tests
         // }
     }
 
-    public class ExistingBuildConfiguration : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingBuildType : TestsBase, IClassFixture<TeamCityFixture>
     {
-        public ExistingBuildConfiguration(TeamCityFixture fixture) : base(fixture) { }
+        public ExistingBuildType(TeamCityFixture fixture) : base(fixture) { }
 
         // [Fact]
         // public async Task Can_be_retrieved_with_id()
         // {
-        //     _teamCity.BuildConfiguration()
+        //     _teamCity.BuildType()
         // }
     }
 }

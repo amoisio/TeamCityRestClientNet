@@ -89,15 +89,15 @@
 //     override fun GetWebUrl(projectId: ProjectId, branch: String ?): String =
 //              Project(projectId).getHomeUrl(branch = branch)
 
-//     override fun GetWebUrl(buildConfigurationId: BuildConfigurationId, branch: String ?): String =
-//              BuildConfiguration(buildConfigurationId).getHomeUrl(branch = branch)
+//     override fun GetWebUrl(buildTypeId: BuildTypeId, branch: String ?): String =
+//              BuildType(buildTypeId).getHomeUrl(branch = branch)
 
 //     override fun GetWebUrl(buildId: BuildId): String =
 //             Build(buildId).getHomeUrl()
 
-//     override fun GetWebUrl(changeId: ChangeId, specificBuildConfigurationId: BuildConfigurationId ?, includePersonalBuilds: Boolean ?): String =
+//     override fun GetWebUrl(changeId: ChangeId, specificBuildTypeId: BuildTypeId ?, includePersonalBuilds: Boolean ?): String =
 //               Change(changeId).getHomeUrl(
-//                       specificBuildConfigurationId = specificBuildConfigurationId,
+//                       specificBuildTypeId = specificBuildTypeId,
 //                       includePersonalBuilds = includePersonalBuilds
 //               )
 

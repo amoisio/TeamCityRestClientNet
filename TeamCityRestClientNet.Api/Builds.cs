@@ -26,7 +26,7 @@ namespace TeamCityRestClientNet.Api
     public interface IBuild
     {
         BuildId Id { get; }
-        BuildConfigurationId BuildConfigurationId { get; }
+        Id BuildTypeId { get; }
         string BuildNumber { get; }
         BuildStatus? Status { get; }
         IBranch Branch { get; }
@@ -87,7 +87,7 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildLocator
     {
-        IBuildLocator FromConfiguration(BuildConfigurationId buildConfigurationId);
+        IBuildLocator FromBuildType(Id buildTypeId);
         IBuildLocator WithNumber(string buildNumber);
         /**
          * Filters builds to include only ones which are built on top of the specified revision.

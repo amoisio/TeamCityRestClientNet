@@ -49,9 +49,9 @@ namespace TeamCityRestClientNet
         public override async Task<IBuild> Build(BuildId id)
             => await Domain.Build.Create(id.stringId, this).ConfigureAwait(false);
 
-        public override async Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number)
+        public override async Task<IBuild> Build(Id buildTypeId, string number)
             => await new BuildLocator(this)
-            .FromConfiguration(buildConfigurationId)
+            .FromBuildType(buildTypeId)
             .WithNumber(number)
             .Latest()
             .ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace TeamCityRestClientNet
         /// <returns>Locator used for interacting with build agent pools.</returns>
         public override IBuildAgentPoolLocator BuildAgentPools => new BuildAgentPoolLocator(this);
 
-        public override IBuildConfigurationLocator BuildConfigurations => new BuildConfigurationLocator(this);
+        public override IBuildTypeLocator BuildTypes => new BuildTypeLocator(this);
        
         public override IBuildQueue BuildQueue => new BuildQueue(this);
 
@@ -96,7 +96,7 @@ namespace TeamCityRestClientNet
             Id? userId = null,
             Id? modId = null,
             bool? personal = null,
-            BuildConfigurationId? buildTypeId = null,
+            Id? buildTypeId = null,
             string branch = null)
         {
             var param = new List<string>();
@@ -119,7 +119,7 @@ namespace TeamCityRestClientNet
                 param.Add($"personal={personalStr}");
             }
             if (buildTypeId.HasValue)
-                param.Add($"buildTypeId={WebUtility.UrlEncode(buildTypeId.Value.stringId)}");
+                param.Add($"buildTypeId={WebUtility.UrlEncode(buildTypeId.Value.StringId)}");
             if (!String.IsNullOrEmpty(branch))
                 param.Add($"branch={WebUtility.UrlEncode(branch)}");
 

@@ -32,7 +32,7 @@ namespace TeamCityRestClientNet.RestApi
 
     public class InvestigationScopeDto
     {
-        public BuildTypesDto BuildTypes { get; set; }
+        public BuildTypeListDto BuildTypes { get; set; }
         public ProjectDto Project { get; set; }
     }
 

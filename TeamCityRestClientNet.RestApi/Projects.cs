@@ -17,7 +17,7 @@ namespace TeamCityRestClientNet.RestApi
         public bool? Archived { get; set; }
         public ProjectListDto Projects { get; set; } = new ProjectListDto();
         public ParametersDto Parameters { get; set; } = new ParametersDto();
-        public BuildTypesDto BuildTypes { get; set; } = new BuildTypesDto();
+        public BuildTypeListDto BuildTypes { get; set; } = new BuildTypeListDto();
     }
 
     [XmlRoot("newProjectDescription")]

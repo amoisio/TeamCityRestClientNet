@@ -38,11 +38,11 @@ namespace TeamCityRestClientNet.Domain
             => this.Dto.VcsRootInstance
               .Let(rootDto => new VcsRootInstance(rootDto));
 
-        public string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null)
+        public string GetHomeUrl(Id? specificBuildTypeId = null, bool? includePersonalBuilds = null)
             => Instance.GetUserUrlPage(
                 "viewModification.html",
                 modId: Id,
-                buildTypeId: specificBuildConfigurationId,
+                buildTypeId: specificBuildTypeId,
                 personal: includePersonalBuilds);
 
         public override string ToString()

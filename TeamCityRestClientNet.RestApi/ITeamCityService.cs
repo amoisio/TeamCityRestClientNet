@@ -121,8 +121,12 @@ namespace TeamCityRestClientNet.RestApi
         Task<BuildTypeDto> CreateBuildType([Body] string buildTypeXml);
 
         [Headers("Accept: application/json")]
+        [Get("/app/rest/buildTypes")]
+        Task<BuildTypeListDto> BuildTypes();
+
+        [Headers("Accept: application/json")]
         [Get("/app/rest/buildTypes/{id}")]
-        Task<BuildTypeDto> BuildConfiguration([AliasAs("id")] string buildTypeId);
+        Task<BuildTypeDto> BuildType([AliasAs("id")] string buildTypeId);
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/buildTypes/{id}/buildTags")]

@@ -27,10 +27,10 @@ namespace TeamCityRestClientNet.Domain
                     return projects.ToList();
                 });
 
-            this.BuildConfigurations = new AsyncLazy<List<IBuildConfiguration>>(async ()
+            this.BuildTypes = new AsyncLazy<List<IBuildType>>(async ()
                 => {
                     var tasks = dto.BuildTypes.Items
-                        .Select(type => BuildConfiguration.Create(type.Id, instance));
+                        .Select(type => BuildType.Create(type.Id, instance));
                     var configs = await Task.WhenAll(tasks).ConfigureAwait(false);
                     return configs.ToList();                    
                 });
@@ -51,7 +51,7 @@ namespace TeamCityRestClientNet.Domain
         public Id? ParentProjectId
             => Dto.ParentProjectId.Let(id => new Id(Dto.ParentProjectId));
         public AsyncLazy<List<IProject>> ChildProjects { get; }
-        public AsyncLazy<List<IBuildConfiguration>> BuildConfigurations { get; }
+        public AsyncLazy<List<IBuildType>> BuildTypes { get; }
         public List<IParameter> Parameters
             => Dto.Parameters
                 ?.Property
@@ -60,10 +60,10 @@ namespace TeamCityRestClientNet.Domain
 
 
         // TODO: Add a builder type - string xml api, no thank you
-        public async Task<IBuildConfiguration> CreateBuildConfiguration(string buildConfigurationDescriptionXml)
+        public async Task<IBuildType> CreateBuildType(string buildTypeDescriptionXml)
         {
-            var dto = await Service.CreateBuildType(buildConfigurationDescriptionXml).ConfigureAwait(false);
-            return await BuildConfiguration.Create(dto.Id, Instance).ConfigureAwait(false);
+            var dto = await Service.CreateBuildType(buildTypeDescriptionXml).ConfigureAwait(false);
+            return await BuildType.Create(dto.Id, Instance).ConfigureAwait(false);
         }
 
         /// <summary>

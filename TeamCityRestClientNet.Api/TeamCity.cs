@@ -10,11 +10,11 @@ namespace TeamCityRestClientNet.Api
     public abstract class TeamCity
     {
         public abstract Task<IBuild> Build(BuildId id);
-        public abstract Task<IBuild> Build(BuildConfigurationId buildConfigurationId, string number);
+        public abstract Task<IBuild> Build(Id buildTypeId, string number);
         public abstract IBuildLocator Builds { get; }
         public abstract IBuildAgentLocator BuildAgents { get; }
         public abstract IBuildAgentPoolLocator BuildAgentPools { get; }
-        public abstract IBuildConfigurationLocator BuildConfigurations { get; }
+        public abstract IBuildTypeLocator BuildTypes { get; }
         public abstract IBuildQueue BuildQueue { get; }
         public abstract IAsyncEnumerable<IBuild> QueuedBuilds(Id projectId);
         public abstract IChangeLocator Changes { get; }

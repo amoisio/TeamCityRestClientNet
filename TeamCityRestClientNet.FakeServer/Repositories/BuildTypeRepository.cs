@@ -3,7 +3,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    class BuildTypeRepository : BaseRepository<BuildTypeDto, BuildTypesDto>
+    class BuildTypeRepository : BaseRepository<BuildTypeDto, BuildTypeListDto>
     {
       
     }

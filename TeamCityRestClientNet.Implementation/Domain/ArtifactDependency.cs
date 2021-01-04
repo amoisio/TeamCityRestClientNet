@@ -12,16 +12,16 @@ namespace TeamCityRestClientNet.Domain
         public ArtifactDependency(ArtifactDependencyDto fullDto, TeamCityServer instance)
             : base(fullDto, instance) 
         { 
-            this.DependsOnBuildConfiguration = new AsyncLazy<IBuildConfiguration>(async () 
-                => await BuildConfiguration.Create(
+            this.DependsOnBuildType = new AsyncLazy<IBuildType>(async () 
+                => await BuildType.Create(
                     NotNull(dto => dto.SourceBuildType.Id), 
                     Instance)
                     .ConfigureAwait(false));
         }
 
-        private string DependentBuildConfigurationId 
+        private string DependentBuildTypeId 
             => this.Dto.SourceBuildType.Id;
-        public AsyncLazy<IBuildConfiguration> DependsOnBuildConfiguration { get; }
+        public AsyncLazy<IBuildType> DependsOnBuildType { get; }
 
         public string Branch => FindPropertyByName("revisionBranch");
 
@@ -51,6 +51,6 @@ namespace TeamCityRestClientNet.Domain
                 ?.Value;
 
         public override string ToString()
-            => $"ArtifactDependency(buildConf={DependentBuildConfigurationId})";
+            => $"ArtifactDependency(buildConf={DependentBuildTypeId})";
     }
 }

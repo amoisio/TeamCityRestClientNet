@@ -38,13 +38,13 @@ namespace TeamCityRestClientNet.Domain
                     throw new Exception("more then one buildType");
                 }
 
-                var buildConfiguration = scope.BuildTypes != null
-                    ? await BuildConfiguration.Create(scope.BuildTypes.Items[0].Id, instance).ConfigureAwait(false)
+                var buildType = scope.BuildTypes != null
+                    ? await BuildType.Create(scope.BuildTypes.Items[0].Id, instance).ConfigureAwait(false)
                     : null;
 
-                if (buildConfiguration != null)
+                if (buildType != null)
                 {
-                    return new InBuildConfiguration(buildConfiguration);
+                    return new InBuildType(buildType);
                 }
 
                 throw new Exception("scope is missed in the bean");

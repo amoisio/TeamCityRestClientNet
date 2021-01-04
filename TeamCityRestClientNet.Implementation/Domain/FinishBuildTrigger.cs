@@ -16,13 +16,13 @@ namespace TeamCityRestClientNet.Domain
             this._dto = dto;
         }
 
-        public BuildConfigurationId InitiatedBuildConfiguration {
+        public Id InitiatedBuildTypeId {
             get {
                 var dependsOn = this._dto.Properties?.Property
                     ?.FirstOrDefault(prop => prop.Name == "dependsOn")
                     ?.Value ?? throw new NullReferenceException();
 
-                return new BuildConfigurationId(dependsOn);
+                return new Id(dependsOn);
             }
         }
         public bool AfterSuccessfulBuildOnly {

@@ -61,14 +61,14 @@ namespace TeamCityRestClientNet.Domain
 
             if (String.IsNullOrEmpty(dto.BuildType.Name))
             {
-                dto.BuildType.Name = (await instance.BuildConfigurations.BuildConfiguration(new BuildConfigurationId(dto.BuildTypeId)).ConfigureAwait(false)).Name;
+                dto.BuildType.Name = (await instance.BuildTypes.ById(new Id(dto.BuildTypeId)).ConfigureAwait(false)).Name;
             }
 
             return new Build(dto, instance);
         }
 
         public BuildId Id => new BuildId(this.IdString);
-        public BuildConfigurationId BuildConfigurationId => new BuildConfigurationId(this.Dto.BuildTypeId);
+        public Id BuildTypeId => new Id(this.Dto.BuildTypeId);
         public string BuildNumber => this.Dto.Number;
         public BuildStatus? Status => this.Dto.Status;
         public IBranch Branch
@@ -366,7 +366,7 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public override string ToString()
-            => $"Build(id={Id}, buildConfigurationId={BuildConfigurationId}, buildNumber={BuildNumber}, status={Status}, branch={Branch})";
+            => $"Build(id={Id}, buildTypeId={BuildTypeId}, buildNumber={BuildNumber}, status={Status}, branch={Branch})";
 
         public async Task Unpin(string comment = "unpinned via REST API")
         {
