@@ -51,6 +51,9 @@ namespace TeamCityRestClientNet.Domain
             });
         }
 
+        public static async Task<IInvestigation> Create(string idString, TeamCityServer instance)
+            => await Create(new InvestigationDto { Id = idString }, false, instance).ConfigureAwait(false);
+
         public static async Task<IInvestigation> Create(InvestigationDto dto, bool isFullDto, TeamCityServer instance)
         {
             var fullDto = isFullDto
@@ -59,7 +62,7 @@ namespace TeamCityRestClientNet.Domain
             return new Investigation(dto, instance);
         }
 
-        public InvestigationId Id => new InvestigationId(IdString);
+        public Id Id => new Id(IdString);
         public InvestigationState State => Dto.State ?? throw new NullReferenceException();
         public AsyncLazy<IUser> Assignee { get; }
         public AsyncLazy<IUser> Reporter { get; }

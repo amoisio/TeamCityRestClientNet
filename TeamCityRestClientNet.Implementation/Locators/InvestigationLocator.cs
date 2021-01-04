@@ -1,59 +1,58 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
-using TeamCityRestClientNet.Domain;
 using TeamCityRestClientNet.Extensions;
+using TeamCityRestClientNet.RestApi;
+using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
-    class InvestigationLocator : Locator, IInvestigationLocator
+    class InvestigationLocator : Locator<IInvestigation>, IInvestigationLocator
     {
-        private int? limitResult;
-        private InvestigationTargetType? targetType;
-        private Id? affectedProjectId;
+        private int? _limitResult;
+        private InvestigationTargetType? _targetType;
+        private Id? _affectedProjectId;
 
-        public InvestigationLocator(TeamCityServer instance) : base(instance) 
-        {
+        public InvestigationLocator(TeamCityServer instance) : base(instance) { }
 
-        }
+        public override async Task<IInvestigation> ById(Id id) 
+            => await Domain.Investigation.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public async Task<IEnumerable<IInvestigation>> All()
+        public override IAsyncEnumerable<IInvestigation> All(string initialLocator = null)
         {
             string investigationLocator = null;
             var parameters = new List<string>();
-            if (limitResult.HasValue) parameters.Add($"count:{limitResult}");
-            if (affectedProjectId.HasValue) parameters.Add($"affectedProject:{affectedProjectId}");
-            if (targetType.HasValue) parameters.Add($"type:{targetType}");
-
+            if (_limitResult.HasValue) parameters.Add($"count:{_limitResult}");
+            if (_affectedProjectId.HasValue) parameters.Add($"affectedProject:{_affectedProjectId}");
+            if (_targetType.HasValue) parameters.Add($"type:{_targetType}");
             if (parameters.IsNotEmpty())
             {
                 investigationLocator = string.Join(",", parameters);
                 // LOG.debug("Retrieving investigations from ${instance.serverUrl} using query '$investigationLocator'")
             }
 
-            var investigations = await Service.Investigations(investigationLocator).ConfigureAwait(false);
-            var tasks = investigations.Investigation
-                .Select(inv => Investigation.Create(inv, true, Instance));
-
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return new Paged2<IInvestigation, InvestigationDto, InvestigationListDto>(
+                Instance,
+                () => Service.Investigations(investigationLocator),
+                (dto) => Domain.Investigation.Create(dto, true, Instance)
+            );
         }
 
         public IInvestigationLocator ForProject(Id projectId)
         {
-            this.affectedProjectId = projectId;
+            this._affectedProjectId = projectId;
             return this;
         }
 
         public IInvestigationLocator LimitResults(int count)
         {
-            this.limitResult = count;
+            this._limitResult = count;
             return this;
         }
 
         public IInvestigationLocator WithTargetType(InvestigationTargetType targetType)
         {
-            this.targetType = targetType;
+            this._targetType = targetType;
             return this;
         }
     }

@@ -4,20 +4,8 @@ using Nito.AsyncEx;
 
 namespace TeamCityRestClientNet.Api
 {
-    public struct InvestigationId
+    public interface IInvestigation : IIdentifiable
     {
-        public InvestigationId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IInvestigation
-    {
-        InvestigationId Id { get; }
         InvestigationState State { get; }
         AsyncLazy<IUser> Assignee { get; }
         AsyncLazy<IUser> Reporter { get; }
@@ -29,12 +17,11 @@ namespace TeamCityRestClientNet.Api
         AsyncLazy<IInvestigationScope> Scope { get; }
     }
 
-    public interface IInvestigationLocator
+    public interface IInvestigationLocator : ILocator<IInvestigation>
     {
         IInvestigationLocator LimitResults(int count);
         IInvestigationLocator ForProject(Id projectId);
         IInvestigationLocator WithTargetType(InvestigationTargetType targetType);
-        Task<IEnumerable<IInvestigation>> All();
     }
 
     public enum InvestigationState

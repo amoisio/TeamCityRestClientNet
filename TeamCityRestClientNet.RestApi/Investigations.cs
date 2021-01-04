@@ -3,9 +3,9 @@ using TeamCityRestClientNet.Api;
 
 namespace TeamCityRestClientNet.RestApi
 {
-    public class InvestigationListDto
+    public class InvestigationListDto : ListDto<InvestigationDto>
     {
-        public List<InvestigationDto> Investigation { get; set; } = new List<InvestigationDto>();
+        public override List<InvestigationDto> Items { get; set; } = new List<InvestigationDto>();
     }
 
     public class InvestigationDto : IdDto
