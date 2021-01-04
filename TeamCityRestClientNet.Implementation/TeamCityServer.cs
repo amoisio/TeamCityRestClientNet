@@ -46,9 +46,6 @@ namespace TeamCityRestClientNet
 
         public string ServerUrlBase { get; }
 
-        public override async Task<IBuild> Build(Id buildId)
-            => await Domain.Build.Create(buildId.StringId, this).ConfigureAwait(false);
-
         public override async Task<IBuild> Build(Id buildTypeId, string number)
             => await new BuildLocator(this)
             .FromBuildType(buildTypeId)
