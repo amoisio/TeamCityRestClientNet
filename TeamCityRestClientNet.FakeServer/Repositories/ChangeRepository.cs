@@ -3,7 +3,7 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.FakeServer
 {
-    class ChangeRepository : BaseRepository<ChangeDto, ChangesDto>
+    class ChangeRepository : BaseRepository<ChangeDto, ChangeListDto>
     {
 
     }

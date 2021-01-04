@@ -12,20 +12,8 @@ namespace TeamCityRestClientNet.Api
         IVcsRootInstance VcsRootInstance { get; }
     }
 
-    public struct ChangeId
+    public interface IChange : IIdentifiable
     {
-        public ChangeId(string stringId)
-        {
-            this.stringId = stringId;
-        }
-
-        public readonly string stringId;
-        public override string ToString() => this.stringId;
-    }
-
-    public interface IChange
-    {
-        ChangeId Id { get; }
         string Version { get; }
         string Username { get; }
         AsyncLazy<IUser> User { get; }
@@ -38,10 +26,8 @@ namespace TeamCityRestClientNet.Api
         string GetHomeUrl(BuildConfigurationId? specificBuildConfigurationId = null, bool? includePersonalBuilds = null);
     }
 
-    public interface IChangeLocator
+    public interface IChangeLocator : ILocator<IChange>
     {
-        Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision);
-        Task<IChange> Change(ChangeId id);
-        IAsyncEnumerable<IChange> All();
+        Task<IChange> ByBuildConfigurationId(BuildConfigurationId buildConfigurationId, string vcsRevision);
     }
 }

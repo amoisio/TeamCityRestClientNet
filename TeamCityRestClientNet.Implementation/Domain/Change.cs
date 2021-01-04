@@ -27,7 +27,7 @@ namespace TeamCityRestClientNet.Domain
             return new Change(fullDto, instance);
         }
 
-        public ChangeId Id => new ChangeId(IdString);
+        public Id Id => new Id(IdString);
         public string Version => this.Dto.Version.SelfOrNullRef();
         public string Username => this.Dto.Username.SelfOrNullRef();
         public AsyncLazy<IUser> User { get; }

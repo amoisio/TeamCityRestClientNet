@@ -156,7 +156,7 @@ namespace TeamCityRestClientNet.RestApi
 
         [Headers("Accept: application/json")]
         [Get("/app/rest/changes")]
-        Task<ChangesDto> Changes(string locator, string fields);
+        Task<ChangeListDto> Changes(string locator, string fields);
 
         #endregion
 

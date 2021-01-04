@@ -7,34 +7,14 @@ using TeamCityRestClientNet.Service;
 
 namespace TeamCityRestClientNet.Locators
 {
-    class ChangeLocator : Locator, IChangeLocator
+    class ChangeLocator : Locator<IChange>, IChangeLocator
     {
         public ChangeLocator(TeamCityServer instance) : base(instance)
         {
 
         }
-
-        public IAsyncEnumerable<IChange> All()
-        {
-            var sequence = new Paged<IChange, ChangesDto>(
-                 Instance,
-                 async () =>
-                 {
-                    //  _logger.LogDebug("Retrieving changes.");
-                     return await Service.Changes(null, null).ConfigureAwait(false);
-                 },
-                 async (list) =>
-                 {
-                     var tasks = list.Items.Select(change => Domain.Change.Create(change, false, Instance));
-                     var dtos = await Task.WhenAll(tasks).ConfigureAwait(false);
-                     return new Page<IChange>(dtos, list.NextHref);
-                 }
-             );
-            return sequence;
-        }
-
         // TODO: This seems suspect...
-        public async Task<IChange> Change(BuildConfigurationId buildConfigurationId, string vcsRevision)
+        public async Task<IChange> ByBuildConfigurationId(BuildConfigurationId buildConfigurationId, string vcsRevision)
         {
             var dto = await Service.Change(buildConfigurationId.stringId, vcsRevision).ConfigureAwait(false);
             return await Domain.Change.Create(dto, true, Instance).ConfigureAwait(false);
@@ -45,7 +25,16 @@ namespace TeamCityRestClientNet.Locators
         /// </summary>
         /// <param name="id">Id of the change to retrieve.</param>
         /// <returns>Matching change. Throws a Refit.ApiException if change not found.</returns>
-        public async Task<IChange> Change(ChangeId id)
-            => await Domain.Change.Create(new ChangeDto { Id = id.stringId }, false, Instance).ConfigureAwait(false);
+        public async override Task<IChange> ById(Id id)
+            => await Domain.Change.Create(new ChangeDto { Id = id.StringId }, false, Instance).ConfigureAwait(false);
+
+        public override IAsyncEnumerable<IChange> All(string initialLocator = null)
+        {
+            return new Paged2<IChange, ChangeDto, ChangeListDto>(
+                Instance,
+                () => Service.Changes(null, null),
+                change => Domain.Change.Create(change, false, Instance)
+            );
+        }
     }
 }
