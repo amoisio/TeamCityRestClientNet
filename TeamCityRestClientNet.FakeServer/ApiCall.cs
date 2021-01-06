@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.FakeServer
 {
@@ -42,9 +43,26 @@ namespace TeamCityRestClientNet.FakeServer
         public Dictionary<string, string[]> QueryParameters { get; private set; }
         public HttpRequestHeaders RequestHeaders => Request.Headers;
         public string Content { get; }
+        public T JsonContentAs<T>()
+        {
+            return JsonConvert.DeserializeObject<T>(Content);
+        }
+        
         public string Resource { get; private set; }
         public bool HasLocators => _locators != null && _locators.Count > 0 || !String.IsNullOrEmpty(_locator);
         public bool HasNamedLocator(string locatorName) => _locators.ContainsKey(locatorName);
+
+        public string GetLocatorOrDefault(string locatorName = null)
+        {
+            try 
+            {
+                return GetLocatorValue(locatorName);
+            } 
+            catch 
+            {
+                return default(string);    
+            }
+        }
         public string GetLocatorValue(string locatorName = null)
         {
             if (!HasLocators)
@@ -72,6 +90,8 @@ namespace TeamCityRestClientNet.FakeServer
         }
         public string Property { get; private set; }
         public string Descriptor { get; private set; }
+        public bool RespondAsStream
+            => Descriptor == "contents" || RequestPath.EndsWith("downloadBuildLog.html");
         private void ParseSegments(string[] segments)
         {
             int count = segments.Length;
@@ -80,7 +100,7 @@ namespace TeamCityRestClientNet.FakeServer
 
             for (int i = 3; i < count; i++)
             {
-                var value = WebUtility.UrlDecode(segments[i].TrimEnd('/'));
+                var value = WebUtility.UrlDecode(segments[i].TrimEnd('/').ToLower());
                 if (i == 3)
                     this.Resource = value;
                 else if (i == 4)
