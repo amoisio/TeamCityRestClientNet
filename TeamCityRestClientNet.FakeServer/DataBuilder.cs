@@ -7,6 +7,201 @@ namespace TeamCityRestClientNet.FakeServer
 {
     class DataBuilder
     {
+        #region Builds
+
+        private readonly BuildDto BuildOK = new BuildDto
+        {
+            Id = "101",
+            BuildTypeId = "TeamCityRestClientNet_RestClient",
+            Number = "1",
+            Status = BuildStatus.SUCCESS,
+            State = "finished",
+            BranchName = "refs/heads/master",
+            DefaultBranch = true,
+            StatusText = "Tests passed: 56",
+            BuildType = new BuildTypeDto
+            {
+                Id = "TeamCityRestClientNet_RestClient",
+                Name = "Rest Client",
+                ProjectId = "TeamCityRestClientNet"                
+            },
+            QueuedDate = "20210103T093500+0000",
+            StartDate = "20210103T094000+0000",
+            FinishDate = "20210103T095000+0000",
+            Triggered = new TriggeredDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                }
+            },
+            Comment = new BuildCommentDto 
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                },
+                Timestamp = "20210103T093500+0000",
+                Text = "Building"
+            },
+            Revisions = new RevisionsDto
+            {
+                Revision = new List<RevisionDto> 
+                {
+                    new RevisionDto 
+                    {
+                        Version = "54f7ef0ebcc5be2f59a66543034740c9b7383cec",
+                        VcsBranchName = "refs/heads/master",
+                        VcsRootInstance = new VcsRootInstanceDto
+                        {
+                            VcsRootId = "TeamCityRestClientNet_Bitbucket",
+                            Id = "3"
+                        }
+                    }
+                }
+            },
+            Agent = new BuildAgentDto
+            {
+                Id = "1",
+                Name = "ip_172.17.0.3"
+            },
+            Properties = new ParametersDto
+            {
+                Property = new List<ParameterDto>
+                {
+                    new ParameterDto("param1", "value1")
+                }
+            }
+        };
+
+        private readonly BuildDto BuildFailed = new BuildDto
+        {
+            Id = "102",
+            BuildTypeId = "TeamCityRestClientNet_RestClient",
+            Number = "2",
+            Status = BuildStatus.FAILURE,
+            State = "finished",
+            StatusText = "/usr/share/dotnet/sdk/3.1.403/NuGet.targets(128,5): error : Unable to load the service index for source https://api.nuget.org/v3/index.json. /usr/share/dotnet/sdk/3.1.403/NuGet.targets(128,5): error : Resource temporarily unavailable (new);",
+            BuildType = new BuildTypeDto
+            {
+                Id = "TeamCityRestClientNet_RestClient",
+                Name = "Rest Client",
+                ProjectId = "TeamCityRestClientNet"
+            },
+            QueuedDate = "20210104T093500+0000",
+            StartDate = "20210104T094000+0000",
+            FinishDate = "20210104T095000+0000",
+            Triggered = new TriggeredDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                }
+            },
+            Revisions = new RevisionsDto
+            {
+                Revision = new List<RevisionDto>
+                {
+                    new RevisionDto
+                    {
+                        Version = "2d5fc7874d73d0e4b7ae555bd00be14f79b76154",
+                        VcsBranchName = "refs/heads/master",
+                        VcsRootInstance = new VcsRootInstanceDto
+                        {
+                            VcsRootId = "TeamCityRestClientNet_Bitbucket",
+                            Id = "3"
+                        }
+                    }
+                }
+            },
+            Agent = new BuildAgentDto
+            {
+                Id = "1",
+                Name = "ip_172.17.0.3"
+            }
+        };
+
+        private readonly BuildDto BuildQueued = new BuildDto
+        {
+            Id = "103",
+            BuildTypeId = "TeamCityRestClientNet_RestClient",
+            State = "queued",
+            BranchName = "<default>",
+            DefaultBranch = true,
+            BuildType = new BuildTypeDto
+            {
+                Id = "TeamCityRestClientNet_RestClient",
+                Name = "Rest Client",
+                ProjectId = "TeamCityRestClientNet"
+            },
+            QueuedDate = "20210104T193500+0000",
+            Triggered = new TriggeredDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                }
+            },
+            Properties = new ParametersDto
+            {
+                Property = new List<ParameterDto>
+                {
+                    new ParameterDto("param1", "value1")
+                }
+            }
+        };
+
+        private readonly BuildDto BuildCancelled = new BuildDto
+        {
+            Id = "104",
+            BuildTypeId = "TeamCityRestClientNet_RestClient",
+            Number = "N/A",
+            Status = BuildStatus.UNKNOWN,
+            State = "finished",
+            BranchName = "<default>",
+            DefaultBranch = true,
+            StatusText = "Canceled",
+            BuildType = new BuildTypeDto
+            {
+                Id = "TeamCityRestClientNet_RestClient",
+                Name = "Rest Client",
+                ProjectId = "TeamCityRestClientNet"
+            },
+            CanceledInfo = new BuildCanceledDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                },
+                Timestamp = "20210103T093500+0000",
+                Text = "Cancelled-1414ceb1-f7ae-42e4-b7c1-d18159e99506"
+            },
+            QueuedDate = "20210103T093500+0000",
+            StartDate = "20210103T094000+0000",
+            FinishDate = "20210103T095000+0000",
+            Triggered = new TriggeredDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                }
+            }
+        };
+
+        #endregion
+
         #region BuildAgents
 
         public readonly BuildAgentDto AgentEnabled = new BuildAgentDto
@@ -80,6 +275,39 @@ namespace TeamCityRestClientNet.FakeServer
 
         #endregion
 
+        #region BuildTypes
+        private readonly BuildTypeDto BuildTypeRestClient = new BuildTypeDto
+        {
+            Id = "TeamCityRestClientNet_RestClient",
+            Name = "Rest Client",
+            ProjectId = "TeamCityRestClientNet",
+            Settings = new BuildTypeSettingsDto
+            {
+                Property = new List<NameValuePropertyDto>
+                {
+                    new NameValuePropertyDto { Name = "artifactRules", Value = "artifacts" },
+                    new NameValuePropertyDto { Name = "buildNumberCounter", Value = "138" },
+                    new NameValuePropertyDto { Name = "cleanBuild", Value = "true" },
+                    new NameValuePropertyDto { Name = "publishArtifactCondition", Value = "SUCCESSFUL" }
+                }
+            }
+        };
+
+        private readonly BuildTypeDto BuildTypeTeamCityCli = new BuildTypeDto
+        {
+            Id = "TeamCityCliNet_Cli",
+            Name = "CLI",
+            ProjectId = "TeamCityCliNet",
+            Settings = new BuildTypeSettingsDto
+            {
+                Property = new List<NameValuePropertyDto>
+                {
+                    new NameValuePropertyDto { Name = "buildNumberCounter", Value = "1" }
+                }
+            }
+        };
+        #endregion
+
         #region Changes
 
         private readonly ChangeDto Change1 = new ChangeDto
@@ -145,6 +373,56 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
+        #endregion
+
+        #region Projects
+        private readonly ProjectDto RootProject = new ProjectDto
+        {
+            Id = "_Root",
+            Name = "<Root project>"
+        };
+
+        private readonly ProjectDto RestClientProject = new ProjectDto
+        {
+            Id = "TeamCityRestClientNet",
+            ParentProjectId = "_Root",
+            Name = "TeamCity Rest Client .NET",
+            Parameters = new ParametersDto
+            {
+                Property = new List<ParameterDto>
+                {
+                    new ParameterDto("configuration_parameter", "6692e7bf_c9a4_4941_9e89_5dde9417f05f"),
+                }
+            }
+        };
+
+        private readonly ProjectDto TeamCityCliProject = new ProjectDto
+        {
+            Id = "TeamCityCliNet",
+            ParentProjectId = "_Root",
+            Name = "TeamCity CLI .NET"
+        };
+
+        private readonly ProjectDto Project1 = new ProjectDto
+        {
+            Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
+            ParentProjectId = "_Root",
+            Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
+        };
+
+        private readonly ProjectDto Project2 = new ProjectDto
+        {
+            Id = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819",
+            ParentProjectId = "_Root",
+            Name = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819"
+        };
+
+        private readonly ProjectDto Project3 = new ProjectDto
+        {
+            Id = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928",
+            ParentProjectId = "_Root",
+            Name = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928"
+        };
         #endregion
 
         #region Users
@@ -231,101 +509,24 @@ namespace TeamCityRestClientNet.FakeServer
 
         #endregion
 
-        #region BuildTypes
-        private readonly BuildTypeDto BuildTypeRestClient = new BuildTypeDto
-        {
-            Id = "TeamCityRestClientNet_RestClient",
-            Name = "Rest Client",
-            ProjectId = "TeamCityRestClientNet",
-            Settings = new BuildTypeSettingsDto
-            {
-                Property = new List<NameValuePropertyDto>
-                {
-                    new NameValuePropertyDto { Name = "artifactRules", Value = "artifacts" },
-                    new NameValuePropertyDto { Name = "buildNumberCounter", Value = "138" },
-                    new NameValuePropertyDto { Name = "cleanBuild", Value = "true" },
-                    new NameValuePropertyDto { Name = "publishArtifactCondition", Value = "SUCCESSFUL" }
-                }
-            }
-        };
-
-        private readonly BuildTypeDto BuildTypeTeamCityCli = new BuildTypeDto
-        {
-            Id = "TeamCityCliNet_Cli",
-            Name = "CLI",
-            ProjectId = "TeamCityCliNet",
-            Settings = new BuildTypeSettingsDto
-            {
-                Property = new List<NameValuePropertyDto>
-                {
-                    new NameValuePropertyDto { Name = "buildNumberCounter", Value = "1" }
-                }
-            }
-        };
-        #endregion
-
-        #region Projects
-        private readonly ProjectDto RootProject = new ProjectDto
-        {
-            Id = "_Root",
-            Name = "<Root project>"
-        };
-
-        private readonly ProjectDto RestClientProject = new ProjectDto
-        {
-            Id = "TeamCityRestClientNet",
-            ParentProjectId = "_Root",
-            Name = "TeamCity Rest Client .NET",
-            Parameters = new ParametersDto
-            {
-                Property = new List<ParameterDto>
-                {
-                    new ParameterDto("configuration_parameter", "6692e7bf_c9a4_4941_9e89_5dde9417f05f"),
-                }
-            }
-        };
-
-        private readonly ProjectDto TeamCityCliProject = new ProjectDto
-        {
-            Id = "TeamCityCliNet",
-            ParentProjectId = "_Root",
-            Name = "TeamCity CLI .NET"
-        };
-
-        private readonly ProjectDto Project1 = new ProjectDto
-        {
-            Id = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4",
-            ParentProjectId = "_Root",
-            Name = "Project_e8fbb7af_1267_4df8_865f_7be55fdd54c4"
-        };
-
-        private readonly ProjectDto Project2 = new ProjectDto
-        {
-            Id = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819",
-            ParentProjectId = "_Root",
-            Name = "Project_1cd586a8_d65c_44b1_b60e_e63f8b471819"
-        };
-
-        private readonly ProjectDto Project3 = new ProjectDto
-        {
-            Id = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928",
-            ParentProjectId = "_Root",
-            Name = "Project_3a1ac261_96d4_45b0_ac3d_7245718a3928"
-        };
-        #endregion
-        
+        #region VcsRootInstances
+       
         private readonly VcsRootInstanceDto VcsInstance1 = new VcsRootInstanceDto
         {
             Id = "3",
             VcsRootId = "TeamCityRestClientNet_Bitbucket",
             Name = "Bitbucket"
         };
+
+        #endregion
         
         public DataBuilder()
         {
+            var builds = new BuildRepository();
+            Builds = builds;
             BuildAgents = new BuildAgentRepository();
             BuildAgentPools = new BuildAgentPoolRepository();
-            BuildTypes = new BuildTypeRepository();
+            BuildTypes = new BuildTypeRepository(builds);
             Changes = new ChangeRepository();
             Projects = new ProjectRepository();
             Users = new UserRepository();
@@ -359,6 +560,11 @@ namespace TeamCityRestClientNet.FakeServer
             DefaultPool.Projects.Items.Add(Project2);
             DefaultPool.Projects.Items.Add(Project3);
             BuildAgentPools.Add(DefaultPool);
+
+            Builds.Add(BuildOK);
+            Builds.Add(BuildFailed);
+            Builds.Add(BuildQueued);
+            Builds.Add(BuildCancelled);
 
             BuildTypes.Add(BuildTypeRestClient);
             BuildTypes.Add(BuildTypeTeamCityCli);
@@ -395,14 +601,14 @@ namespace TeamCityRestClientNet.FakeServer
             VcsRootInstances.Add(VcsInstance1);
         }
 
+        public BuildRepository Builds { get; private set; }
         public BuildAgentRepository BuildAgents { get; private set; }
         public BuildAgentPoolRepository BuildAgentPools { get; private set; }
         public BuildTypeRepository BuildTypes { get; private set; }
+        public ProjectRepository Projects { get; private set; }
         public ChangeRepository Changes { get; private set; }
         public UserRepository Users { get; private set; }
         public VcsRootRepository VcsRoots { get; private set; }
         public VcsRootInstanceRepository VcsRootInstances { get; private set; }
-        public ProjectRepository Projects { get; private set; }
-
     }
 }
