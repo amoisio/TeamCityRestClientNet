@@ -68,6 +68,7 @@ namespace TeamCityRestClientNet.RestApi
         [Post("/app/rest/builds/{id}")]
         Task CancelBuild([AliasAs("id")] string buildId, [Body] BuildCancelRequestDto value);
 
+        [Headers("Accept: application/json")]
         [Post("/app/rest/builds/{id}/tags/")]
         Task AddTag([AliasAs("id")] string buildId, [Body] string tag);
 
@@ -92,7 +93,6 @@ namespace TeamCityRestClientNet.RestApi
             string locator,
             string fields);
 
-
         [Headers("Accept: application/json")]
         [Get("/app/rest/builds/{id}/resulting-properties")]
         Task<ParametersDto> ResultingProperties([AliasAs("id")] string buildId);
@@ -106,11 +106,8 @@ namespace TeamCityRestClientNet.RestApi
         [Put("/app/rest/builds/{id}/pin/")]
         Task Pin([AliasAs("id")] string buildId, [Body] string comment);
 
-        //The standard DELETE annotation doesn't allow to include a body, so we need to use our own.
-        //Probably it would be better to change Rest API here (https://youtrack.jetbrains.com/issue/TW-49178).
-        // @DELETE_WITH_BODY("/app/rest/builds/{id}/pin/")
         [Delete("/app/rest/builds/{id}/pin/")]
-        Task Unpin([AliasAs("id")] string buildId, [Body] string comment);
+        Task Unpin([AliasAs("id")] string buildId);
 
         #endregion
 
