@@ -6,6 +6,6 @@ namespace TeamCityRestClientNet.Api
     public interface IBuildQueue
     {
         Task RemoveBuild(Id buildId, string comment = "", bool reAddIntoQueue = false);
-        IAsyncEnumerable<IBuild> QueuedBuilds(Id? projectId = null);
+        IAsyncEnumerable<IBuild> All(Id? projectId = null);
     }
 }

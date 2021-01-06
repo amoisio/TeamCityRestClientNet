@@ -8,7 +8,7 @@ namespace TeamCityRestClientNet.Tests
     {
         public static async Task EmptyBuildQueue(TeamCity teamCity)
         {
-            await foreach (var build in teamCity.BuildQueue.QueuedBuilds())
+            await foreach (var build in teamCity.BuildQueue.All())
             {
                 await teamCity.BuildQueue.RemoveBuild(build.Id);
             }

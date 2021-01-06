@@ -17,7 +17,7 @@ namespace TeamCityRestClientNet.Domain
             this._instance = instance;
         }
 
-        public IAsyncEnumerable<IBuild> QueuedBuilds(Id? projectId = null)
+        public IAsyncEnumerable<IBuild> All(Id? projectId = null)
         {
             var parameters = projectId.HasValue
                 ? new List<string>{ $"project:{projectId.Value}" }

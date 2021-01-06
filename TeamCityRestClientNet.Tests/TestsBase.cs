@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.FakeServer;
 
@@ -22,6 +23,8 @@ namespace TeamCityRestClientNet.Tests
         protected readonly string _serverUrl;
         protected readonly RedirectToFakeServer _handler;
         protected ApiCall ApiCall => _handler.ApiCall;
+        protected ApiCall FirstApiCall => _handler.FirstApiCall;
+        protected List<ApiCall> ApiCalls => _handler.ApiCalls;
 
         public TestsBase(TeamCityFixture fixture)
         {
