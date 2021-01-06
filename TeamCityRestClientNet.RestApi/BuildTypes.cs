@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.RestApi
@@ -46,5 +47,19 @@ namespace TeamCityRestClientNet.RestApi
         public bool? Inherited { get; set; } = false;
         public ParametersDto Properties { get; set; } = new ParametersDto();
         public BuildTypeDto SourceBuildType { get; set; } = new BuildTypeDto();
+    }
+
+
+    [XmlRoot("newBuildTypeDescription")]
+    public class NewBuildTypeDescription
+    {
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+        [XmlAttribute("sourceBuildTypeLocator")]
+        public string SourceBuildTypeLocator { get; set; }
+        [XmlElement("copyAllAssociatedSettings")]
+        public bool CopyAllAssociatedSettings { get; set; }
+        [XmlElement("shareVCSRoots")]
+        public bool ShareVCSRoots { get; set; }
     }
 }
