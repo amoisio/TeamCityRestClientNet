@@ -370,7 +370,7 @@ namespace TeamCityRestClientNet.Domain
         public async Task Unpin(string comment = "unpinned via REST API")
         {
         //         LOG.info("Unpinning build ${getHomeUrl()}")
-            await Service.Unpin(IdString, comment).ConfigureAwait(false);
+            await Service.Unpin(IdString).ConfigureAwait(false);
         }
     }
 }
