@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,18 +15,23 @@ namespace TeamCityRestClientNet.FakeServer
         public RedirectToFakeServer(FakeServer fakeServer)
         {
             _fakeServer = fakeServer;
+            ApiCalls = new List<ApiCall>();
         }
 
-        public ApiCall ApiCall { get; set; }
+        public List<ApiCall> ApiCalls { get; set; }
+        public ApiCall FirstApiCall => ApiCalls.First();
+        public ApiCall ApiCall => ApiCalls.Last();
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            this.ApiCall = new ApiCall(request);
+            var apiCall = new ApiCall(request);
+            ApiCalls.Add(apiCall);
             var fs = _fakeServer;
             HttpStatusCode code;
             HttpContent content;
             try
             {
-                var response = fs.ResolveApiCall(this.ApiCall);
+                var response = fs.ResolveApiCall(apiCall);
 
                 if (response == null)
                 {
@@ -36,7 +41,7 @@ namespace TeamCityRestClientNet.FakeServer
                 else
                 {
                     code = HttpStatusCode.OK;
-                    if (this.ApiCall.RespondAsStream)
+                    if (apiCall.RespondAsStream)
                         content = new StreamContent(response as Stream);
                     else 
                         content = new StringContent(JsonConvert.SerializeObject(response));
@@ -49,13 +54,13 @@ namespace TeamCityRestClientNet.FakeServer
             }
 
             return await Task
-                    .FromResult(new HttpResponseMessage(code)
-                    {
+                .FromResult(new HttpResponseMessage(code)
+                {
 
-                        Content = content,
-                        RequestMessage = request
-                    })
-                    .ConfigureAwait(false);
-        }
+                    Content = content,
+                    RequestMessage = request
+                })
+                .ConfigureAwait(false);
+}
     }
 }
