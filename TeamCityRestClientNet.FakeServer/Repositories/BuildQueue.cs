@@ -12,6 +12,7 @@ namespace TeamCityRestClientNet.FakeServer
         public BuildQueue(BuildRepository builds)
         {
             this._builds = builds;
+            this.AddRange(_builds.All().Items.Where(build => build.State == "queued"));
         }
 
         internal TriggeredBuildDto TriggerBuild(TriggerBuildRequestDto request)
