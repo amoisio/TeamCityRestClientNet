@@ -47,7 +47,7 @@ namespace TeamCityRestClientNet.FakeServer
         {
             return JsonConvert.DeserializeObject<T>(Content);
         }
-        
+
         public string Resource { get; private set; }
         public bool HasLocators => _locators != null && _locators.Count > 0 || !String.IsNullOrEmpty(_locator);
         public bool HasNamedLocator(string locatorName) => _locators.ContainsKey(locatorName);
@@ -100,7 +100,7 @@ namespace TeamCityRestClientNet.FakeServer
 
             for (int i = 3; i < count; i++)
             {
-                var value = WebUtility.UrlDecode(segments[i].TrimEnd('/').ToLower());
+                var value = WebUtility.UrlDecode(segments[i].TrimEnd('/'));
                 if (i == 3)
                     this.Resource = value;
                 else if (i == 4)
