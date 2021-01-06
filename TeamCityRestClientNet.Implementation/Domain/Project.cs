@@ -57,12 +57,26 @@ namespace TeamCityRestClientNet.Domain
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 
-
-        // TODO: Add a builder type - string xml api, no thank you
-        public async Task<IBuildType> CreateBuildType(string buildTypeDescriptionXml)
+        public async Task<IBuildType> CreateBuildType(string name)
         {
-            var dto = await Service.CreateBuildType(buildTypeDescriptionXml).ConfigureAwait(false);
-            return await BuildType.Create(dto.Id, Instance).ConfigureAwait(false);
+            var dto = new NewBuildTypeDescription
+            {
+                Name = name
+            };
+            return await CreateBuildType(dto);
+        }
+        
+        public async Task<IBuildType> CreateBuildType(NewBuildTypeDescription dto)
+        {
+            var xml = new StringBuilder();
+            using (var tw = new StringWriter(xml))
+            {
+                var serializer = new XmlSerializer(typeof(NewBuildTypeDescription));
+                serializer.Serialize(tw, dto);
+            }
+
+            var buildTypeDto = await Service.CreateBuildType(xml.ToString()).ConfigureAwait(false);
+            return await BuildType.Create(buildTypeDto.Id, Instance).ConfigureAwait(false);
         }
 
         /// <summary>
