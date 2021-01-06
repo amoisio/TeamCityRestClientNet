@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -35,7 +36,10 @@ namespace TeamCityRestClientNet.FakeServer
                 else
                 {
                     code = HttpStatusCode.OK;
-                    content = new StringContent(JsonConvert.SerializeObject(response));
+                    if (this.ApiCall.RespondAsStream)
+                        content = new StreamContent(response as Stream);
+                    else 
+                        content = new StringContent(JsonConvert.SerializeObject(response));
                 }
             }
             catch
@@ -47,6 +51,7 @@ namespace TeamCityRestClientNet.FakeServer
             return await Task
                     .FromResult(new HttpResponseMessage(code)
                     {
+
                         Content = content,
                         RequestMessage = request
                     })
