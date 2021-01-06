@@ -140,12 +140,12 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (!String.IsNullOrEmpty(query))
             {
-                var parameters = query.Split('&');
+                var parameters = query.Substring(1).Split('&');
                 foreach (var parameter in parameters)
                 {
                     var parts = parameter.Split('=');
                     var key = parts[0].Trim().ToLower();
-                    var val = parts[1]?.Trim();
+                    var val = WebUtility.UrlDecode(parts[1]?.Trim());
 
                     if (!this.QueryParameters.ContainsKey(key)) 
                     {
