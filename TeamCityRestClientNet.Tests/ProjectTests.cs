@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Collections.Generic;
 using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
@@ -13,10 +12,9 @@ using System.Xml.Serialization;
 
 namespace TeamCityRestClientNet.Projects
 {
-    public class RootProject : TestsBase, IClassFixture<TeamCityFixture>
+    public class RootProject : TestsBase
     {
-        public RootProject(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved()
         {
@@ -29,13 +27,14 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task GETs_the_projects_end_point_with_root_id()
         {
-            var users = await _teamCity.Projects.RootProject();
+            await _teamCity.Projects.RootProject();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
-            Assert.Equal("_Root", ApiCall.GetLocatorValue());
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/projects/_Root");
+            Assert.NotNull(apiCall);
+            Assert.Equal("_Root", apiCall.GetLocatorValue());
         }
 
+        [Obsolete]
         [Fact]
         public async Task Child_projects_can_be_retrieved()
         {
@@ -57,16 +56,17 @@ namespace TeamCityRestClientNet.Projects
 
             var childIds = childProjects.Select(p => p.Id.StringId);
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
-            Assert.Contains(ApiCall.GetLocatorValue(), childIds);
+            foreach(var childId in childIds) {
+                var apiCall = GetApiCall(HttpMethod.Get, $"/app/rest/projects/{childId}");
+                Assert.NotNull(apiCall);
+                Assert.Equal(childId, apiCall.GetLocatorValue());
+            }
         }
     }
 
-    public class NewProject : TestsBase, IClassFixture<TeamCityFixture>
+    public class NewProject : TestsBase
     {
-        public NewProject(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_created_as_child_to_root_project()
         {
@@ -98,8 +98,8 @@ namespace TeamCityRestClientNet.Projects
                 body = serializer.Deserialize(xr) as NewProjectDescriptionDto;
             }
 
-            Assert.Equal(HttpMethod.Post, ApiCall.Method);
-            Assert.StartsWith("/app/rest/project", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/projects");
+            Assert.NotNull(apiCall);
             Assert.Equal(projectId, body.Id);
             Assert.Equal(projectId, body.Name);
             Assert.Equal("id:_Root", body.ParentProject.Locator);
@@ -123,6 +123,7 @@ namespace TeamCityRestClientNet.Projects
             await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new Id(projectId), projectId));
         }
 
+        [Obsolete]
         [Fact]
         public async Task Can_be_created_as_child_to_nonroot_project()
         {
@@ -155,19 +156,17 @@ namespace TeamCityRestClientNet.Projects
                 body = serializer.Deserialize(xr) as NewProjectDescriptionDto;
             }
 
-            Assert.Equal(HttpMethod.Post, ApiCall.Method);
-            Assert.StartsWith("/app/rest/project", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Post, $"/app/rest/projects");
+            Assert.NotNull(apiCall);
             Assert.Equal(projectId, body.Id);
             Assert.Equal(projectId, body.Name);
             Assert.Equal($"id:{project.Id}", body.ParentProject.Locator);
         }
-
     }
 
-    public class ExistingProject : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingProject : TestsBase
     {
-        public ExistingProject(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
@@ -181,8 +180,8 @@ namespace TeamCityRestClientNet.Projects
         {
             var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/projects/TeamCityRestClientNet");
+            Assert.NotNull(apiCall);
             Assert.Equal("TeamCityRestClientNet", project.Id.StringId);
         }
 
@@ -192,6 +191,7 @@ namespace TeamCityRestClientNet.Projects
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Projects.ById(new Id("Not.Found")));
         }
 
+        [Obsolete]
         [Fact]
         public async Task Parameters_can_be_retrieved()
         {
@@ -201,6 +201,7 @@ namespace TeamCityRestClientNet.Projects
                 (param) => Assert.Equal("configuration_parameter", param.Name));
         }
 
+        [Obsolete]
         [Fact]
         public async Task Existing_parameter_value_can_be_changed()
         {
@@ -225,15 +226,15 @@ namespace TeamCityRestClientNet.Projects
             var newValue = Guid.NewGuid().ToString();
             await project.SetParameter("configuration_parameter", newValue);
 
-            Assert.Equal(HttpMethod.Put, ApiCall.Method);
-            Assert.StartsWith("/app/rest/projects/TeamCityRestClientNet/parameters/configuration_parameter", ApiCall.RequestPath);
-            Assert.Equal("TeamCityRestClientNet", ApiCall.GetLocatorValue());
-            Assert.Equal("parameters", ApiCall.Property);
-            Assert.Equal("configuration_parameter", ApiCall.Descriptor);
+            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/projects/TeamCityRestClientNet/parameters/configuration_parameter");
+            Assert.NotNull(apiCall);
+            Assert.Equal("TeamCityRestClientNet", apiCall.GetLocatorValue());
+            Assert.Equal("parameters", apiCall.Property);
+            Assert.Equal("configuration_parameter", apiCall.Descriptor);
             Assert.Contains(newValue, ApiCall.Content);
         }
 
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_deleted() 
         {
@@ -262,10 +263,10 @@ namespace TeamCityRestClientNet.Projects
 
             await toDelete.Delete();
 
-            Assert.Equal(HttpMethod.Delete, ApiCall.Method);
-            Assert.StartsWith("/app/rest/projects", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal(toDelete.Id.StringId, ApiCall.GetLocatorValue());
+            var apiCall = GetApiCall(HttpMethod.Delete, $"/app/rest/projects/id:{toDelete.Id}");
+            Assert.NotNull(apiCall);
+            Assert.True(apiCall.HasLocators);
+            Assert.Equal(toDelete.Id.StringId, apiCall.GetLocatorValue());
         }
     }
 }
