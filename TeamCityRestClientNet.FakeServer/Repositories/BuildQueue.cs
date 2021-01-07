@@ -46,7 +46,7 @@ namespace TeamCityRestClientNet.FakeServer
                         Name = "John Doe"
                     },
                     Timestamp = DateTime.UtcNow.ToString(Constants.TEAMCITY_DATETIME_FORMAT),
-                    Text = request.Comment.Text
+                    Text = request.Comment?.Text
                 },
                 Properties = request.Properties
             };

@@ -4,39 +4,52 @@ using Xunit;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Http;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Tests
 {
-    public class QueuedBuilds: TestsBase, IClassFixture<TeamCityFixture>
+    public class QueuedBuilds: TestsBase
     {
-        public QueuedBuilds(TeamCityFixture fixture) : base(fixture) { }
-
         [Fact]
-        public async Task Can_be_retrieved()
+        public async Task Can_be_retrieved_by_GETting_buildQueue_end_point()
         {
-            var queuedBuilds = await _teamCity.BuildQueue.All().ToListAsync();
+            await _teamCity.BuildQueue.All().ToListAsync();
 
-            Assert.All(queuedBuilds, build => Assert.Equal(BuildState.QUEUED, build.State));
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/buildQueue");
+            Assert.NotNull(apiCall);
         }
 
         [Fact]
-        public async Task GETs_the_buildQueue_end_point()
+        public async Task Can_be_retrieved_for_a_project_by_GETting_buildQueue_endpoint_with_projectId()
         {
-            var queuedBuilds = await _teamCity.BuildQueue.All().ToListAsync();
+            await _teamCity.BuildQueue.All(new Id("TeamCityRestClientNet")).ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, FirstApiCall.Method);
-            Assert.Equal("/app/rest/buildQueue", FirstApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/buildQueue", apiCall => apiCall.QueryParameters.ContainsKey("locator"));
+            Assert.NotNull(apiCall);
+            Assert.Equal("project:TeamCityRestClientNet", apiCall.QueryParameters["locator"][0]);
         }
 
         [Fact]
-        public async Task GET_query_contains_given_projectId_as_query_parameter()
+        public async Task Can_removed_from_queue_by_POSTing_to_buildQueue_endpoint_with_buildId()
         {
-            var queuedBuilds = await _teamCity.BuildQueue.All(new Id("TeamCityRestClientNet")).ToListAsync();
+            await _teamCity.BuildQueue.RemoveBuild(new Id("103"));
 
-            Assert.Equal(HttpMethod.Get, FirstApiCall.Method);
-            Assert.Equal("/app/rest/buildQueue", FirstApiCall.RequestPath);
-            Assert.True(FirstApiCall.QueryParameters.ContainsKey("locator"));
-            Assert.Equal("project:TeamCityRestClientNet", FirstApiCall.QueryParameters["locator"][0]);
+            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/buildQueue/103");
+            Assert.NotNull(apiCall);
+            Assert.Equal("103", apiCall.GetLocatorValue());
+        }
+
+        [Fact]
+        public async Task Can_be_triggered_by_POSTing_to_buildQueue_endpoint_with_trigger_request()
+        {
+            var buildType = await _teamCity.BuildTypes.ById("TeamCityRestClientNet_RestClient");
+
+            await buildType.RunBuild();
+
+            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/buildQueue");
+            Assert.NotNull(apiCall);
+            var request = apiCall.JsonContentAs<TriggerBuildRequestDto>();
+            Assert.Equal("TeamCityRestClientNet_RestClient", request.BuildType.Id);
         }
     }
 }

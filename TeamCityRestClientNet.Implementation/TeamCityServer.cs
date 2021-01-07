@@ -69,9 +69,6 @@ namespace TeamCityRestClientNet
        
         public override IBuildQueue BuildQueue => new BuildQueue(this);
 
-        public override IAsyncEnumerable<IBuild> QueuedBuilds(Id projectId)
-            => new BuildQueue(this).All(projectId);
-
         /// <summary>
         /// Retrieve build locator.
         /// </summary>

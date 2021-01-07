@@ -15,7 +15,6 @@ namespace TeamCityRestClientNet.Api
         public abstract IBuildAgentPoolLocator BuildAgentPools { get; }
         public abstract IBuildTypeLocator BuildTypes { get; }
         public abstract IBuildQueue BuildQueue { get; }
-        public abstract IAsyncEnumerable<IBuild> QueuedBuilds(Id projectId);
         public abstract IChangeLocator Changes { get; }
         public abstract IInvestigationLocator Investigations { get; }
         public abstract IProjectLocator Projects { get; }

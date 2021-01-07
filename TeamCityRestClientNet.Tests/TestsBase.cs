@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System;
+using System.Linq;
+using System.Net.Http;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.FakeServer;
 
@@ -25,6 +28,15 @@ namespace TeamCityRestClientNet.Tests
         protected ApiCall ApiCall => _handler.ApiCall;
         protected ApiCall FirstApiCall => _handler.FirstApiCall;
         protected List<ApiCall> ApiCalls => _handler.ApiCalls;
+        protected ApiCall GetApiCall(HttpMethod method, string requestPath, Func<ApiCall, bool> filter = null)
+        {
+            var calls = ApiCalls.Where(call => call.Method == method && call.RequestPath == requestPath);
+            if (filter != null)
+                calls = calls.Where(filter);
+            return calls.SingleOrDefault();
+        }
+
+        public TestsBase() : this(new TeamCityFixture()) { }
 
         public TestsBase(TeamCityFixture fixture)
         {
