@@ -8,10 +8,9 @@ using System.Net.Http;
 
 namespace TeamCityRestClientNet.Changes
 {
-    public class ChangeList : TestsBase, IClassFixture<TeamCityFixture>
+    public class ChangeList : TestsBase
     {
-        public ChangeList(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Contains_all_changes()
         {
@@ -26,15 +25,14 @@ namespace TeamCityRestClientNet.Changes
         {
             await _teamCity.Changes.All().ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/changes", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/changes");
+            Assert.NotNull(apiCall);
         }
     }
 
-    public class ExistingChange : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingChange : TestsBase
     {
-        public ExistingChange(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
@@ -56,10 +54,10 @@ namespace TeamCityRestClientNet.Changes
         {
             var change = await _teamCity.Changes.ById(new Id("1"));
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/changes", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("1", ApiCall.GetLocatorValue());
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/changes/1");
+            Assert.NotNull(apiCall);
+            Assert.True(apiCall.HasLocators);
+            Assert.Equal("1", apiCall.GetLocatorValue());
         }
 
         [Fact]
