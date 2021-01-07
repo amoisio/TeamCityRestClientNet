@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Http;
 using TeamCityRestClientNet.RestApi;
+using TeamCityRestClientNet.Tests;
 
-namespace TeamCityRestClientNet.Tests
+namespace TeamCityRestClientNet.BuildQueue
 {
     public class QueuedBuilds: TestsBase
     {
