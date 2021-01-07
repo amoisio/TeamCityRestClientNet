@@ -39,7 +39,7 @@ namespace TeamCityRestClientNet.FakeServer
 
         public HttpRequestMessage Request { get; private set; }
         public HttpMethod Method => Request.Method;
-        public string RequestPath => Request.RequestUri.AbsolutePath;
+        public string RequestPath => WebUtility.UrlDecode(Request.RequestUri.AbsolutePath); 
         public Dictionary<string, string[]> QueryParameters { get; private set; }
         public HttpRequestHeaders RequestHeaders => Request.Headers;
         public string Content { get; }

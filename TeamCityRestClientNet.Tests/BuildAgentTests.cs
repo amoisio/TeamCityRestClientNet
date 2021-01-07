@@ -8,10 +8,9 @@ using System.Net.Http;
 
 namespace TeamCityRestClientNet.BuildAgents
 {
-    public class BuildAgentList : TestsBase, IClassFixture<TeamCityFixture>
+    public class BuildAgentList : TestsBase
     {
-        public BuildAgentList(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Contains_all_build_agents()
         {
@@ -24,24 +23,23 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task GETs_the_agents_end_point()
         {
-            var agents = await _teamCity.BuildAgents.All().ToListAsync();
+            await _teamCity.BuildAgents.All().ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agents");
+            Assert.NotNull(apiCall);
         }
     }
 
-    public class EnabledBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
+    public class EnabledBuildAgent : TestsBase
     {
-        public EnabledBuildAgent(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_disabled()
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("1"));
 
             await agent.Disable();
-            
+
             var agents = await _teamCity.BuildAgents.All().ToListAsync();
             Assert.Contains(agents, (agent) => agent.Id.StringId == "1" && !agent.Enabled);
         }
@@ -53,18 +51,17 @@ namespace TeamCityRestClientNet.BuildAgents
 
             await agent.Disable();
 
-            Assert.Equal(HttpMethod.Put, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
-            Assert.Equal("1", ApiCall.GetLocatorValue());
-            Assert.Equal("enabled", ApiCall.Property);
-            Assert.Equal("false", ApiCall.Content);
+            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
+            Assert.NotNull(apiCall);
+            Assert.Equal("1", apiCall.GetLocatorValue());
+            Assert.Equal("enabled", apiCall.Property);
+            Assert.Equal("false", apiCall.Content);
         }
     }
 
-    public class DisabledBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
+    public class DisabledBuildAgent : TestsBase
     {
-        public DisabledBuildAgent(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_enabled()
         {
@@ -83,19 +80,19 @@ namespace TeamCityRestClientNet.BuildAgents
 
             await agent.Enable();
 
-            Assert.Equal(HttpMethod.Put, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
-            Assert.Equal("1", ApiCall.GetLocatorValue());
-            Assert.Equal("enabled", ApiCall.Property);
-            Assert.Equal("true", ApiCall.Content);
+            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
+            Assert.NotNull(apiCall);
+            Assert.Equal("1", apiCall.GetLocatorValue());
+            Assert.Equal("enabled", apiCall.Property);
+            Assert.Equal("true", apiCall.Content);
         }
-
     }
 
     public class ExistingBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
     {
         public ExistingBuildAgent(TeamCityFixture fixture) : base(fixture) { }
 
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved()
         {
@@ -128,8 +125,9 @@ namespace TeamCityRestClientNet.BuildAgents
         public async Task GETs_the_agents_end_point_with_id()
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("1"));
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agents", ApiCall.RequestPath);
+
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agents/id:1");
+            Assert.NotNull(apiCall);
             Assert.True(ApiCall.HasLocators);
             Assert.Equal("1", ApiCall.GetLocatorValue());
         }
