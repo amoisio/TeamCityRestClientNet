@@ -9,10 +9,9 @@ using TeamCityRestClientNet.FakeServer;
 
 namespace TeamCityRestClientNet.BuildAgentPools
 {
-    public class BuildAgentPoolList : TestsBase, IClassFixture<TeamCityFixture>
+    public class BuildAgentPoolList : TestsBase
     {
-        public BuildAgentPoolList(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Contains_all_build_agent_pools()
         {
@@ -24,17 +23,16 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task GETs_the_agent_pools_end_point()
         {
-            var agents = await _teamCity.BuildAgentPools.All().ToListAsync();
+            await _teamCity.BuildAgentPools.All().ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agentPools");
+            Assert.NotNull(apiCall);
         }
     }
 
-    public class ExistingBuildAgentPool : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingBuildAgentPool : TestsBase
     {
-        public ExistingBuildAgentPool(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved()
         {
@@ -54,8 +52,9 @@ namespace TeamCityRestClientNet.BuildAgentPools
         public async Task GETs_the_agent_pools_end_point_with_id()
         {
             var agent = await _teamCity.BuildAgentPools.ById(new Id("0"));
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/agentPools", ApiCall.RequestPath);
+
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agentPools/id:0");
+            Assert.NotNull(apiCall);
             Assert.True(ApiCall.HasLocators);
             Assert.Equal("0", ApiCall.GetLocatorValue());
         }

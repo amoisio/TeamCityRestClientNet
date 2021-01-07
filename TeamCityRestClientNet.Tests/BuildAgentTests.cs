@@ -88,10 +88,8 @@ namespace TeamCityRestClientNet.BuildAgents
         }
     }
 
-    public class ExistingBuildAgent : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingBuildAgent : TestsBase
     {
-        public ExistingBuildAgent(TeamCityFixture fixture) : base(fixture) { }
-
         [Obsolete]
         [Fact]
         public async Task Can_be_retrieved()
