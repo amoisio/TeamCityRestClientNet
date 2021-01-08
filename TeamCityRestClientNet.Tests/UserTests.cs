@@ -8,10 +8,9 @@ using System.Net.Http;
 
 namespace TeamCityRestClientNet.Users
 {
-    public class UserList : TestsBase, IClassFixture<TeamCityFixture>
+    public class UserList : TestsBase
     {
-        public UserList(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Contains_all_users()
         {
@@ -29,26 +28,14 @@ namespace TeamCityRestClientNet.Users
         {
             var users = await _teamCity.Users.All().ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users");
+            Assert.NotNull(apiCall);
         }
     }
 
-    public class NewUser : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingUser : TestsBase
     {
-        public NewUser(TeamCityFixture fixture) : base(fixture) { }
-
-        // [Fact]
-        // public async Task Can_be_created() 
-        // {
-
-        // }
-    }
-
-    public class ExistingUser : TestsBase, IClassFixture<TeamCityFixture>
-    {
-        public ExistingUser(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
@@ -68,6 +55,7 @@ namespace TeamCityRestClientNet.Users
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ById(userId));
         }
 
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved_with_exact_username()
         {
@@ -88,23 +76,21 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task GETs_users_end_point_with_id_locator()
         {
-            var user = await _teamCity.Users.ById(new Id("1"));
+            await _teamCity.Users.ById(new Id("1"));
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("1", ApiCall.GetLocatorValue());
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users/id:1");
+            Assert.NotNull(apiCall);
+            Assert.Equal("1", apiCall.GetLocatorValue());
         }
 
         [Fact]
         public async Task GETs_users_end_point_with_username_locator()
         {
-            var user = await _teamCity.Users.ByUsername("jadoe");
+            await _teamCity.Users.ByUsername("jadoe");
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/users", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("jadoe", ApiCall.GetLocatorValue("username"));
+            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users/jadoe");
+            Assert.NotNull(apiCall);
+            Assert.Equal("jadoe", apiCall.GetLocatorValue("username"));
         }
     }
 }
