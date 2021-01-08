@@ -8,25 +8,23 @@ using TeamCityRestClientNet.Tools;
 
 namespace TeamCityRestClientNet.Builds
 {
-    [Collection("TeamCity Collection")]
-    public class BuildList : _TestsBase
+    public class BuildList : TestsBase
     {
-        public BuildList(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
-
         [Fact]
         public async Task By_default_contains_all_builds_from_default_branch()
         {
+            var defaultBranch = "refs/heads/master";
             var builds = await _teamCity.Builds.All().ToListAsync();
 
             Assert.Contains(builds, (build) =>
                 build.Id.StringId == "12"
                 && build.Status == BuildStatus.SUCCESS
-                && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
+                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
 
             Assert.Contains(builds, (build) =>
                 build.Id.StringId == "13"
                 && build.Status == BuildStatus.FAILURE
-                && (build.Branch.Name == null || build.Branch.Name == "refs/heads/master"));
+                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
         }
 
         [Fact]
@@ -199,11 +197,8 @@ namespace TeamCityRestClientNet.Builds
 
     }
 
-    [Collection("TeamCity Collection")]
-    public class NewBuild : _TestsBase
+    public class NewBuild : TestsBase
     {
-        public NewBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
-
         private BuildState[] _buildingStates = new BuildState[]
         {
             BuildState.QUEUED, /* Queued if there are no agents to run the build */ 
@@ -235,11 +230,8 @@ namespace TeamCityRestClientNet.Builds
         // // // }
     }
 
-    [Collection("TeamCity Collection")]
-    public class RunningBuild : _TestsBase
+    public class RunningBuild : TestsBase
     {
-        public RunningBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
-
         // // // [Fact]
         // // // public async Task Can_be_cancelled()
         // // // {
@@ -258,10 +250,8 @@ namespace TeamCityRestClientNet.Builds
         // // // }
     }
 
-    [Collection("TeamCity Collection")]
-    public class ExistingBuild : _TestsBase
+    public class ExistingBuild : TestsBase
     {
-        public ExistingBuild(_TeamCityFixture teamCityFixture) : base(teamCityFixture) { }
 
         [Fact]
         public async Task Can_be_retrieved_as_latest_build()

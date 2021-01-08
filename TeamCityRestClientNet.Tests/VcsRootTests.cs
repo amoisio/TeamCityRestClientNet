@@ -13,10 +13,9 @@ using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.VcsRoots
 {
-    public class VcsRootList : TestsBase, IClassFixture<TeamCityFixture>
+    public class VcsRootList : TestsBase
     {
-        public VcsRootList(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Contains_all_VcsRoots()
         {
@@ -27,17 +26,16 @@ namespace TeamCityRestClientNet.VcsRoots
         [Fact]
         public async Task GETs_the_vcsroots_end_point()
         {
-            var users = await _teamCity.VcsRoots.All().ToListAsync();
+            await _teamCity.VcsRoots.All().ToListAsync();
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/vcs-roots");
+            Assert.NotNull(apiCall);
         }
     }
 
-    public class NewGitVcsRoot : TestsBase, IClassFixture<TeamCityFixture> 
+    public class NewGitVcsRoot : TestsBase
     {
-        public NewGitVcsRoot(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_created_for_root_project()
         {
@@ -92,7 +90,8 @@ namespace TeamCityRestClientNet.VcsRoots
                 new Dictionary<string, string>());
 
             NewVcsRoot body;
-            var bodyStr = ApiCall.Content;
+            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/vcs-roots");
+            var bodyStr = apiCall.Content;
             using (var sr = new StringReader(bodyStr))
             using (var xr = XmlReader.Create(sr))
             {
@@ -100,18 +99,16 @@ namespace TeamCityRestClientNet.VcsRoots
                 body = serializer.Deserialize(xr) as NewVcsRoot;
             }
 
-            Assert.Equal(HttpMethod.Post, ApiCall.Method);
-            Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
+            Assert.NotNull(apiCall);
             Assert.Equal(vcsId, body.Id);
             Assert.Equal(vcsId, body.Name);
             Assert.Equal(project.Id.StringId, body.Project.Id);
         }
     }
 
-    public class ExistingVcsRoot : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingVcsRoot : TestsBase
     {
-        public ExistingVcsRoot(TeamCityFixture fixture) : base(fixture) { }
-
+        [Obsolete]
         [Fact]
         public async Task Can_be_retrieved_with_id()
         {
@@ -137,12 +134,12 @@ namespace TeamCityRestClientNet.VcsRoots
             var rootId = new Id("TeamCityRestClientNet_Bitbucket");
             var root = await _teamCity.VcsRoots.ById(rootId);
 
-            Assert.Equal(HttpMethod.Get, ApiCall.Method);
-            Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("TeamCityRestClientNet_Bitbucket", ApiCall.GetLocatorValue());
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/vcs-roots/TeamCityRestClientNet_Bitbucket");
+            Assert.NotNull(apiCall);
+            Assert.Equal("TeamCityRestClientNet_Bitbucket", apiCall.GetLocatorValue());
         }
 
+        [Obsolete]
         [Fact]
         public async Task Can_be_deleted()
         {
@@ -168,10 +165,9 @@ namespace TeamCityRestClientNet.VcsRoots
                 
             await toDelete.Delete();
 
-            Assert.Equal(HttpMethod.Delete, ApiCall.Method);
-            Assert.StartsWith("/app/rest/vcs-roots", ApiCall.RequestPath);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal(toDelete.Id.StringId, ApiCall.GetLocatorValue());
+            var apiCall = ApiCall(HttpMethod.Delete, $"/app/rest/vcs-roots/id:{toDelete.Id}");
+            Assert.NotNull(apiCall);
+            Assert.Equal(toDelete.Id.StringId, apiCall.GetLocatorValue());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace TeamCityRestClientNet.Projects
         {
             await _teamCity.Projects.RootProject();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/projects/_Root");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/projects/_Root");
             Assert.NotNull(apiCall);
             Assert.Equal("_Root", apiCall.GetLocatorValue());
         }
@@ -57,7 +57,7 @@ namespace TeamCityRestClientNet.Projects
             var childIds = childProjects.Select(p => p.Id.StringId);
 
             foreach(var childId in childIds) {
-                var apiCall = GetApiCall(HttpMethod.Get, $"/app/rest/projects/{childId}");
+                var apiCall = ApiCall(HttpMethod.Get, $"/app/rest/projects/{childId}");
                 Assert.NotNull(apiCall);
                 Assert.Equal(childId, apiCall.GetLocatorValue());
             }
@@ -90,7 +90,8 @@ namespace TeamCityRestClientNet.Projects
             await project.CreateProject(new Id(projectId), projectId);
 
             NewProjectDescriptionDto body;
-            var bodyStr = ApiCall.Content;
+            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/projects");
+            var bodyStr = apiCall.Content;
             using (var sr = new StringReader(bodyStr))
             using (var xr = XmlReader.Create(sr))
             {
@@ -98,7 +99,6 @@ namespace TeamCityRestClientNet.Projects
                 body = serializer.Deserialize(xr) as NewProjectDescriptionDto;
             }
 
-            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/projects");
             Assert.NotNull(apiCall);
             Assert.Equal(projectId, body.Id);
             Assert.Equal(projectId, body.Name);
@@ -147,8 +147,9 @@ namespace TeamCityRestClientNet.Projects
             var projectId = $"Project_{Guid.NewGuid().ToString().Replace('-', '_')}";
             await project.CreateProject(new Id(projectId), projectId);
 
+            var apiCall = ApiCall(HttpMethod.Post, $"/app/rest/projects");
             NewProjectDescriptionDto body;
-            var bodyStr = ApiCall.Content;
+            var bodyStr = apiCall.Content;
             using (var sr = new StringReader(bodyStr))
             using (var xr = XmlReader.Create(sr))
             {
@@ -156,7 +157,7 @@ namespace TeamCityRestClientNet.Projects
                 body = serializer.Deserialize(xr) as NewProjectDescriptionDto;
             }
 
-            var apiCall = GetApiCall(HttpMethod.Post, $"/app/rest/projects");
+            
             Assert.NotNull(apiCall);
             Assert.Equal(projectId, body.Id);
             Assert.Equal(projectId, body.Name);
@@ -180,7 +181,7 @@ namespace TeamCityRestClientNet.Projects
         {
             var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/projects/TeamCityRestClientNet");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/projects/TeamCityRestClientNet");
             Assert.NotNull(apiCall);
             Assert.Equal("TeamCityRestClientNet", project.Id.StringId);
         }
@@ -226,12 +227,12 @@ namespace TeamCityRestClientNet.Projects
             var newValue = Guid.NewGuid().ToString();
             await project.SetParameter("configuration_parameter", newValue);
 
-            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/projects/TeamCityRestClientNet/parameters/configuration_parameter");
+            var apiCall = ApiCall(HttpMethod.Put, "/app/rest/projects/TeamCityRestClientNet/parameters/configuration_parameter");
             Assert.NotNull(apiCall);
             Assert.Equal("TeamCityRestClientNet", apiCall.GetLocatorValue());
             Assert.Equal("parameters", apiCall.Property);
             Assert.Equal("configuration_parameter", apiCall.Descriptor);
-            Assert.Contains(newValue, ApiCall.Content);
+            Assert.Contains(newValue, apiCall.Content);
         }
 
         [Obsolete]
@@ -263,7 +264,7 @@ namespace TeamCityRestClientNet.Projects
 
             await toDelete.Delete();
 
-            var apiCall = GetApiCall(HttpMethod.Delete, $"/app/rest/projects/id:{toDelete.Id}");
+            var apiCall = ApiCall(HttpMethod.Delete, $"/app/rest/projects/id:{toDelete.Id}");
             Assert.NotNull(apiCall);
             Assert.True(apiCall.HasLocators);
             Assert.Equal(toDelete.Id.StringId, apiCall.GetLocatorValue());

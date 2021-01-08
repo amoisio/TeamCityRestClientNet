@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.All().ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/buildQueue");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/buildQueue");
             Assert.NotNull(apiCall);
         }
 
@@ -25,7 +25,7 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.All(new Id("TeamCityRestClientNet")).ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/buildQueue", apiCall => apiCall.QueryParameters.ContainsKey("locator"));
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/buildQueue", apiCall => apiCall.QueryParameters.ContainsKey("locator"));
             Assert.NotNull(apiCall);
             Assert.Equal("project:TeamCityRestClientNet", apiCall.QueryParameters["locator"][0]);
         }
@@ -35,7 +35,7 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.RemoveBuild(new Id("103"));
 
-            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/buildQueue/103");
+            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/buildQueue/103");
             Assert.NotNull(apiCall);
             Assert.Equal("103", apiCall.GetLocatorValue());
         }
@@ -47,7 +47,7 @@ namespace TeamCityRestClientNet.BuildQueue
 
             await buildType.RunBuild();
 
-            var apiCall = GetApiCall(HttpMethod.Post, "/app/rest/buildQueue");
+            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/buildQueue");
             Assert.NotNull(apiCall);
             var request = apiCall.JsonContentAs<TriggerBuildRequestDto>();
             Assert.Equal("TeamCityRestClientNet_RestClient", request.BuildType.Id);

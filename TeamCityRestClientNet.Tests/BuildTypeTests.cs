@@ -6,10 +6,8 @@ using System.Linq;
 
 namespace TeamCityRestClientNet.Tests
 {
-    public class BuildTypeList : TestsBase, IClassFixture<TeamCityFixture>
+    public class BuildTypeList : TestsBase
     {
-        public BuildTypeList(TeamCityFixture fixture) : base(fixture) { }
-
         // [Fact]
         // public async Task Contains_all_build_configurations()
         // {
@@ -37,10 +35,8 @@ namespace TeamCityRestClientNet.Tests
         // }
     }
 
-    public class ExistingBuildType : TestsBase, IClassFixture<TeamCityFixture>
+    public class ExistingBuildType : TestsBase
     {
-        public ExistingBuildType(TeamCityFixture fixture) : base(fixture) { }
-
         // [Fact]
         // public async Task Can_be_retrieved_with_id()
         // {

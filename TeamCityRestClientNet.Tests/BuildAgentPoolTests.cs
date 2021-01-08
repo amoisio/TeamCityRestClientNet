@@ -25,7 +25,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         {
             await _teamCity.BuildAgentPools.All().ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agentPools");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/agentPools");
             Assert.NotNull(apiCall);
         }
     }
@@ -53,10 +53,9 @@ namespace TeamCityRestClientNet.BuildAgentPools
         {
             var agent = await _teamCity.BuildAgentPools.ById(new Id("0"));
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agentPools/id:0");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/agentPools/id:0");
             Assert.NotNull(apiCall);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("0", ApiCall.GetLocatorValue());
+            Assert.Equal("0", apiCall.GetLocatorValue());
         }
 
         [Fact]

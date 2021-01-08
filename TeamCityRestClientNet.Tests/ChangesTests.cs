@@ -25,7 +25,7 @@ namespace TeamCityRestClientNet.Changes
         {
             await _teamCity.Changes.All().ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/changes");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/changes");
             Assert.NotNull(apiCall);
         }
     }
@@ -54,7 +54,7 @@ namespace TeamCityRestClientNet.Changes
         {
             var change = await _teamCity.Changes.ById(new Id("1"));
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/changes/1");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/changes/1");
             Assert.NotNull(apiCall);
             Assert.True(apiCall.HasLocators);
             Assert.Equal("1", apiCall.GetLocatorValue());

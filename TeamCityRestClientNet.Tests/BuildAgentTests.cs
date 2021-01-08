@@ -25,7 +25,7 @@ namespace TeamCityRestClientNet.BuildAgents
         {
             await _teamCity.BuildAgents.All().ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agents");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/agents");
             Assert.NotNull(apiCall);
         }
     }
@@ -51,7 +51,7 @@ namespace TeamCityRestClientNet.BuildAgents
 
             await agent.Disable();
 
-            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
+            var apiCall = ApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
             Assert.NotNull(apiCall);
             Assert.Equal("1", apiCall.GetLocatorValue());
             Assert.Equal("enabled", apiCall.Property);
@@ -80,7 +80,7 @@ namespace TeamCityRestClientNet.BuildAgents
 
             await agent.Enable();
 
-            var apiCall = GetApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
+            var apiCall = ApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled");
             Assert.NotNull(apiCall);
             Assert.Equal("1", apiCall.GetLocatorValue());
             Assert.Equal("enabled", apiCall.Property);
@@ -124,10 +124,9 @@ namespace TeamCityRestClientNet.BuildAgents
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("1"));
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/agents/id:1");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/agents/id:1");
             Assert.NotNull(apiCall);
-            Assert.True(ApiCall.HasLocators);
-            Assert.Equal("1", ApiCall.GetLocatorValue());
+            Assert.Equal("1", apiCall.GetLocatorValue());
         }
 
         [Fact]

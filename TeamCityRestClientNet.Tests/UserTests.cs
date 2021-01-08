@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Users
         {
             var users = await _teamCity.Users.All().ToListAsync();
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/users");
             Assert.NotNull(apiCall);
         }
     }
@@ -78,7 +78,7 @@ namespace TeamCityRestClientNet.Users
         {
             await _teamCity.Users.ById(new Id("1"));
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users/id:1");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/users/id:1");
             Assert.NotNull(apiCall);
             Assert.Equal("1", apiCall.GetLocatorValue());
         }
@@ -88,7 +88,7 @@ namespace TeamCityRestClientNet.Users
         {
             await _teamCity.Users.ByUsername("jadoe");
 
-            var apiCall = GetApiCall(HttpMethod.Get, "/app/rest/users/jadoe");
+            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/users/username:jadoe");
             Assert.NotNull(apiCall);
             Assert.Equal("jadoe", apiCall.GetLocatorValue("username"));
         }
