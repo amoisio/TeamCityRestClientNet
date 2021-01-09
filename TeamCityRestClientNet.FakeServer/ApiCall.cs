@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Xml;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace TeamCityRestClientNet.FakeServer
@@ -46,6 +49,16 @@ namespace TeamCityRestClientNet.FakeServer
         public T JsonContentAs<T>()
         {
             return JsonConvert.DeserializeObject<T>(Content);
+        }
+
+        public T XmlContentAs<T>()
+        {
+            using (var sr = new StringReader(Content))
+            using (var xr = XmlReader.Create(sr))
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                return (T)serializer.Deserialize(xr);
+            }
         }
 
         public string Resource { get; private set; }

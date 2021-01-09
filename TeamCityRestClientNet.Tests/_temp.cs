@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamCityRestClientNet.Api;
@@ -125,5 +126,97 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
     }
 
+    public class VcsRootList : TestsBase
+    {
+        [Obsolete]
+        [Fact]
+        public async Task Contains_all_VcsRoots()
+        {
+            var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
+            Assert.Contains(vcsRoots, (root) => root.Id.StringId == "TeamCityRestClientNet_Bitbucket");
+        }
+    }
 
+    public class NewGitVcsRoot : TestsBase
+    {
+        [Obsolete]
+        [Fact]
+        public async Task Can_be_created_for_root_project()
+        {
+            var project = await _teamCity.Projects.RootProject();
+
+            var vcsId = $"Vcs_{Guid.NewGuid().ToString().Replace('-', '_')}";
+
+            await project.CreateVcsRoot(
+                new Id(vcsId),
+                vcsId,
+                VcsRootType.GIT,
+                new Dictionary<string, string>());
+
+            var vcs = await _teamCity.VcsRoots.ById(vcsId);
+            Assert.Equal(vcsId, vcs.Id.StringId);
+            Assert.Equal(vcsId, vcs.Name);
+            // TODO: Add vcs root type check
+            // TODO: Add parameter checks
+        }
+
+        [Fact]
+        public async Task Creation_throws_ApiException_if_id_is_invalid()
+        {
+            var project = await _teamCity.Projects.RootProject();
+
+            var vcsRootId = "-----TeamCityRestClientNet_Bitbucket";
+            await Assert.ThrowsAsync<Refit.ApiException>(
+                () => project.CreateVcsRoot(new Id(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+        }
+
+        [Fact]
+        public async Task Creation_throws_ApiException_if_id_already_exists()
+        {
+            var project = await _teamCity.Projects.RootProject();
+
+            var vcsRootId = "TeamCityRestClientNet_Bitbucket";
+            await Assert.ThrowsAsync<Refit.ApiException>(
+                () => project.CreateVcsRoot(new Id(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
+        }
+    }
+
+    public class ExistingVcsRoot : TestsBase
+    {
+        [Obsolete]
+        [Fact]
+        public async Task Can_be_retrieved_with_id()
+        {
+            var rootId = new Id("TeamCityRestClientNet_Bitbucket");
+            var root = await _teamCity.VcsRoots.ById(rootId);
+            Assert.Equal(rootId.StringId, root.Id.StringId);
+            Assert.Equal("Bitbucket", root.Name);
+            Assert.Equal("refs/heads/master", root.DefaultBranch);
+            Assert.Equal("https://noexist@bitbucket.org/joedoe/teamcityrestclientnet.git", root.Url);
+        }
+
+        [Fact]
+        public async Task Retrieval_throws_ApiException_if_id_not_found()
+        {
+            var rootId = new Id("Not_found");
+
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.VcsRoots.ById(rootId));
+        }
+
+        [Obsolete]
+        [Fact]
+        public async Task Can_be_deleted()
+        {
+            var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
+
+            var toDelete = vcsRoots
+                .First(root => root.Id.StringId.StartsWith("Vcs_"));
+
+            await toDelete.Delete();
+
+            vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
+
+            Assert.DoesNotContain(vcsRoots, root => root.Id == toDelete.Id);
+        }
+    }
 }
