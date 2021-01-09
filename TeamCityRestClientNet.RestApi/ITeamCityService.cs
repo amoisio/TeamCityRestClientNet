@@ -6,7 +6,7 @@ using Refit;
 namespace TeamCityRestClientNet.RestApi
 {
     /// <summary>
-    /// Team city REST Api end-points grouped by resource and sorted in CRUD order.
+    /// Team city REST Api end-points.
     /// </summary>
     public interface ITeamCityService
     {
@@ -69,7 +69,7 @@ namespace TeamCityRestClientNet.RestApi
         Task CancelBuild([AliasAs("id")] string buildId, [Body] BuildCancelRequestDto value);
 
         [Headers("Accept: application/json")]
-        [Post("/app/rest/builds/{id}/tags/")]
+        [Post("/app/rest/builds/{id}/tags")]
         Task AddTag([AliasAs("id")] string buildId, [Body] string tag);
 
         [Headers("Accept: application/json")]

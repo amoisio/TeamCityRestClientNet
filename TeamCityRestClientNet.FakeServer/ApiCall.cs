@@ -97,7 +97,7 @@ namespace TeamCityRestClientNet.FakeServer
         public string PropertySegment { get; private set; }
         public string DescriptorSegment { get; private set; }
         public bool RespondAsStream
-            => DescriptorSegment == "contents" || RequestPath.EndsWith("downloadBuildLog.html");
+            => DescriptorSegment == "content" || RequestPath.EndsWith("downloadBuildLog.html");
         private void ParseSegments(string[] segments)
         {
             int count = segments.Length;

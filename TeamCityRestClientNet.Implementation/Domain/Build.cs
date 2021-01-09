@@ -313,7 +313,7 @@ namespace TeamCityRestClientNet.Domain
             bool recursive = false, 
             bool hidden = false)
         {
-            var locator = $"recursive:{recursive},hidden:{hidden}";
+            var locator = $"recursive:{(recursive ? "true" : "false")},hidden:{(hidden ? "true" : "false")}";
             var fields = $"file({ArtifactFileDto.FIELDS})";
             var artifacts = await Service
                 .ArtifactChildren(Id.StringId, parentPath, locator, fields)

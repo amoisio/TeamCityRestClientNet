@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
-using TeamCityRestClientNet.Tools;
-using System.Net.Http;
 using TeamCityRestClientNet.RestApi;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
 
 namespace TeamCityRestClientNet.Builds
 {
@@ -280,6 +282,108 @@ namespace TeamCityRestClientNet.Builds
             AssertApiCall(HttpMethod.Get, "/app/rest/builds",
                 apiCall => Assert.True(apiCall.HasLocator("revision")),
                 apiCall => Assert.Equal("qwerty", apiCall.GetLocator("revision")));
+        }
+
+    }
+
+    public class ExistingBuild : TestsBase
+    {
+        [Fact]
+        public async Task Can_be_tagged_by_POSTing_to_builds_tags_end_point_with_id_and_tag()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.AddTag("NewTag");
+
+            AssertApiCall(HttpMethod.Post, "/app/rest/builds/101/tags",
+                apiCall => Assert.Equal("NewTag", apiCall.Content));
+        }
+
+        [Fact]
+        public async Task Artifact_content_can_be_streamed_by_GETting_build_artifacts_content_end_point_with_id_and_artifact_path()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            using (var ms = new MemoryStream())
+            {
+                await build.DownloadArtifact("mypath.txt", ms);
+            }
+            
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds/101/artifacts/content/mypath.txt");
+        }
+
+        [Fact]
+        public async Task Artifact_children_can_be_retrieved_by_GETting_build_artifacts_children_end_point_with_id_and_artifact_path()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            using (var ms = new MemoryStream())
+            {
+                await build.GetArtifacts("parent/");
+            }
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds/101/artifacts/children/parent/",
+                apiCall => Assert.True(apiCall.HasLocator("recursive")),
+                apiCall => Assert.Equal("false", apiCall.GetLocator("recursive")),
+                apiCall => Assert.True(apiCall.HasLocator("hidden")),
+                ApiCall => Assert.Equal("false", ApiCall.GetLocator("hidden")));
+        }
+
+        [Fact]
+        public async Task Properties_can_be_retrieved_by_GETting_build_resulting_properties_end_point_with_id()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.GetResultingParameters();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds/101/resulting-properties");
+        }
+
+        [Fact]
+        public async Task Can_be_commented_on_by_PUTting_to_builds_comment_end_point_with_id_and_comment()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.SetComment("Comment");
+
+            AssertApiCall(HttpMethod.Put, "/app/rest/builds/101/comment/",
+                apiCall => Assert.Equal("Comment", apiCall.Content));
+        }
+
+        [Fact]
+        public async Task Can_have_its_tags_replaces_by_PUTting_to_builds_tags_end_point_with_id_and_tags()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.ReplaceTags(new List<string> { "Tag1", "Tag2"});
+
+            AssertApiCall(HttpMethod.Put, "/app/rest/builds/101/tags/",
+                apiCall => {
+                    var body = apiCall.JsonContentAs<TagsDto>();
+                    Assert.Collection(body.Tag,
+                        tag => Assert.Equal("Tag1", tag.Name),
+                        tag => Assert.Equal("Tag2", tag.Name));
+                });
+        }
+
+        [Fact]
+        public async Task Can_be_pinned_by_PUTting_to_builds_pin_end_point_with_id()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.Pin();
+
+            AssertApiCall(HttpMethod.Put, "/app/rest/builds/101/pin/");
+        }
+
+        [Fact]
+        public async Task Can_be_unpinned_by_DELETEing_to_builds_pin_end_point_with_id()
+        {
+            var build = await _teamCity.Builds.ById("101");
+
+            await build.Unpin();
+
+            AssertApiCall(HttpMethod.Delete, "/app/rest/builds/101/pin/");
         }
 
     }
