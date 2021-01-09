@@ -16,8 +16,7 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.All().ToListAsync();
 
-            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/buildQueue");
-            Assert.NotNull(apiCall);
+            AssertApiCall(HttpMethod.Get, "/app/rest/buildQueue");
         }
 
         [Fact]
@@ -25,9 +24,9 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.All(new Id("TeamCityRestClientNet")).ToListAsync();
 
-            var apiCall = ApiCall(HttpMethod.Get, "/app/rest/buildQueue", apiCall => apiCall.QueryParameters.ContainsKey("locator"));
-            Assert.NotNull(apiCall);
-            Assert.Equal("project:TeamCityRestClientNet", apiCall.QueryParameters["locator"][0]);
+            AssertApiCall(HttpMethod.Get, "/app/rest/buildQueue", 
+                apiCall => Assert.Contains("locator", apiCall.QueryParameters.Keys.ToArray()),
+                apiCall => Assert.Equal("project:TeamCityRestClientNet", apiCall.QueryParameters["locator"][0]));
         }
 
         [Fact]
@@ -35,9 +34,7 @@ namespace TeamCityRestClientNet.BuildQueue
         {
             await _teamCity.BuildQueue.RemoveBuild(new Id("103"));
 
-            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/buildQueue/103");
-            Assert.NotNull(apiCall);
-            Assert.Equal("103", apiCall.GetLocatorValue());
+            AssertApiCall(HttpMethod.Post, "/app/rest/buildQueue/103");
         }
 
         [Fact]
@@ -47,10 +44,11 @@ namespace TeamCityRestClientNet.BuildQueue
 
             await buildType.RunBuild();
 
-            var apiCall = ApiCall(HttpMethod.Post, "/app/rest/buildQueue");
-            Assert.NotNull(apiCall);
-            var request = apiCall.JsonContentAs<TriggerBuildRequestDto>();
-            Assert.Equal("TeamCityRestClientNet_RestClient", request.BuildType.Id);
+            AssertApiCall(HttpMethod.Post, "/app/rest/buildQueue",
+                apiCall => {
+                    var request = apiCall.JsonContentAs<TriggerBuildRequestDto>();
+                    Assert.Equal("TeamCityRestClientNet_RestClient", request.BuildType.Id);
+                });
         }
     }
 }
