@@ -22,6 +22,20 @@ namespace TeamCityRestClientNet.Tests
             return calls.SingleOrDefault();
         }
 
+        protected void AssertApiCall(HttpMethod method, string requestPath, params Action<ApiCall>[] asserts)
+        {
+            var calls = ApiCalls.Where(call => call.Method == method && call.RequestPath == requestPath);
+            int count = calls.Count();
+            Xunit.Assert.False(count > 1, $"Multiple Api calls found for {method.ToString()} {requestPath}.");
+            Xunit.Assert.False(count == 0, $"No Api calls found for {method.ToString()} {requestPath}.");
+
+            var apiCall = calls.Single();
+            foreach(var assert in asserts)
+            {
+                assert(apiCall);
+            }
+        }
+
         public TestsBase() : this(new TeamCityFixture()) { }
 
         public TestsBase(TeamCityFixture fixture)
