@@ -5,195 +5,282 @@ using Xunit;
 using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using TeamCityRestClientNet.Tools;
+using System.Net.Http;
+using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.Builds
 {
-    public class BuildList : TestsBase
+    public class Builds : TestsBase
     {
         [Fact]
-        public async Task By_default_contains_all_builds_from_default_branch()
+        public async Task Can_be_retrieved_by_GETting_the_builds_end_point()
         {
-            var defaultBranch = "refs/heads/master";
-            var builds = await _teamCity.Builds.All().ToListAsync();
+            await _teamCity.Builds.All().ToListAsync();
 
-            Assert.Contains(builds, (build) =>
-                build.Id.StringId == "12"
-                && build.Status == BuildStatus.SUCCESS
-                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds");
+        }
+    }
 
-            Assert.Contains(builds, (build) =>
-                build.Id.StringId == "13"
-                && build.Status == BuildStatus.FAILURE
-                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
+    public class BuildsLocator : TestsBase
+    {
+        [Fact]
+        public async Task Can_be_retrieved_by_GETting_the_builds_end_point_with_id()
+        {
+            await _teamCity.Builds.ById("101");
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds/101");
         }
 
         [Fact]
-        public async Task Can_contain_builds_from_all_branches()
+        public async Task Includes_defaultFilter_by_default()
         {
-            var builds = await _teamCity.Builds.WithAllBranches().All().ToListAsync();
+            await _teamCity.Builds.All().ToListAsync();
 
-            Assert.Contains(builds, build => build.Branch.Name == null);
-            Assert.Contains(builds, build => build.Branch.Name == "refs/heads/master");
-            Assert.Contains(builds, build => build.Branch.Name == "refs/heads/development");
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("defaultFilter")),
+                apiCall => Assert.Equal("true", apiCall.GetLocator("defaultFilter")));
         }
 
         [Fact]
-        public async Task Can_contain_builds_from_specific_branch_only()
+        public async Task Includes_status_SUCCESS_locator_by_default()
         {
-            var builds = await _teamCity.Builds.WithBranch("refs/heads/development").All().ToListAsync();
+            await _teamCity.Builds.All().ToListAsync();
 
-            Assert.All(builds, build => Assert.Equal("refs/heads/development", build.Branch.Name));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("status")),
+                apiCall => Assert.Equal(BuildStatus.SUCCESS.ToString(), apiCall.GetLocator("status")));
         }
 
         [Fact]
-        public async Task Can_contain_builds_with_specific_build_number_only()
+        public async Task Includes_any_branch_locator_with_WithAllBranches()
         {
-            var builds = await _teamCity.Builds.WithNumber("12").All().ToListAsync();
+            await _teamCity.Builds.WithAllBranches().All().ToListAsync();
 
-            Assert.All(builds, build => Assert.Equal("12", build.BuildNumber));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("branch")),
+                apiCall => Assert.Equal("default:any", apiCall.GetLocator("branch")));
         }
 
         [Fact]
-        public async Task Can_contain_builds_with_FAILURE_build_status_only()
+        public async Task Includes_branch_locator_with_WithBranch()
         {
-            var builds = await _teamCity.Builds.WithStatus(BuildStatus.FAILURE).All().ToListAsync();
+            await _teamCity.Builds.WithBranch("refs/heads/development").All().ToListAsync();
 
-            Assert.All(builds, build => Assert.Equal(BuildStatus.FAILURE, build.Status));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("branch")),
+                apiCall => Assert.Equal("refs/heads/development", apiCall.GetLocator("branch")));
         }
 
         [Fact]
-        public async Task Can_contain_builds_with_SUCCESS_build_status_only()
+        public async Task Includes_build_number_locator_with_WithNumber()
         {
-            var builds = await _teamCity.Builds.WithStatus(BuildStatus.SUCCESS).All().ToListAsync();
+            await _teamCity.Builds.WithNumber("12").All().ToListAsync();
 
-            Assert.All(builds, build => Assert.Equal(BuildStatus.SUCCESS, build.Status));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("number")),
+                apiCall => Assert.Equal("12", apiCall.GetLocator("number")));
         }
 
         [Fact]
-        public async Task Contains_builds_with_specific_tag()
+        public async Task Includes_status_locator_with_WithStatus()
         {
-            var builds = await _teamCity.Builds.WithTag("Tag").All().ToListAsync();
+            await _teamCity.Builds.WithStatus(BuildStatus.FAILURE).All().ToListAsync();
 
-            Assert.All(builds, build => Assert.Equal("25", build.BuildNumber));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("status")),
+                apiCall => Assert.Equal("FAILURE", apiCall.GetLocator("status")));
         }
 
-        // TODO: Add test case for vcs revisions
+        [Fact]
+        public async Task Includes_tag_locator_with_WithTag()
+        {
+            await _teamCity.Builds.WithTag("Tag").All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("tags")),
+                apiCall => Assert.Equal("(Tag)", apiCall.GetLocator("tags")));
+        }
 
         [Fact]
-        public async Task Contains_builds_until_a_specific_datetime()
+        public async Task Includes_until_date_locator_with_Until()
         {
             var untilDate = Utilities.ParseTeamCity("20201201T203857+0000").Value;
-            var builds = await _teamCity.Builds.Until(untilDate).All().ToListAsync();
+            await _teamCity.Builds.Until(untilDate).All().ToListAsync();
 
-            Assert.All(builds, build => Assert.True(untilDate > build.FinishDateTime.Value));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("untilDate")),
+                apiCall => Assert.Equal("20201201T203857+0000", apiCall.GetLocator("untilDate")));
         }
 
         [Fact]
-        public async Task Contains_builds_since_a_specific_datetime()
+        public async Task Includes_since_date_locator_with_Since()
         {
             var sinceDate = Utilities.ParseTeamCity("20201201T203857+0000").Value;
-            var builds = await _teamCity.Builds.Since(sinceDate).All().ToListAsync();
+            await _teamCity.Builds.Since(sinceDate).All().ToListAsync();
 
-            Assert.All(builds, build => Assert.True(sinceDate < build.FinishDateTime.Value));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("sinceDate")),
+                apiCall => Assert.Equal("20201201T203857+0000", apiCall.GetLocator("sinceDate")));
         }
 
         [Fact]
-        public async Task Contains_pinned_builds_only()
+        public async Task Includes_pinned_locator_with_PinnedOnly()
         {
-            var pinned = await _teamCity.Builds.PinnedOnly().All().ToListAsync();
+            await _teamCity.Builds.PinnedOnly().All().ToListAsync();
 
-            Assert.All(pinned, build => Assert.NotNull(build.PinInfo));
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("pinned")),
+                apiCall => Assert.Equal("true", apiCall.GetLocator("pinned")));
         }
 
         [Fact]
-        public async Task Contains_canceled_builds_only()
+        public async Task Includes_canceled_locator_with_OnlyCanceled()
         {
-            var cancelled = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+            await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
 
-            Assert.All(cancelled, build => Assert.NotNull(build.CanceledInfo));
-        }
-
-        // TODO: only personal builds
-        // [Fact]
-        // public async Task Contains_personal_builds_only()
-        // {
-        //     // var canceled = await _teamCity.Builds.().ToListAsync();
-
-        //     // Assert.All(canceled, async build => 
-        //     // {
-        //     //     Assert.NotNull(build.CanceledInfo);
-
-        //     //     Assert.Equal("cancel", build.CanceledInfo.Text);
-        //     //     var cancelTimestamp = Utilities.ParseTeamCity("20201214T201259+0000").Value;
-        //     //     Assert.Equal(cancelTimestamp, build.CanceledInfo.Timestamp);
-        //     //     var cancelUser = await build.CanceledInfo.User;
-        //     //     Assert.Equal("aleksi.moisio30@gmail.com", cancelUser.Email);
-        //     //     Assert.Equal("1", cancelUser.Id.stringId);
-        //     //     Assert.Equal("Aleksi Moisio", cancelUser.Name);
-        //     //     Assert.Equal("amoisio", cancelUser.Username);
-        //     // });
-        // }
-
-        [Fact]
-        public async Task Can_include_canceled_builds()
-        {
-            var canceled = await _teamCity.Builds
-                .WithAllBranches()
-                .IncludeCanceled()
-                .All().ToListAsync();
-
-            Assert.Contains(canceled, build => build.CanceledInfo != null && build.CanceledInfo.Text == "cancel");
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("canceled")),
+                apiCall => Assert.Equal("true", apiCall.GetLocator("canceled")));
         }
 
         [Fact]
-        public async Task Can_include_failed_builds()
+        public async Task Includes_canceled_any_locator_with_IncludeCanceled()
         {
-            var canceled = await _teamCity.Builds.IncludeFailed().All().ToListAsync();
+            await _teamCity.Builds.IncludeCanceled().All().ToListAsync();
 
-            Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("canceled")),
+                apiCall => Assert.Equal("any", apiCall.GetLocator("canceled")));
         }
 
-        // TODO: include personal builds
-        // [Fact]
-        // public async Task Can_include_personal_builds()
-        // {
-        //     var canceled = await _teamCity.Builds.IncludePersonal().All().ToListAsync();
+        [Fact]
+        public async Task Includes_personal_locator_with_OnlyPersonal()
+        {
+            await _teamCity.Builds.OnlyPersonal().All().ToListAsync();
 
-        //     Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
-        // }
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("personal")),
+                apiCall => Assert.Equal("true", apiCall.GetLocator("personal")));
+        }
 
+        [Fact]
+        public async Task Includes_personal_any_locator_with_IncludePersonal()
+        {
+            await _teamCity.Builds.IncludePersonal().All().ToListAsync();
 
-        // // // [Fact]
-        // // // public async Task Can_contain_running_builds_only()
-        // // // {
-        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
-        // // //     var newBuild = await config.RunBuild();
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("personal")),
+                apiCall => Assert.Equal("any", apiCall.GetLocator("personal")));
+        }
 
-        // // //     var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
+        [Fact]
+        public async Task Removed_status_locator_with_IncludeFailed()
+        {
+            await _teamCity.Builds.IncludeFailed().All().ToListAsync();
 
-        // // //     Assert.All(onlyRunning, build => Assert.Equal(BuildState.RUNNING, build.State));
-        // // // }
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.False(apiCall.HasLocator("status")));
+        }
 
-        // // // [Fact]
-        // // // public async Task Can_include_running_builds()
-        // // // {
-        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity);
+        [Fact]
+        public async Task Includes_running_any_locator_with_IncludeRunning()
+        {
+            await _teamCity.Builds.IncludeRunning().All().ToListAsync();
 
-        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
-        // // //     var newBuild = await config.RunBuild();
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("running")),
+                apiCall => Assert.Equal("any", apiCall.GetLocator("running")));
+        }
 
-        // // //     var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
+        [Fact]
+        public async Task Includes_running_locator_with_OnlyRunning()
+        {
+            await _teamCity.Builds.OnlyRunning().All().ToListAsync();
 
-        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.RUNNING);
-        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.FINISHED);
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("running")),
+                apiCall => Assert.Equal("true", apiCall.GetLocator("running")));
+        }
 
-        // // // }
+        [Fact]
+        public async Task Includes_build_type_locator_with_FromBuildType()
+        {
+            await _teamCity.Builds.FromBuildType(new Id("104")).All().ToListAsync();
 
-        // [Fact]
-        // public async Task Can_contain_builds_from_specific_configuration_only()
-        // {
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("buildType")),
+                apiCall => Assert.Equal("104", apiCall.GetLocator("buildType")));
+        }
 
-        // }
+        [Fact]
+        public async Task Includes_max_page_size_as_count_locator_when_PageSize_and_LimitResult_are_over_1024()
+        {
+            await _teamCity.Builds.PageSize(2000).LimitResults(2000).All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("count")),
+                apiCall => Assert.Equal("1024", apiCall.GetLocator("count")));
+        }
+
+        [Fact]
+        public async Task Includes_limit_result_as_count_locator_when_LimitResult_is_given_without_PageSize_and_below_1024()
+        {
+            await _teamCity.Builds.LimitResults(1000).All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("count")),
+                apiCall => Assert.Equal("1000", apiCall.GetLocator("count")));
+        }
+
+        [Fact]
+        public async Task Includes_page_size_as_count_locator_when_PageSize_is_given_without_LimitResult_and_below_1024()
+        {
+            await _teamCity.Builds.PageSize(1000).All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("count")),
+                apiCall => Assert.Equal("1000", apiCall.GetLocator("count")));
+        }
+
+        [Fact]
+        public async Task Includes_limit_result_as_count_locator_when_both_LimitResult_and_PageSize_are_given_and_below_1024()
+        {
+            await _teamCity.Builds.LimitResults(500).PageSize(600).All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("count")),
+                apiCall => Assert.Equal("500", apiCall.GetLocator("count")));
+        }
+
+        [Fact]
+        public async Task Includes_count_1_locator_with_Latest()
+        {
+            await _teamCity.Builds.Latest();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("count")),
+                apiCall => Assert.Equal("1", apiCall.GetLocator("count")));
+        }
+
+        [Fact]
+        public async Task Includes_snapshot_dependency_locator_with_SnapshotDependencyTo()
+        {
+            await _teamCity.Builds.SnapshotDependencyTo(new Id("501")).All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("snapshotDependency")),
+                apiCall => Assert.Equal("(to:(id:501))", apiCall.GetLocator("snapshotDependency")));
+        }
+
+        [Fact]
+        public async Task Includes_vcs_revision_locator_with_WithVcsRevision()
+        {
+            await _teamCity.Builds.WithVcsRevision("qwerty").All().ToListAsync();
+
+            AssertApiCall(HttpMethod.Get, "/app/rest/builds",
+                apiCall => Assert.True(apiCall.HasLocator("revision")),
+                apiCall => Assert.Equal("qwerty", apiCall.GetLocator("revision")));
+        }
 
     }
 
@@ -232,39 +319,19 @@ namespace TeamCityRestClientNet.Builds
 
     public class RunningBuild : TestsBase
     {
-        // // // [Fact]
-        // // // public async Task Can_be_cancelled()
-        // // // {
-        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
-        // // //     var newBuild = await config.RunBuild();
-
-        // // //     await Task.Delay(500).ConfigureAwait(false);
-
-        // // //     var comment = $"Cancelled-{Guid.NewGuid()}";
-        // // //     await newBuild.Cancel(comment);
-
-        // // //     await Task.Delay(500).ConfigureAwait(false);
-
-        // // //     var cancelledBuilds = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
-        // // //     Assert.Contains(cancelledBuilds, build => build.CanceledInfo.Text == comment);
-        // // // }
-    }
-
-    public class ExistingBuild : TestsBase
-    {
-
         [Fact]
-        public async Task Can_be_retrieved_as_latest_build()
+        public async Task Can_be_canceled_by_POSTing_to_builds_end_point_with_id()
         {
-            var builds = await _teamCity.Builds.All().ToListAsync();
-            var latest = builds.OrderByDescending(b => Int32.Parse(b.Id.StringId)).First();
+            var build = await _teamCity.Builds.ById("105");
+            var comment = $"Cancelled-{Guid.NewGuid()}";
 
-            var latestBuild = await _teamCity.Builds.Latest();
+            await build.Cancel(comment);
 
-            Assert.Equal(latest.Id, latestBuild.Id);
-            Assert.Equal(latest.Name, latestBuild.Name);
-            Assert.Equal(latest.Status, latestBuild.Status);
-            Assert.Equal(latest.State, latest.State);
+            AssertApiCall(HttpMethod.Post, "/app/rest/builds/105",
+                apiCall => {
+                    var body = apiCall.JsonContentAs<BuildCancelRequestDto>();
+                    Assert.Equal(comment, body.Comment);
+                });
         }
     }
 }

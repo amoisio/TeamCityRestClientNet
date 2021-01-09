@@ -10,7 +10,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class BuildAgents : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Contains_all_build_agents()
         {
             var agents = await _teamCity.BuildAgents.All().ToListAsync();
@@ -23,7 +23,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class EnabledBuildAgent : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_disabled()
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("1"));
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class DisabledBuildAgent : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_enabled()
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("2"));
@@ -53,7 +53,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingBuildAgent : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved()
         {
             var agent = await _teamCity.BuildAgents.ById(new Id("1"));
@@ -81,7 +81,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.NotEmpty(agent.Parameters);
         }
 
-        [Fact]
+        // [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgents.ById(new Id("not.found")));
@@ -91,7 +91,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class BuildAgentPools : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Contains_all_build_agent_pools()
         {
             var agentPools = await _teamCity.BuildAgentPools.All().ToListAsync();
@@ -104,7 +104,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingBuildAgentPool : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved()
         {
             var agentPool = await _teamCity.BuildAgentPools.ById(new Id("0"));
@@ -119,17 +119,277 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Contains(projects, a => a.Id.StringId == "TeamCityRestClientNet");
         }
       
-        [Fact]
+        // [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.BuildAgentPools.ById(new Id("not.found")));
         }
     }
 
+    public class BuildList : TestsBase
+    {
+        // [Fact]
+        public async Task By_default_contains_all_builds_from_default_branch()
+        {
+            var defaultBranch = "refs/heads/master";
+            var builds = await _teamCity.Builds.All().ToListAsync();
+
+            Assert.Contains(builds, (build) =>
+                build.Id.StringId == "12"
+                && build.Status == BuildStatus.SUCCESS
+                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
+
+            Assert.Contains(builds, (build) =>
+                build.Id.StringId == "13"
+                && build.Status == BuildStatus.FAILURE
+                && (build.Branch.Name == null || build.Branch.Name == defaultBranch));
+        }
+
+        // [Fact]
+        public async Task Can_contain_builds_from_all_branches()
+        {
+            var builds = await _teamCity.Builds.WithAllBranches().All().ToListAsync();
+
+            Assert.Contains(builds, build => build.Branch.Name == null);
+            Assert.Contains(builds, build => build.Branch.Name == "refs/heads/master");
+            Assert.Contains(builds, build => build.Branch.Name == "refs/heads/development");
+        }
+
+        // [Fact]
+        public async Task Can_contain_builds_from_specific_branch_only()
+        {
+            var builds = await _teamCity.Builds.WithBranch("refs/heads/development").All().ToListAsync();
+
+            Assert.All(builds, build => Assert.Equal("refs/heads/development", build.Branch.Name));
+        }
+
+        // [Fact]
+        public async Task Can_contain_builds_with_specific_build_number_only()
+        {
+            var builds = await _teamCity.Builds.WithNumber("12").All().ToListAsync();
+
+            Assert.All(builds, build => Assert.Equal("12", build.BuildNumber));
+        }
+
+        // [Fact]
+        public async Task Can_contain_builds_with_FAILURE_build_status_only()
+        {
+            var builds = await _teamCity.Builds.WithStatus(BuildStatus.FAILURE).All().ToListAsync();
+
+            Assert.All(builds, build => Assert.Equal(BuildStatus.FAILURE, build.Status));
+        }
+
+        // [Fact]
+        public async Task Can_contain_builds_with_SUCCESS_build_status_only()
+        {
+            var builds = await _teamCity.Builds.WithStatus(BuildStatus.SUCCESS).All().ToListAsync();
+
+            Assert.All(builds, build => Assert.Equal(BuildStatus.SUCCESS, build.Status));
+        }
+
+        // [Fact]
+        public async Task Contains_builds_with_specific_tag()
+        {
+            var builds = await _teamCity.Builds.WithTag("Tag").All().ToListAsync();
+
+            Assert.All(builds, build => Assert.Equal("25", build.BuildNumber));
+        }
+
+        // TODO: Add test case for vcs revisions
+
+        // [Fact]
+        public async Task Contains_builds_until_a_specific_datetime()
+        {
+            var untilDate = Utilities.ParseTeamCity("20201201T203857+0000").Value;
+            var builds = await _teamCity.Builds.Until(untilDate).All().ToListAsync();
+
+            Assert.All(builds, build => Assert.True(untilDate > build.FinishDateTime.Value));
+        }
+
+        // [Fact]
+        public async Task Contains_builds_since_a_specific_datetime()
+        {
+            var sinceDate = Utilities.ParseTeamCity("20201201T203857+0000").Value;
+            var builds = await _teamCity.Builds.Since(sinceDate).All().ToListAsync();
+
+            Assert.All(builds, build => Assert.True(sinceDate < build.FinishDateTime.Value));
+        }
+
+        // [Fact]
+        public async Task Contains_pinned_builds_only()
+        {
+            var pinned = await _teamCity.Builds.PinnedOnly().All().ToListAsync();
+
+            Assert.All(pinned, build => Assert.NotNull(build.PinInfo));
+        }
+
+        // [Fact]
+        public async Task Contains_canceled_builds_only()
+        {
+            var cancelled = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+
+            Assert.All(cancelled, build => Assert.NotNull(build.CanceledInfo));
+        }
+
+        // TODO: only personal builds
+        // // [Fact]
+        // public async Task Contains_personal_builds_only()
+        // {
+        //     // var canceled = await _teamCity.Builds.().ToListAsync();
+
+        //     // Assert.All(canceled, async build => 
+        //     // {
+        //     //     Assert.NotNull(build.CanceledInfo);
+
+        //     //     Assert.Equal("cancel", build.CanceledInfo.Text);
+        //     //     var cancelTimestamp = Utilities.ParseTeamCity("20201214T201259+0000").Value;
+        //     //     Assert.Equal(cancelTimestamp, build.CanceledInfo.Timestamp);
+        //     //     var cancelUser = await build.CanceledInfo.User;
+        //     //     Assert.Equal("aleksi.moisio30@gmail.com", cancelUser.Email);
+        //     //     Assert.Equal("1", cancelUser.Id.stringId);
+        //     //     Assert.Equal("Aleksi Moisio", cancelUser.Name);
+        //     //     Assert.Equal("amoisio", cancelUser.Username);
+        //     // });
+        // }
+
+        // [Fact]
+        public async Task Can_include_canceled_builds()
+        {
+            var canceled = await _teamCity.Builds
+                .WithAllBranches()
+                .IncludeCanceled()
+                .All().ToListAsync();
+
+            Assert.Contains(canceled, build => build.CanceledInfo != null && build.CanceledInfo.Text == "cancel");
+        }
+
+        // [Fact]
+        public async Task Can_include_failed_builds()
+        {
+            var canceled = await _teamCity.Builds.IncludeFailed().All().ToListAsync();
+
+            Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
+        }
+
+        // TODO: include personal builds
+        // // [Fact]
+        // public async Task Can_include_personal_builds()
+        // {
+        //     var canceled = await _teamCity.Builds.IncludePersonal().All().ToListAsync();
+
+        //     Assert.Contains(canceled, build => build.Status == BuildStatus.FAILURE);
+        // }
+
+
+        // // // // [Fact]
+        // // // public async Task Can_contain_running_builds_only()
+        // // // {
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
+
+        // // //     var onlyRunning = await _teamCity.Builds.OnlyRunning().All().ToListAsync();
+
+        // // //     Assert.All(onlyRunning, build => Assert.Equal(BuildState.RUNNING, build.State));
+        // // // }
+
+        // // // // [Fact]
+        // // // public async Task Can_include_running_builds()
+        // // // {
+        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity);
+
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
+
+        // // //     var inclRunning = await _teamCity.Builds.IncludeRunning().All().ToListAsync();
+
+        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.RUNNING);
+        // // //     Assert.Contains(inclRunning, build => build.State == BuildState.FINISHED);
+
+        // // // }
+
+        // // [Fact]
+        // public async Task Can_contain_builds_from_specific_configuration_only()
+        // {
+
+        // }
+
+    }
+
+    public class NewBuild : TestsBase
+    {
+        private BuildState[] _buildingStates = new BuildState[]
+        {
+            BuildState.QUEUED, /* Queued if there are no agents to run the build */ 
+            BuildState.RUNNING /* Running if agent can start the build immediatelly */
+        };
+
+        // // // // [Fact]
+        // // // public async Task Can_be_started_for_a_branch()
+        // // // {
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
+        // // //     var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
+
+        // // //     Assert.Contains(_buildingStates, state => state == build.State);
+        // // // }
+
+        // // // // [Fact]
+        // // // public async Task Can_be_seen_on_the_build_queue()
+        // // // {
+        // // //     await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
+
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
+
+        // // //     var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
+
+        // // //     Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
+
+        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
+        // // // }
+    }
+
+    public class RunningBuild : TestsBase
+    {
+        // // // // [Fact]
+        // // // public async Task Can_be_cancelled()
+        // // // {
+        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
+        // // //     var newBuild = await config.RunBuild();
+
+        // // //     await Task.Delay(500).ConfigureAwait(false);
+
+        // // //     var comment = $"Cancelled-{Guid.NewGuid()}";
+        // // //     await newBuild.Cancel(comment);
+
+        // // //     await Task.Delay(500).ConfigureAwait(false);
+
+        // // //     var cancelledBuilds = await _teamCity.Builds.OnlyCanceled().All().ToListAsync();
+        // // //     Assert.Contains(cancelledBuilds, build => build.CanceledInfo.Text == comment);
+        // // // }
+    }
+
+    public class ExistingBuild : TestsBase
+    {
+
+        // [Fact]
+        public async Task Can_be_retrieved_as_latest_build()
+        {
+            var builds = await _teamCity.Builds.All().ToListAsync();
+            var latest = builds.OrderByDescending(b => Int32.Parse(b.Id.StringId)).First();
+
+            var latestBuild = await _teamCity.Builds.Latest();
+
+            Assert.Equal(latest.Id, latestBuild.Id);
+            Assert.Equal(latest.Name, latestBuild.Name);
+            Assert.Equal(latest.Status, latestBuild.Status);
+            Assert.Equal(latest.State, latest.State);
+        }
+    }
+
     public class ChangeList : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Contains_all_changes()
         {
             var changes = await _teamCity.Changes.All().ToListAsync();
@@ -142,7 +402,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingChange : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved_with_id()
         {
             var change = await _teamCity.Changes.ById(new Id("1"));
@@ -158,7 +418,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal("a9f57192-48d1-4e7a-b3f5-ebead0c6f8d6", change.Version);
         }
 
-        [Fact]
+        // [Fact]
         public async Task Throws_ApiException_if_id_is_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Changes.ById(new Id("999991")));
@@ -168,7 +428,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class RootProject : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved()
         {
             var rootProject = await _teamCity.Projects.RootProject();
@@ -178,7 +438,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Child_projects_can_be_retrieved()
         {
             var rootProject = await _teamCity.Projects.RootProject();
@@ -195,7 +455,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class NewProject : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_created_as_child_to_root_project()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -209,7 +469,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal(projectId, returnedProject.Name);
         }
 
-        [Fact]
+        // [Fact]
         public async Task Creation_throws_ApiException_if_id_is_invalid()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -218,7 +478,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             await Assert.ThrowsAsync<Refit.ApiException>(() => project.CreateProject(new Id(projectId), projectId));
         }
 
-        [Fact]
+        // [Fact]
         public async Task Creation_throws_ApiException_if_id_already_exists()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -228,7 +488,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_created_as_child_to_nonroot_project()
         {
             var root = await _teamCity.Projects.RootProject();
@@ -246,7 +506,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingProject : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved_with_id()
         {
             var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
@@ -254,14 +514,14 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal("TeamCity Rest Client .NET", project.Name);
         }
 
-        [Fact]
+        // [Fact]
         public async Task Retrieval_throws_ApiException_if_id_is_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Projects.ById(new Id("Not.Found")));
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Parameters_can_be_retrieved()
         {
             var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
@@ -271,7 +531,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Existing_parameter_value_can_be_changed()
         {
             var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
@@ -289,7 +549,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_deleted()
         {
             var rootProject = await _teamCity.Projects.RootProject();
@@ -310,7 +570,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class UserList : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Contains_all_users()
         {
             var users = await _teamCity.Users.All().ToListAsync();
@@ -326,7 +586,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingUser : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved_with_id()
         {
             var userId = new Id("1");
@@ -338,7 +598,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
         }
 
-        [Fact]
+        // [Fact]
         public async Task Throws_ApiException_if_id_not_found()
         {
             var userId = new Id("9999");
@@ -346,7 +606,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved_with_exact_username()
         {
             var user = await _teamCity.Users.ByUsername("dunkin");
@@ -357,7 +617,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=3", user.GetHomeUrl());
         }
 
-        [Fact]
+        // [Fact]
         public async Task Throws_ApiException_if_exact_username_not_found()
         {
             await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ByUsername("not.found"));
@@ -367,7 +627,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class VcsRootList : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Contains_all_VcsRoots()
         {
             var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();
@@ -378,7 +638,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class NewGitVcsRoot : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_created_for_root_project()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -398,7 +658,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             // TODO: Add parameter checks
         }
 
-        [Fact]
+        // [Fact]
         public async Task Creation_throws_ApiException_if_id_is_invalid()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -408,7 +668,7 @@ namespace TeamCityRestClientNet.Tests.Temp
                 () => project.CreateVcsRoot(new Id(vcsRootId), vcsRootId, VcsRootType.GIT, new Dictionary<string, string>()));
         }
 
-        [Fact]
+        // [Fact]
         public async Task Creation_throws_ApiException_if_id_already_exists()
         {
             var project = await _teamCity.Projects.RootProject();
@@ -422,7 +682,7 @@ namespace TeamCityRestClientNet.Tests.Temp
     public class ExistingVcsRoot : TestsBase
     {
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_retrieved_with_id()
         {
             var rootId = new Id("TeamCityRestClientNet_Bitbucket");
@@ -433,7 +693,7 @@ namespace TeamCityRestClientNet.Tests.Temp
             Assert.Equal("https://noexist@bitbucket.org/joedoe/teamcityrestclientnet.git", root.Url);
         }
 
-        [Fact]
+        // [Fact]
         public async Task Retrieval_throws_ApiException_if_id_not_found()
         {
             var rootId = new Id("Not_found");
@@ -442,7 +702,7 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
 
         [Obsolete]
-        [Fact]
+        // [Fact]
         public async Task Can_be_deleted()
         {
             var vcsRoots = await _teamCity.VcsRoots.All().ToListAsync();

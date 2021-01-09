@@ -200,6 +200,35 @@ namespace TeamCityRestClientNet.FakeServer
             }
         };
 
+        private readonly BuildDto BuildRunning = new BuildDto
+        {
+            Id = "105",
+            BuildTypeId = "TeamCityRestClientNet_RestClient",
+            Number = "105",
+            Status = BuildStatus.UNKNOWN,
+            State = "running",
+            BranchName = "<default>",
+            DefaultBranch = true,
+            StatusText = "Running",
+            BuildType = new BuildTypeDto
+            {
+                Id = "TeamCityRestClientNet_RestClient",
+                Name = "Rest Client",
+                ProjectId = "TeamCityRestClientNet"
+            },
+            QueuedDate = "20210103T093500+0000",
+            StartDate = "20210103T094000+0000",
+            Triggered = new TriggeredDto
+            {
+                User = new UserDto
+                {
+                    Id = "1",
+                    Username = "jodoe",
+                    Name = "John Doe"
+                }
+            }
+        };
+
         #endregion
  
         #region BuildAgents
@@ -565,7 +594,8 @@ namespace TeamCityRestClientNet.FakeServer
             Builds.Add(BuildFailed);
             Builds.Add(BuildQueued);
             Builds.Add(BuildCancelled);
-
+            Builds.Add(BuildRunning);
+            
             BuildTypes.Add(BuildTypeRestClient);
             BuildTypes.Add(BuildTypeTeamCityCli);
 

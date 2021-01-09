@@ -12,10 +12,24 @@ namespace TeamCityRestClientNet.Tools
         public static List<T> ListOfNotNull<T>(params T[] values)
             => values.Where(val => val != null).ToList();
 
+        public const int REASONABLE_MAX_PAGE_SIZE = 1024;
+
         public static int? SelectRestApiCountForPagedRequests(int? limitResults, int? pageSize)
         {
-            var reasonableMaxPageSize = 1024;
-            return pageSize ?? limitResults?.Let((val) => Math.Min(val, reasonableMaxPageSize));
+            if (!limitResults.HasValue && !pageSize.HasValue)
+                return null;
+
+            int tmp;
+            if (limitResults.HasValue)
+            {
+                tmp = limitResults.Value;
+                if (pageSize.HasValue)
+                    tmp = Math.Min(tmp, pageSize.Value);
+            }
+            else 
+                tmp = pageSize.Value;
+
+            return Math.Min(tmp, REASONABLE_MAX_PAGE_SIZE);
         }
 
 
