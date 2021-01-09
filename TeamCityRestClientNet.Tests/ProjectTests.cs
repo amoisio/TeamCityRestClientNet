@@ -95,8 +95,8 @@ namespace TeamCityRestClientNet.Projects
 
             AssertApiCall(HttpMethod.Put, "/app/rest/projects/TeamCityRestClientNet/parameters/configuration_parameter",
                 apiCall => {
-                    Assert.Equal("parameters", apiCall.Property);
-                    Assert.Equal("configuration_parameter", apiCall.Descriptor);
+                    Assert.Equal("parameters", apiCall.PropertySegment);
+                    Assert.Equal("configuration_parameter", apiCall.DescriptorSegment);
                     Assert.Contains(newValue, apiCall.Content);
                 });
         }

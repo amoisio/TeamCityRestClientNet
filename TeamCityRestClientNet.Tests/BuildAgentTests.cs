@@ -29,7 +29,7 @@ namespace TeamCityRestClientNet.BuildAgents
             await agent.Disable();
 
             AssertApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled",
-                (apiCall) => Assert.Equal("enabled", apiCall.Property),
+                (apiCall) => Assert.Equal("enabled", apiCall.PropertySegment),
                 (apiCall) => Assert.Equal("false", apiCall.Content));
         }
     }
@@ -44,7 +44,7 @@ namespace TeamCityRestClientNet.BuildAgents
             await agent.Enable();
 
             AssertApiCall(HttpMethod.Put, "/app/rest/agents/id:1/enabled",
-                (apiCall) => Assert.Equal("enabled", apiCall.Property),
+                (apiCall) => Assert.Equal("enabled", apiCall.PropertySegment),
                 (apiCall) => Assert.Equal("true", apiCall.Content));
         }
     }

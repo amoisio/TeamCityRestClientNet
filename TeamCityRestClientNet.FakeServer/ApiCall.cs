@@ -28,7 +28,6 @@ namespace TeamCityRestClientNet.FakeServer
     /// </summary>
     public class ApiCall
     {
-        private string _locator;
         private readonly Dictionary<string, string> _locators;
         public ApiCall(HttpRequestMessage request)
         {
@@ -60,64 +59,61 @@ namespace TeamCityRestClientNet.FakeServer
                 return (T)serializer.Deserialize(xr);
             }
         }
-
-        public string Resource { get; private set; }
-        public bool HasLocators => _locators != null && _locators.Count > 0 || !String.IsNullOrEmpty(_locator);
-        public bool HasNamedLocator(string locatorName) => _locators.ContainsKey(locatorName);
-
+        
+        public bool HasLocatorSegment => !String.IsNullOrEmpty(LocatorSegment);
+        public bool HasLocator(string locatorName) => _locators.ContainsKey(locatorName);
         public string GetLocatorOrDefault(string locatorName = null)
         {
             try 
             {
-                return GetLocatorValue(locatorName);
+                return GetLocator(locatorName);
             } 
             catch 
             {
                 return default(string);    
             }
         }
-        public string GetLocatorValue(string locatorName = null)
+        public string GetLocator(string locatorName = null)
         {
-            if (!HasLocators)
-                throw new InvalidOperationException("ApiCall has no locators.");
-
             if (String.IsNullOrEmpty(locatorName))
             {
-                if (!String.IsNullOrEmpty(_locator))
-                    return _locator;
-                
+                if (HasLocator("id"))
+                    return _locators["id"];
+
+                if (HasLocatorSegment)
+                    return LocatorSegment;
+
                 if (_locators.Count == 1)
-                {
-                    var value = _locators.First().Value;
-                    if (!String.IsNullOrEmpty(value))
-                        return value;
-                }
+                    return _locators.First().Value;
             } 
-            else 
-            {
-                if (_locators.ContainsKey(locatorName) && !String.IsNullOrEmpty(_locators[locatorName]))
-                    return _locators[locatorName];
-            }
+            else if (_locators.ContainsKey(locatorName) && !String.IsNullOrEmpty(_locators[locatorName]))
+                return _locators[locatorName];
 
             throw new InvalidOperationException("Locator not found.");
         }
-        public string Property { get; private set; }
-        public string Descriptor { get; private set; }
+
+        public string ResourceSegment { get; private set; }
+        public string LocatorSegment { get; set; }
+        public string PropertySegment { get; private set; }
+        public string DescriptorSegment { get; private set; }
         public bool RespondAsStream
-            => Descriptor == "contents" || RequestPath.EndsWith("downloadBuildLog.html");
+            => DescriptorSegment == "contents" || RequestPath.EndsWith("downloadBuildLog.html");
         private void ParseSegments(string[] segments)
         {
             int count = segments.Length;
             if (count < 4)
                 throw new ArgumentException("URL expected to contain the Team City resource specifier.");
 
+            // The first three segments are '/', 'app/' and 'rest/
             for (int i = 3; i < count; i++)
             {
                 var value = WebUtility.UrlDecode(segments[i].TrimEnd('/'));
                 if (i == 3)
-                    this.Resource = value;
+                    this.ResourceSegment = value;
                 else if (i == 4)
                 {
+                    this.LocatorSegment = value;
+
                     if (value.Contains(':'))
                     {
                         foreach(var locator in ParseLocators(value))
@@ -125,26 +121,25 @@ namespace TeamCityRestClientNet.FakeServer
                             _locators.Add(locator.name, locator.value);
                         }
                     }
-                    else
-                    {
-                        this._locator = value;
-                    }
                 }
                 else if (i == 5)
-                    this.Property = value;
+                    this.PropertySegment = value;
                 else if (i == 6)
-                    this.Descriptor = value;
+                    this.DescriptorSegment = value;
                 else
                     continue;
             }
         }
 
+        /// <summary>
+        /// Locator string are of the form "[locator1], ... ,[locatorN]" where each [locatorN] is of the form "[locatorName]:[locatorValue]".
+        /// </summary>
         private static IEnumerable<(string name, string value)> ParseLocators(string value)
         {
             var locatorStrings = value.Split(',');
             foreach (var locatorString in locatorStrings)
             {
-                var locatorParts = locatorString.Split(':');
+                var locatorParts = locatorString.Split(':', 2);
                 yield return (locatorParts[0]?.Trim(), locatorParts[1]?.Trim());
             }
         }
@@ -160,7 +155,15 @@ namespace TeamCityRestClientNet.FakeServer
                     var key = parts[0].Trim().ToLower();
                     var val = WebUtility.UrlDecode(parts[1]?.Trim());
 
-                    if (!this.QueryParameters.ContainsKey(key)) 
+                    if (key == "locator")
+                    {
+                        foreach (var locator in ParseLocators(val))
+                        {
+                            _locators.Add(locator.name, locator.value);
+                        }
+                    }
+
+                    if (!this.QueryParameters.ContainsKey(key))
                     {
                         this.QueryParameters.Add(key, new string[0]);
                     }

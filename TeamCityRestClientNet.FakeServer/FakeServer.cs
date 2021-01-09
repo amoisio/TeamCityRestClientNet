@@ -34,7 +34,7 @@ namespace TeamCityRestClientNet.FakeServer
 
         public object ResolveApiCall(ApiCall apiCall)
         {
-            object response = apiCall.Resource switch
+            object response = apiCall.ResourceSegment switch
             {
                 "agents"             => ResolveAgents(apiCall),
                 "agentPools"         => ResolveAgentPools(apiCall),
@@ -61,7 +61,7 @@ namespace TeamCityRestClientNet.FakeServer
                 // [Headers("Accept: text/plain", "Content-Type: text/plain")]
                 // [Put("/app/rest/agents/{locator}/enabled")]
                 // Task EnableAgent([AliasAs("locator")] string agentlocator, [Body(BodySerializationMethod.Serialized)] bool enable);
-                var id = apiCall.GetLocatorValue();
+                var id = apiCall.GetLocator();
                 if (apiCall.Content == "false")
                 {
                     return BuildAgents.Disable(id);
@@ -102,7 +102,7 @@ namespace TeamCityRestClientNet.FakeServer
 
             if (apiCall.Method == HttpMethod.Post)
             {
-                if (String.IsNullOrEmpty(apiCall.Property))
+                if (String.IsNullOrEmpty(apiCall.PropertySegment))
                 {
                     // [Headers("Accept: application/json")]
                     // [Post("/app/rest/builds/{id}")]
@@ -121,7 +121,7 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators)
+                if (!apiCall.HasLocatorSegment)
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/builds")]
@@ -129,28 +129,28 @@ namespace TeamCityRestClientNet.FakeServer
                     return Builds.All();
                 }
 
-                if (String.IsNullOrEmpty(apiCall.Property))
+                if (String.IsNullOrEmpty(apiCall.PropertySegment))
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/builds/{id}")]
                     // Task<BuildDto> Build(string id);
-                    return Builds.ById(apiCall.GetLocatorValue());
+                    return Builds.ById(apiCall.GetLocator());
                 }
-                else if (apiCall.Property == "resulting-properties")
+                else if (apiCall.PropertySegment == "resulting-properties")
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/builds/{id}/resulting-properties")]
                     // Task<ParametersDto> ResultingProperties([AliasAs("id")] string buildId);
                     return Builds.ResultingProperties(id);
                 }
-                else if (apiCall.Property == "artifacts" && apiCall.Descriptor == "children")
+                else if (apiCall.PropertySegment == "artifacts" && apiCall.DescriptorSegment == "children")
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/builds/{id}/artifacts/children/{**path}")]
                     // Task<ArtifactFileListDto> ArtifactChildren([AliasAs("id")] string buildId, [AliasAs("path")] string artifactPath, string locator, string fields);
                     return Builds.Artifacts(id);
                 }
-                else if (apiCall.Property == "artifacts" && apiCall.Descriptor == "content")
+                else if (apiCall.PropertySegment == "artifacts" && apiCall.DescriptorSegment == "content")
                 {
                     // [Get("/app/rest/builds/{id}/artifacts/content/{**path}")]
                     // Task<Stream> ArtifactContent( [AliasAs("id")] string buildId, [AliasAs("path")] string artifactPath);
@@ -159,21 +159,21 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Put)
             {
-                if (apiCall.Property == "comment")
+                if (apiCall.PropertySegment == "comment")
                 {
                     // [Put("/app/rest/builds/{id}/comment/")]
                     // Task SetComment([AliasAs("id")] string buildId, [Body] string comment);
                     Builds.SetComment(id, apiCall.Content);
                     return id;
                 }
-                else if (apiCall.Property == "tags")
+                else if (apiCall.PropertySegment == "tags")
                 {
                     // [Put("/app/rest/builds/{id}/tags/")]
                     // Task ReplaceTags([AliasAs("id")] string buildId, [Body] TagsDto tags);
                     Builds.ReplaceTags(id, apiCall.JsonContentAs<TagsDto>());
                     return id;
                 }
-                else if (apiCall.Property == "pin")
+                else if (apiCall.PropertySegment == "pin")
                 {
                     // [Put("/app/rest/builds/{id}/pin/")]
                     // Task Pin([AliasAs("id")] string buildId, [Body] string comment);
@@ -198,7 +198,7 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (apiCall.Method == HttpMethod.Post)
             {
-                if (!apiCall.HasLocators) 
+                if (!apiCall.HasLocatorSegment) 
                 {
                     // [Headers("Accept: application/json")]
                     // [Post("/app/rest/buildQueue")]
@@ -212,7 +212,7 @@ namespace TeamCityRestClientNet.FakeServer
                     // [Post("/app/rest/buildQueue/{id}")]
                     // Task RemoveQueuedBuild([AliasAs("id")] string buildId, [Body] BuildCancelRequestDto value);
                     var request = JsonConvert.DeserializeObject<BuildCancelRequestDto>(apiCall.Content);
-                    var id = apiCall.GetLocatorValue();
+                    var id = apiCall.GetLocator();
                     BuildQueue.CancelBuild(id, request);
                     return id;
                 }
@@ -243,35 +243,35 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators)
+                if (!apiCall.HasLocatorSegment)
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes")]
                     // Task<BuildTypeListDto> BuildTypes();
                     return BuildTypes.All();
                 }
-                if (String.IsNullOrEmpty(apiCall.Property))
+                if (String.IsNullOrEmpty(apiCall.PropertySegment))
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes/{id}")]
                     // Task<BuildTypeDto> BuildType([AliasAs("id")] string buildTypeId);
                     return BuildTypes.ById(id);
                 }
-                else if (apiCall.Property == "buildTags")
+                else if (apiCall.PropertySegment == "buildTags")
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes/{id}/buildTags")]
                     // Task<TagsDto> BuildTypeTags([AliasAs("id")] string buildTypeId);
                     return BuildTypes.Tags(id);
                 }
-                else if (apiCall.Property == "triggers")
+                else if (apiCall.PropertySegment == "triggers")
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes/{id}/triggers")]
                     // Task<TriggersDto> BuildTypeTriggers([AliasAs("id")] string buildTypeId);
                     return BuildTypes.Triggers(id);
                 }
-                else if (apiCall.Property == "artifact-dependencies")
+                else if (apiCall.PropertySegment == "artifact-dependencies")
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes/{id}/artifact-dependencies")]
@@ -281,18 +281,18 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Put)
             {
-                if (apiCall.Property == "parameters") 
+                if (apiCall.PropertySegment == "parameters") 
                 {
                     // [Put("/app/rest/buildTypes/{id}/parameters/{name}")]
                     // Task SetBuildTypeParameter([AliasAs("id")] string buildTypeId, string name, [Body] string value);
-                    BuildTypes.SetParameters(id, apiCall.Descriptor, apiCall.Content);
+                    BuildTypes.SetParameters(id, apiCall.DescriptorSegment, apiCall.Content);
                     return id;
                 } 
-                else if (apiCall.Property == "settings")
+                else if (apiCall.PropertySegment == "settings")
                 {
                     // [Put("/app/rest/buildTypes/{id}/settings/{name}")]
                     // Task SetBuildTypeSettings([AliasAs("id")] string buildTypeId, string name, [Body] string value);
-                    BuildTypes.SetSetting(id, apiCall.Descriptor, apiCall.Content);
+                    BuildTypes.SetSetting(id, apiCall.DescriptorSegment, apiCall.Content);
                     return id;
                 }
             }
@@ -338,7 +338,7 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators) 
+                if (!apiCall.HasLocatorSegment) 
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/projects")]
@@ -350,17 +350,17 @@ namespace TeamCityRestClientNet.FakeServer
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/projects/{id}")]
                     // Task<ProjectDto> Project(string id);
-                    return this.Projects.ById(apiCall.GetLocatorValue());
+                    return this.Projects.ById(apiCall.GetLocator());
                 }
             }
             else if (apiCall.Method == HttpMethod.Put)
             {
-                if (apiCall.Property == "parameters")
+                if (apiCall.PropertySegment == "parameters")
                 {
                     // [Put("/app/rest/projects/{id}/parameters/{name}")]
                     // Task SetProjectParameter([AliasAs("id")] string projectId, string name, [Body] string value);
-                    var id = apiCall.GetLocatorValue();
-                    var name = apiCall.Descriptor;
+                    var id = apiCall.GetLocator();
+                    var name = apiCall.DescriptorSegment;
                     var value = apiCall.Content;
                     return this.Projects.SetParameter(id, name, value);
                 }
@@ -370,7 +370,7 @@ namespace TeamCityRestClientNet.FakeServer
                 // [Headers("Accept: application/json")]
                 // [Delete("/app/rest/projects/{locator}")]
                 // Task DeleteProject([AliasAs("locator")] string projectLocator);
-                return this.Projects.Delete(apiCall.GetLocatorValue());
+                return this.Projects.Delete(apiCall.GetLocator());
             }
 
             throw new NotImplementedException($"End-point {apiCall.Method} : {apiCall.RequestPath} not implemented.");
@@ -383,26 +383,26 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators) 
+                if (!apiCall.HasLocatorSegment) 
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/users")]
                     // Task<UserListDto> Users();
                     return this.Users.All();
                 }
-                else if (apiCall.HasNamedLocator("username")) 
+                else if (apiCall.HasLocator("username")) 
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/users/{locator}")]
                     // Task<UserDto> Users([AliasAs("locator")] string userLocator);
-                    return this.Users.ByUsername(apiCall.GetLocatorValue("username"));
+                    return this.Users.ByUsername(apiCall.GetLocator("username"));
                 }
                 else
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/users/{locator}")]
                     // Task<UserDto> Users([AliasAs("locator")] string userLocator);
-                    return this.Users.ById(apiCall.GetLocatorValue());
+                    return this.Users.ById(apiCall.GetLocator());
                 }
             }
 
@@ -419,7 +419,7 @@ namespace TeamCityRestClientNet.FakeServer
             }
             else if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators) 
+                if (!apiCall.HasLocatorSegment) 
                 {
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/vcs-roots")]
@@ -431,7 +431,7 @@ namespace TeamCityRestClientNet.FakeServer
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/vcs-roots/{id}")]
                     // Task<VcsRootDto> VcsRoot(string id);
-                    return this.VcsRoots.ById(apiCall.GetLocatorValue());
+                    return this.VcsRoots.ById(apiCall.GetLocator());
                 }
             }
             else if (apiCall.Method == HttpMethod.Delete)
@@ -439,7 +439,7 @@ namespace TeamCityRestClientNet.FakeServer
                 // [Headers("Accept: application/json")]
                 // [Delete("/app/rest/vcs-roots/{locator}")]
                 // Task DeleteVcsRoot([AliasAs("locator")] string vcsRootLocator);
-                return this.VcsRoots.Delete(apiCall.GetLocatorValue());
+                return this.VcsRoots.Delete(apiCall.GetLocator());
             }
 
             throw new NotImplementedException($"End-point {apiCall.Method} : {apiCall.RequestPath} not implemented.");
@@ -462,14 +462,14 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (apiCall.Method == HttpMethod.Get)
             {
-                if (!apiCall.HasLocators)
+                if (!apiCall.HasLocatorSegment)
                     return repository.All();
                 else
-                    return repository.ById(apiCall.GetLocatorValue());
+                    return repository.ById(apiCall.GetLocator());
             }
             else if (apiCall.Method == HttpMethod.Delete)
             {
-                return repository.Delete(apiCall.GetLocatorValue());
+                return repository.Delete(apiCall.GetLocator());
             }
             else
             {
