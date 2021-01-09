@@ -126,6 +126,63 @@ namespace TeamCityRestClientNet.Tests.Temp
         }
     }
 
+    public class UserList : TestsBase
+    {
+        [Obsolete]
+        [Fact]
+        public async Task Contains_all_users()
+        {
+            var users = await _teamCity.Users.All().ToListAsync();
+
+            Assert.Collection(users,
+                user => Assert.Equal("jodoe", user.Username),
+                user => Assert.Equal("jadoe", user.Username),
+                user => Assert.Equal("dunkin", user.Username),
+                user => Assert.Equal("maccheese", user.Username));
+        }
+    }
+
+    public class ExistingUser : TestsBase
+    {
+        [Obsolete]
+        [Fact]
+        public async Task Can_be_retrieved_with_id()
+        {
+            var userId = new Id("1");
+            var user = await _teamCity.Users.ById(userId);
+            Assert.Equal(userId, user.Id);
+            Assert.Equal("john.doe@mailinator.com", user.Email);
+            Assert.Equal("John Doe", user.Name);
+            Assert.Equal("jodoe", user.Username);
+            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=1", user.GetHomeUrl());
+        }
+
+        [Fact]
+        public async Task Throws_ApiException_if_id_not_found()
+        {
+            var userId = new Id("9999");
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ById(userId));
+        }
+
+        [Obsolete]
+        [Fact]
+        public async Task Can_be_retrieved_with_exact_username()
+        {
+            var user = await _teamCity.Users.ByUsername("dunkin");
+            Assert.Equal(new Id("3"), user.Id);
+            Assert.Equal("dunkin@mailinator.com", user.Email);
+            Assert.Equal("Dunkin' Donuts", user.Name);
+            Assert.Equal("dunkin", user.Username);
+            Assert.Equal($"{_serverUrl}/admin/editUser.html?userId=3", user.GetHomeUrl());
+        }
+
+        [Fact]
+        public async Task Throws_ApiException_if_exact_username_not_found()
+        {
+            await Assert.ThrowsAsync<Refit.ApiException>(() => _teamCity.Users.ByUsername("not.found"));
+        }
+    }
+
     public class VcsRootList : TestsBase
     {
         [Obsolete]
