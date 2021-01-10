@@ -385,40 +385,24 @@ namespace TeamCityRestClientNet.Builds
 
             AssertApiCall(HttpMethod.Delete, "/app/rest/builds/101/pin/");
         }
-
     }
 
     public class NewBuild : TestsBase
     {
-        private BuildState[] _buildingStates = new BuildState[]
+        [Fact]
+        public async Task Can_be_started_by_POSTing_to_buildQueue_end_point_with_a_trigger_request()
         {
-            BuildState.QUEUED, /* Queued if there are no agents to run the build */ 
-            BuildState.RUNNING /* Running if agent can start the build immediatelly */
-        };
+            var config = await _teamCity.BuildTypes.ById("TeamCityRestClientNet_RestClient");
 
-        // // // [Fact]
-        // // // public async Task Can_be_started_for_a_branch()
-        // // // {
-        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
-        // // //     var build = await config.RunBuild(logicalBranchName: "refs/heads/development");
+            await config.RunBuild(logicalBranchName: "refs/heads/development");
 
-        // // //     Assert.Contains(_buildingStates, state => state == build.State);
-        // // // }
-
-        // // // [Fact]
-        // // // public async Task Can_be_seen_on_the_build_queue()
-        // // // {
-        // // //     await TeamCityHelpers.DisableAllAgents(_teamCity).ConfigureAwait(false);
-
-        // // //     var config = await _teamCity.BuildType("TeamCityRestClientNet_RestClient");
-        // // //     var newBuild = await config.RunBuild();
-
-        // // //     var queuedBuilds = await _teamCity.BuildQueue.QueuedBuilds().ToListAsync();
-
-        // // //     Assert.Contains(queuedBuilds, build => build.Id.stringId == newBuild.Id.stringId);
-
-        // // //     await TeamCityHelpers.EnableAllAgents(_teamCity).ConfigureAwait(false);
-        // // // }
+            AssertApiCall(HttpMethod.Post, "/app/rest/buildQueue",
+                apiCall => {
+                    var request = apiCall.JsonContentAs<TriggerBuildRequestDto>();
+                    Assert.Equal("TeamCityRestClientNet_RestClient", request.BuildType.Id);
+                    Assert.Equal("refs/heads/development", request.BranchName);
+                });
+        }
     }
 
     public class RunningBuild : TestsBase
