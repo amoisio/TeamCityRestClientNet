@@ -464,40 +464,6 @@ namespace TeamCityRestClientNet.FakeServer
         };
         #endregion
 
-        #region Users
-        private readonly UserDto UserJohnDoe = new UserDto
-        {
-            Id = "1",
-            Name = "John Doe",
-            Username = "jodoe",
-            Email = "john.doe@mailinator.com"
-        };
-
-        private readonly UserDto UserJaneDoe = new UserDto
-        {
-            Id = "2",
-            Name = "Jane Doe",
-            Username = "jadoe",
-            Email = "jane.doe@mailinator.com"
-        };
-
-        private readonly UserDto UserDunkinDonuts = new UserDto
-        {
-            Id = "3",
-            Name = "Dunkin' Donuts",
-            Username = "dunkin",
-            Email = "dunkin@mailinator.com"
-        };
-
-        private readonly UserDto UserMacCheese = new UserDto
-        {
-            Id = "4",
-            Name = "Mac Cheese",
-            Username = "maccheese",
-            Email = "maccheese@mailinator.com"
-        };
-        #endregion
-
         #region VcsRoots
         private readonly VcsRootDto VcsRestClientGit = new VcsRootDto
         {
@@ -567,7 +533,10 @@ namespace TeamCityRestClientNet.FakeServer
             BuildAgentPools = new BuildAgentPoolRepository();
             BuildTypes = new BuildTypeRepository(builds);
             Changes = new ChangeRepository();
+            Investigations = new InvestigationRepository();
+            ProblemOccurrences = new ProblemOccurrenceRepository();
             Projects = new ProjectRepository();
+            TestOccurrences = new TestOccurrenceRepository();
             Users = new UserRepository();
             VcsRoots = new VcsRootRepository();
             VcsRootInstances = new VcsRootInstanceRepository();
@@ -578,17 +547,17 @@ namespace TeamCityRestClientNet.FakeServer
             var authComment = AgentEnabled.AuthorizedInfo.Comment;
             authComment.Timestamp = DateTime.UtcNow.AddDays(-14).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             authComment.Text = "Authorized";
-            authComment.User = UserJohnDoe;
+            authComment.User = UserRepository.UserJohnDoe;
             var enabComment = AgentEnabled.EnabledInfo.Comment;
             enabComment.Timestamp = DateTime.UtcNow.AddDays(-13).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             enabComment.Text = "Enabled";
-            enabComment.User = UserJohnDoe;
+            enabComment.User = UserRepository.UserJohnDoe;
             BuildAgents.Add(AgentEnabled);
 
             authComment = AgentDisabled.AuthorizedInfo.Comment;
             authComment.Timestamp = DateTime.UtcNow.AddDays(-24).ToString(Constants.TEAMCITY_DATETIME_FORMAT);
             authComment.Text = "Authorized disabled agent";
-            authComment.User = UserJaneDoe;
+            authComment.User = UserRepository.UserJaneDoe;
             BuildAgents.Add(AgentDisabled);
 
             DefaultPool.Agents.Items.Add(AgentEnabled);
@@ -627,11 +596,6 @@ namespace TeamCityRestClientNet.FakeServer
             Projects.Add(Project2);
             Projects.Add(Project3);
 
-            Users.Add(UserJohnDoe);
-            Users.Add(UserJaneDoe);
-            Users.Add(UserDunkinDonuts);
-            Users.Add(UserMacCheese);
-
             VcsRoots.Add(VcsRestClientGit);
             VcsRoots.Add(Vcs1);
             VcsRoots.Add(Vcs2);
@@ -645,8 +609,11 @@ namespace TeamCityRestClientNet.FakeServer
         public BuildAgentRepository BuildAgents { get; private set; }
         public BuildAgentPoolRepository BuildAgentPools { get; private set; }
         public BuildTypeRepository BuildTypes { get; private set; }
-        public ProjectRepository Projects { get; private set; }
         public ChangeRepository Changes { get; private set; }
+        public InvestigationRepository Investigations { get; private set; }
+        public ProblemOccurrenceRepository ProblemOccurrences { get; set; }
+        public ProjectRepository Projects { get; private set; }
+        public TestOccurrenceRepository TestOccurrences { get; set; }
         public UserRepository Users { get; private set; }
         public VcsRootRepository VcsRoots { get; private set; }
         public VcsRootInstanceRepository VcsRootInstances { get; private set; }

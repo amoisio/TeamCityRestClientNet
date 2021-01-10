@@ -1,0 +1,4 @@
+namespace TeamCityRestClientNet.TestOccurrences
+{
+    
+}

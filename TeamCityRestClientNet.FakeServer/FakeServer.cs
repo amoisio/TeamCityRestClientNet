@@ -27,7 +27,10 @@ namespace TeamCityRestClientNet.FakeServer
         internal BuildQueue BuildQueue { get; }
         internal BuildTypeRepository BuildTypes => _data.BuildTypes;
         internal ChangeRepository Changes => _data.Changes;
+        internal InvestigationRepository Investigations => _data.Investigations;
+        internal ProblemOccurrenceRepository ProblemOccurrences => _data.ProblemOccurrences;
         internal ProjectRepository Projects => _data.Projects;
+        internal TestOccurrenceRepository TestOccurrences => _data.TestOccurrences;
         internal UserRepository Users => _data.Users;
         internal VcsRootRepository VcsRoots => _data.VcsRoots;
         internal VcsRootInstanceRepository VcsRootInstances => _data.VcsRootInstances;
@@ -321,11 +324,11 @@ namespace TeamCityRestClientNet.FakeServer
         }
         private object ResolveInvestigations(ApiCall apiCall)
         {
-            throw new NotImplementedException($"End-point {apiCall.Method} : {apiCall.RequestPath} not implemented.");
+            return Resolve<InvestigationDto, InvestigationListDto>(apiCall, Investigations);
         }
         private object ResolveProblems(ApiCall apiCall)
         {
-            throw new NotImplementedException($"End-point {apiCall.Method} : {apiCall.RequestPath} not implemented.");
+            return Resolve<BuildProblemOccurrenceDto, BuildProblemOccurrenceListDto>(apiCall, ProblemOccurrences);
         }
         private object ResolveProjects(ApiCall apiCall)
         {
@@ -377,7 +380,7 @@ namespace TeamCityRestClientNet.FakeServer
         }
         private object ResolveTests(ApiCall apiCall)
         {
-            throw new NotImplementedException($"End-point {apiCall.Method} : {apiCall.RequestPath} not implemented.");
+            return Resolve<TestOccurrenceDto, TestOccurrenceListDto>(apiCall, TestOccurrences);
         }
         private object ResolveUsers(ApiCall apiCall)
         {
