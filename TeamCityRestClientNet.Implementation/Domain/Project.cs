@@ -57,16 +57,19 @@ namespace TeamCityRestClientNet.Domain
                 .Select(prop => new Parameter(prop))
                 .ToList<IParameter>();
 
-        public async Task<IBuildType> CreateBuildType(string name)
+        public async Task<IBuildType> CreateBuildType(string name, string sourceBuildTypeLocator = null, bool copyAllAssociatedSettings = false, bool shareVCSRoots = false)
         {
             var dto = new NewBuildTypeDescription
             {
-                Name = name
+                Name = name,
+                SourceBuildTypeLocator = sourceBuildTypeLocator,
+                CopyAllAssociatedSettings = copyAllAssociatedSettings,
+                ShareVCSRoots = shareVCSRoots
             };
             return await CreateBuildType(dto);
         }
         
-        public async Task<IBuildType> CreateBuildType(NewBuildTypeDescription dto)
+        private async Task<IBuildType> CreateBuildType(NewBuildTypeDescription dto)
         {
             var xml = new StringBuilder();
             using (var tw = new StringWriter(xml))

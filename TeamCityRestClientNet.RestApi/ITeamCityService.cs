@@ -140,9 +140,6 @@ namespace TeamCityRestClientNet.RestApi
         [Put("/app/rest/buildTypes/{id}/parameters/{name}")]
         Task SetBuildTypeParameter([AliasAs("id")] string buildTypeId, string name, [Body] string value);
 
-        [Put("/app/rest/buildTypes/{id}/settings/{name}")]
-        Task SetBuildTypeSettings([AliasAs("id")] string buildTypeId, string name, [Body] string value);
-
         #endregion
 
         #region Changes

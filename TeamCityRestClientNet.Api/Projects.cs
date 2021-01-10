@@ -25,12 +25,7 @@ namespace TeamCityRestClientNet.Api
         Task<IVcsRoot> CreateVcsRoot(Id id, string name, VcsRootType type, IDictionary<string, string> properties);
         Task<IProject> CreateProject(Id id, string name);
         Task Delete();
-        /**
-         * XML in the same format as
-         * https://teamcity/app/rest/buildTypes/YourBuildConfigurationId
-         * returns
-         */
-        Task<IBuildType> CreateBuildType(string buildTypeDescriptionXml);
+        Task<IBuildType> CreateBuildType(string name, string sourceBuildTypeLocator = null, bool copyAllAssociatedSettings = false, bool shareVCSRoots = false);
     }
 
     public interface IProjectLocator : ILocator<IProject>

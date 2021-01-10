@@ -75,6 +75,16 @@ namespace TeamCityRestClientNet.FakeServer
                 {
                     new ParameterDto("param1", "value1")
                 }
+            },
+            Tags = new TagsDto
+            {
+                Tag = new List<TagDto>
+                {
+                    new TagDto
+                    {
+                        Name = "Release #1"
+                    }
+                }
             }
         };
 

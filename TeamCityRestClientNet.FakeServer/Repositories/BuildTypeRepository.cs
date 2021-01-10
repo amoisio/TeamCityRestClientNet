@@ -36,7 +36,9 @@ namespace TeamCityRestClientNet.FakeServer
 
         internal TagsDto Tags(string id)
         {
-            var tags =_builds.All().Items.SelectMany(build => build.Tags.Tag);
+            var tags =_builds.All().Items
+                .Where(build => build.Tags != null)
+                .SelectMany(build => build.Tags.Tag);
             return new TagsDto
             {
                 Tag = tags.ToList()
