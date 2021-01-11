@@ -5,17 +5,9 @@ namespace TeamCityRestClientNet.FakeServer
 {
     class UserRepository : BaseRepository<UserDto, UserListDto>
     {
-        public UserRepository()
-        {
-            _itemsById.Add(UserJohnDoe.Id, UserJohnDoe);
-            _itemsById.Add(UserJaneDoe.Id, UserJaneDoe);
-            _itemsById.Add(UserDunkinDonuts.Id, UserDunkinDonuts);
-            _itemsById.Add(UserMacCheese.Id, UserMacCheese);
-        }
-
         public UserDto ByUsername(string username) => _itemsById.Values.SingleOrDefault(u => u.Username == username);
 
-        public static UserDto UserJohnDoe = new UserDto
+        public UserDto CreateJohnDoe() => new UserDto
         {
             Id = "1",
             Name = "John Doe",
@@ -23,7 +15,7 @@ namespace TeamCityRestClientNet.FakeServer
             Email = "john.doe@mailinator.com"
         };
 
-        public static UserDto UserJaneDoe = new UserDto
+        public UserDto CreateJaneDoe() => new UserDto
         {
             Id = "2",
             Name = "Jane Doe",
@@ -31,7 +23,7 @@ namespace TeamCityRestClientNet.FakeServer
             Email = "jane.doe@mailinator.com"
         };
 
-        public static UserDto UserDunkinDonuts = new UserDto
+        public UserDto CreateDunkinDonuts() => new UserDto
         {
             Id = "3",
             Name = "Dunkin' Donuts",
@@ -39,7 +31,7 @@ namespace TeamCityRestClientNet.FakeServer
             Email = "dunkin@mailinator.com"
         };
 
-        public static UserDto UserMacCheese = new UserDto
+        public UserDto CreateMacCheese() => new UserDto
         {
             Id = "4",
             Name = "Mac Cheese",

@@ -17,14 +17,13 @@ namespace TeamCityRestClientNet.FakeServer
         {
             _logger = logger;
             _data = new DataBuilder();
-            _data.Load();
-            BuildQueue = new BuildQueue(_data.Builds);
+            _data.Initialize();
         }
 
         internal BuildRepository Builds => _data.Builds;
         internal BuildAgentRepository BuildAgents => _data.BuildAgents;
         internal BuildAgentPoolRepository BuildAgentPools => _data.BuildAgentPools;
-        internal BuildQueue BuildQueue { get; }
+        internal BuildQueue BuildQueue => _data.BuildQueue;
         internal BuildTypeRepository BuildTypes => _data.BuildTypes;
         internal ChangeRepository Changes => _data.Changes;
         internal InvestigationRepository Investigations => _data.Investigations;
@@ -207,7 +206,7 @@ namespace TeamCityRestClientNet.FakeServer
                     // [Post("/app/rest/buildQueue")]
                     // Task<TriggeredBuildDto> TriggerBuild([Body] TriggerBuildRequestDto value);
                     var request = JsonConvert.DeserializeObject<TriggerBuildRequestDto>(apiCall.Content);
-                    return BuildQueue.TriggerBuild(request);
+                    return BuildQueue.TriggerBuild(Builds, Users.ById("1"), request);
                 }
                 else 
                 {
@@ -216,7 +215,7 @@ namespace TeamCityRestClientNet.FakeServer
                     // Task RemoveQueuedBuild([AliasAs("id")] string buildId, [Body] BuildCancelRequestDto value);
                     var request = JsonConvert.DeserializeObject<BuildCancelRequestDto>(apiCall.Content);
                     var id = apiCall.GetLocator();
-                    BuildQueue.CancelBuild(id, request);
+                    BuildQueue.CancelBuild(id, Users.ById("1"), request);
                     return id;
                 }
             }
@@ -265,7 +264,7 @@ namespace TeamCityRestClientNet.FakeServer
                     // [Headers("Accept: application/json")]
                     // [Get("/app/rest/buildTypes/{id}/buildTags")]
                     // Task<TagsDto> BuildTypeTags([AliasAs("id")] string buildTypeId);
-                    return BuildTypes.Tags(id);
+                    return BuildTypes.Tags(Builds, id);
                 }
                 else if (apiCall.PropertySegment == "triggers")
                 {

@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Locators
         private Id? _buildId;
         private Id? _testId;
         private Id? _affectedProjectId;
-        private TestStatus? _testStatus;
+        private TestStatus? _testStatus = TestStatus.IGNORED;
         private bool _expandMultipleInvocations = false;
 
         public TestRunsLocator(TeamCityServer instance) : base(instance) { }
@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Locators
                 _affectedProjectId?.Let(val => $"affectedProject:{val}"),
                 _buildId?.Let(val => $"build:{val}"),
                 _testId?.Let(val => $"test:{val}"),
-                _expandMultipleInvocations.Let(val => $"expandInvocations:{val}"),
+                _expandMultipleInvocations.Let(val => $"expandInvocations:{val.ToString().ToLower()}"),
                 statusLocator
             );
 

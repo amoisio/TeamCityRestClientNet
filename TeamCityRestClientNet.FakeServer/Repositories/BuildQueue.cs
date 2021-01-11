@@ -8,16 +8,9 @@ namespace TeamCityRestClientNet.FakeServer
 {
     class BuildQueue : List<BuildDto>
     {
-        private readonly BuildRepository _builds;
-        public BuildQueue(BuildRepository builds)
+        public TriggeredBuildDto TriggerBuild(BuildRepository builds, UserDto user, TriggerBuildRequestDto request)
         {
-            this._builds = builds;
-            this.AddRange(_builds.All().Items.Where(build => build.State == "queued"));
-        }
-
-        internal TriggeredBuildDto TriggerBuild(TriggerBuildRequestDto request)
-        {
-            var newId = _builds.All().Items.Max(item => Int32.Parse(item.Id)) + 1;
+            int newId = builds.All().Items.Max(i => Int32.Parse(i.Id)) + 1;
             var newBuild = new BuildDto
             {
                 Id = newId.ToString(),
@@ -30,21 +23,11 @@ namespace TeamCityRestClientNet.FakeServer
                 QueuedDate = DateTime.UtcNow.ToString(Constants.TEAMCITY_DATETIME_FORMAT),
                 Triggered = new TriggeredDto
                 {
-                    User = new UserDto
-                    {
-                        Id = "1",
-                        Username = "jodoe",
-                        Name = "John Doe"
-                    }
+                    User = user
                 },
                 Comment = new BuildCommentDto
                 {
-                    User = new UserDto
-                    {
-                        Id = "1",
-                        Username = "jodoe",
-                        Name = "John Doe"
-                    },
+                    User = user,
                     Timestamp = DateTime.UtcNow.ToString(Constants.TEAMCITY_DATETIME_FORMAT),
                     Text = request.Comment?.Text
                 },
@@ -52,7 +35,7 @@ namespace TeamCityRestClientNet.FakeServer
             };
 
             this.Add(newBuild);
-            _builds.Add(newBuild);
+            builds.Add(newBuild);
 
             return new TriggeredBuildDto
             {
@@ -61,7 +44,7 @@ namespace TeamCityRestClientNet.FakeServer
             };
         }
 
-        internal void CancelBuild(string id, BuildCancelRequestDto request)
+        public void CancelBuild(string id, UserDto user, BuildCancelRequestDto request)
         {
             var queuedBuild = this.FirstOrDefault(build => build.Id == id);
             if (queuedBuild != null)
@@ -71,12 +54,7 @@ namespace TeamCityRestClientNet.FakeServer
                 queuedBuild.StatusText  = "Canceled";
                 queuedBuild.CanceledInfo = new BuildCanceledDto
                 {
-                    User = new UserDto
-                    {
-                        Id = "1",
-                        Username = "jodoe",
-                        Name = "John Doe"
-                    },
+                    User = user,
                     Timestamp = DateTime.UtcNow.ToString(Constants.TEAMCITY_DATETIME_FORMAT),
                     Text = request.Comment
                 };

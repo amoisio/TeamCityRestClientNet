@@ -55,5 +55,51 @@ namespace TeamCityRestClientNet.FakeServer
             }
             return project;
         }
+
+        public ProjectDto CreateRootProject() => new ProjectDto
+        {
+            Id = "_Root",
+            Name = "<Root project>"
+        };
+
+        public ProjectDto CreateRestClientProject(ProjectDto parentProjectDto) {
+            var project = new ProjectDto
+            {
+                Id = "TeamCityRestClientNet",
+                ParentProjectId = parentProjectDto.Id,
+                Name = "TeamCity Rest Client .NET",
+                Parameters = new ParametersDto
+                {
+                    Property = new List<ParameterDto>
+                    {
+                        new ParameterDto("configuration_parameter", "6692e7bf_c9a4_4941_9e89_5dde9417f05f"),
+                    }
+                }
+            };
+            parentProjectDto.Projects.Items.Add(project);
+            return project;
+        }
+
+        public ProjectDto CreateTeamCityCliProject(ProjectDto parentProjectDto) {
+            var project = new ProjectDto
+            {
+                Id = "TeamCityCliNet",
+                ParentProjectId = parentProjectDto.Id,
+                Name = "TeamCity CLI .NET"
+            };
+            parentProjectDto.Projects.Items.Add(project);
+            return project;
+        }
+
+        public ProjectDto CreateProject(Guid projectId, ProjectDto parentProjectDto) {
+            var project = new ProjectDto
+            {
+                Id = $"Project_{projectId.ToString().ToLower().Replace('-', '_')}",
+                ParentProjectId = parentProjectDto.Id,
+                Name = $"Project_{projectId.ToString().ToLower().Replace('-', '_')}"
+            };
+            parentProjectDto.Projects.Items.Add(project);
+            return project;
+        }
     }
 }
