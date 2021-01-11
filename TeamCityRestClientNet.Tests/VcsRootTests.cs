@@ -6,9 +6,6 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 using TeamCityRestClientNet.RestApi;
 
 namespace TeamCityRestClientNet.VcsRoots

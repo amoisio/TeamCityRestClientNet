@@ -7,7 +7,6 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using TeamCityRestClientNet.RestApi;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 
 namespace TeamCityRestClientNet.Builds

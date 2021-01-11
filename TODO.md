@@ -1,5 +1,4 @@
 
-1. Test cases for basic stuff 
 2. At some point run code coverage and static analysis
 3. Fix and repair
 4. When code coverage suitable, document in README.md

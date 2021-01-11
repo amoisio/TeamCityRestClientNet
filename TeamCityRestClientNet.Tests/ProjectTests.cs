@@ -6,9 +6,6 @@ using TeamCityRestClientNet.Api;
 using TeamCityRestClientNet.Tests;
 using System.Net.Http;
 using TeamCityRestClientNet.RestApi;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace TeamCityRestClientNet.Projects
 {

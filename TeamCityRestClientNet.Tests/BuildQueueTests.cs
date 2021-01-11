@@ -1,4 +1,3 @@
-using System;
 using TeamCityRestClientNet.Api;
 using Xunit;
 using System.Threading.Tasks;
