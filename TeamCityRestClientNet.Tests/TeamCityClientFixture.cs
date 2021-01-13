@@ -22,23 +22,10 @@ namespace TeamCityRestClientNet.Tests
 
         public TeamCityFixture()
         {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("System", LogLevel.Warning)
-                    .AddFilter("TeamCity.Tests", LogLevel.Trace)
-                    .AddConsole();
-            });
-
-            var guid = Guid.NewGuid().ToString().Substring(0,6);
-            Logger = loggerFactory.CreateLogger($"TeamCity.Tests.{guid}");
-
             this.Handler = new RedirectToFakeServer(new FakeServer.FakeServer(Logger));
             this.TeamCity = new TeamCityServerBuilder()
               .WithServerUrl(serverUrl)
               .WithBearerAuthentication(_token)
-              .WithLogging(Logger)
               .WithHandlers((innerHandler) => this.Handler)
               .Build();
         }

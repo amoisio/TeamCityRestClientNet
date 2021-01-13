@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
@@ -136,9 +137,10 @@ namespace TeamCityRestClientNet
         {
             ValidateProperties();
 
+            var logger = _logger ?? NullLogger.Instance;
             var hostUrl = $"{_serverUrl}{ServerUrlBase}";
 
-            _logger.LogInformation($"Building REST service to {hostUrl}.");
+            logger.LogInformation($"Building REST service to {hostUrl}.");
 
             var serviceHandler = BuildHandlerPipeline();
             var settings = BuildRefitSettings();
@@ -149,7 +151,7 @@ namespace TeamCityRestClientNet
                 },
                 settings);
 
-            return new TeamCityServer(_serverUrl, _serverUrlBase, service, _logger);
+            return new TeamCityServer(_serverUrl, _serverUrlBase, service, logger);
         }
 
         private void ValidateProperties()

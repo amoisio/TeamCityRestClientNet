@@ -16,7 +16,7 @@ namespace TeamCityRestClientNet
 {
     class TeamCityServer : TeamCity
     {
-        // TODO: Does this need to be configurable?
+        // TODO: Make configurable?
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMddTHHmmsszz00";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
         public ITeamCityService Service { get; }
@@ -26,7 +26,7 @@ namespace TeamCityRestClientNet
             string serverUrl,
             string serverUrlBase,
             ITeamCityService service,
-            ILogger logger = null)
+            ILogger logger)
         {
             if (String.IsNullOrWhiteSpace(serverUrl))
                 throw new ArgumentNullException(nameof(serverUrl));
