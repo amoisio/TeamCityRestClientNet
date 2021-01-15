@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>TeamcityRestClientNet.RestApi</RootNamespace>
+    <RootNamespace>TeamCityRestClientNet.RestApi</RootNamespace>
     <PackageId>TeamCityRestClient.NET.RestApi</PackageId>
     <Title>TeamCity REST client for .NET RestApi</Title>
     <Product>TeamCity REST client for .NET RestApi</Product>
