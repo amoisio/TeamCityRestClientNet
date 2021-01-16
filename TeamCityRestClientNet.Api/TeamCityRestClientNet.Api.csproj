@@ -7,8 +7,8 @@
     <Title>TeamCity REST client for .NET Api</Title>
     <Product>TeamCity REST client for .NET Api</Product>
     <Description>TeamCity REST client for .NET Api</Description>
-    <Version>1.0.1</Version>
-    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.2</Version>
+    <FileVersion>1.0.2</FileVersion>
     <Authors>Aleksi Moisio</Authors>
     <Company>-</Company>
     <Copyright>Copyright (c) 2020 Aleksi Moisio</Copyright> 
