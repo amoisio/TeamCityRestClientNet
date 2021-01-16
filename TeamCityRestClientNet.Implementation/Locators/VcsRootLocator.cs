@@ -27,7 +27,7 @@ namespace TeamCityRestClientNet.Locators
         /// Retrieves all vcs roots from TeamCity.
         /// </summary>
         /// <returns>All vcs roots defined in TeamCity.</returns>
-        public override IAsyncEnumerable<IVcsRoot> All(string initialLocator = null)
+        public override IAsyncEnumerable<IVcsRoot> All()
         {
             return new Paged2<IVcsRoot, VcsRootDto, VcsRootListDto>(
                 Instance,

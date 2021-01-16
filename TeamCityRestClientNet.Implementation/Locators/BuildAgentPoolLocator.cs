@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Locators
         public override async Task<IBuildAgentPool> ById(Id id)
             => await Domain.BuildAgentPool.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public override async IAsyncEnumerable<IBuildAgentPool> All(string initialLocator = null)
+        public override async IAsyncEnumerable<IBuildAgentPool> All()
         {
             var pools = await Service.AgentPools().ConfigureAwait(false);
             foreach(var pool in pools.Items)

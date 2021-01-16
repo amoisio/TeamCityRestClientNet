@@ -13,7 +13,7 @@ namespace TeamCityRestClientNet.Locators
         public async override Task<IBuildType> ById(Id id)
             => await Domain.BuildType.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IBuildType> All(string initialLocator = null)
+        public override IAsyncEnumerable<IBuildType> All()
         {
             return new Paged2<IBuildType, BuildTypeDto, BuildTypeListDto>(
                 Instance,

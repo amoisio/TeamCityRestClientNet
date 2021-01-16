@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Locators
         public override async Task<IBuildAgent> ById(Id id)
             => await Domain.BuildAgent.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public override async IAsyncEnumerable<IBuildAgent> All(string initialLocator = null)
+        public override async IAsyncEnumerable<IBuildAgent> All()
         {
             var agents = await Service.Agents().ConfigureAwait(false);
             foreach(var agent in agents.Items) 

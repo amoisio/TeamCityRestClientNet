@@ -174,7 +174,7 @@ namespace TeamCityRestClientNet.Locators
         public override async Task<IBuild> ById(Id id)
             => await Domain.Build.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IBuild> All(string initialLocator = null)
+        public override IAsyncEnumerable<IBuild> All()
         {
             int? count = Utility.SelectRestApiCountForPagedRequests(_limitResults, _pageSize);
 

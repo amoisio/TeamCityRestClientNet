@@ -18,7 +18,7 @@ namespace TeamCityRestClientNet.Locators
         public override async Task<IInvestigation> ById(Id id) 
             => await Domain.Investigation.Create(id.StringId, Instance).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IInvestigation> All(string initialLocator = null)
+        public override IAsyncEnumerable<IInvestigation> All()
         {
             string investigationLocator = null;
             var parameters = new List<string>();

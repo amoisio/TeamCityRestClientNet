@@ -32,7 +32,7 @@ namespace TeamCityRestClientNet.Locators
         /// </summary>
         /// <param name="initialLocator">Locator string for the first query.</param>
         /// <returns>All projects.</returns>
-        public override IAsyncEnumerable<IProject> All(string initialLocator = null)
+        public override IAsyncEnumerable<IProject> All()
         {
             return new Paged2<IProject, ProjectDto, ProjectListDto>(
                 Instance,

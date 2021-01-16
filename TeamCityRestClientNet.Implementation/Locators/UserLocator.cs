@@ -38,7 +38,7 @@ namespace TeamCityRestClientNet.Locators
         /// Retrieves all users from TeamCity.
         /// </summary>
         /// <returns>All users defined in TeamCity.</returns>
-        public override async IAsyncEnumerable<IUser> All(string initialLocator = null)
+        public override async IAsyncEnumerable<IUser> All()
         {
             // _logger.LogDebug("Retrieving users.");
             var userListDto = await Service.Users().ConfigureAwait(false);

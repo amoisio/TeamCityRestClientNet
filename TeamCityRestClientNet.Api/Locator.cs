@@ -7,6 +7,6 @@ namespace TeamCityRestClientNet.Api
     {
         Task<T> ById(string stringId);
         Task<T> ById(Id id);
-        IAsyncEnumerable<T> All(string initialLocator = null);
+        IAsyncEnumerable<T> All();
     }
 }

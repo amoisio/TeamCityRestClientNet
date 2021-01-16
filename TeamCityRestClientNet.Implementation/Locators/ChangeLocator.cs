@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.Locators
         public async override Task<IChange> ById(Id id)
             => await Domain.Change.Create(new ChangeDto { Id = id.StringId }, false, Instance).ConfigureAwait(false);
 
-        public override IAsyncEnumerable<IChange> All(string initialLocator = null)
+        public override IAsyncEnumerable<IChange> All()
         {
             return new Paged2<IChange, ChangeDto, ChangeListDto>(
                 Instance,
