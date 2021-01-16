@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>TeamCityRestClient.NET</id>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <title>TeamCity REST client for .NET</title>
     <authors>Aleksi Moisio</authors>
     <owners>Aleksi Moisio</owners>
