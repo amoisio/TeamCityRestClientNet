@@ -73,17 +73,31 @@ namespace TeamCityRestClientNet.Domain
         public async Task SetBuildCounter(int count)
             => await SetParameter("buildNumberCounter", count).ConfigureAwait(false);
 
+
+        public const string DEFAULT_PATTERN = "%build.counter%";
         public string BuildNumberFormat
         {
             get
             {
-                return GetSetting("buildNumberPattern")
-                    ?? throw new TeamCityQueryException($"Cannot get 'buildNumberPattern' setting for {IdString}");
+                if (HasSetting("buildNumberPattern"))
+                {
+                    return GetSetting("buildNumberPattern")
+                        ?? throw new TeamCityQueryException($"Cannot get 'buildNumberPattern' setting for {IdString}");
+                }
+                else 
+                {
+                    return DEFAULT_PATTERN;
+                }
             }
         }
 
         public async Task SetBuildNumberFormat(string format)
             => await SetParameter("buildNumberPattern", format).ConfigureAwait(false);
+
+        private bool HasSetting(string settingName)
+            => this.Dto.Settings
+                ?.Property
+                ?.FirstOrDefault(prop => prop.Name == settingName) != null;
 
         private string GetSetting(string settingName)
             => this.Dto.Settings
