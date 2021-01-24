@@ -46,13 +46,6 @@ namespace TeamCityRestClientNet
 
         public string ServerUrlBase { get; }
 
-        public override async Task<IBuild> Build(Id buildTypeId, string number)
-            => await new BuildLocator(this)
-            .FromBuildType(buildTypeId)
-            .WithNumber(number)
-            .Latest()
-            .ConfigureAwait(false);
-
         /// <summary>
         /// Retrieve build agent locator.
         /// </summary>
