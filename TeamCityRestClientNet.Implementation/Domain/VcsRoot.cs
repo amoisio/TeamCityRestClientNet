@@ -28,7 +28,6 @@ namespace TeamCityRestClientNet.Domain
             return new VcsRoot(fullDto, instance);
         }
         public Dictionary<string, string> Properties { get; }
-        public string Name => Dto.Name.SelfOrNullRef();
         public string Url => GetNameValueProperty("url");
         public string DefaultBranch => GetNameValueProperty("branch");
         private string GetNameValueProperty(string name)

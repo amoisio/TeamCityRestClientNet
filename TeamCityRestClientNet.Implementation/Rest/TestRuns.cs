@@ -11,7 +11,6 @@ namespace TeamCityRestClientNet.RestApi
 
     public class TestOccurrenceDto : IdDto
     {
-        public string Name { get; set; }
         public string Status { get; set; }
         public bool? Ignored { get; set; }
         public long? Duration { get; set; }

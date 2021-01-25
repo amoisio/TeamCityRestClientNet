@@ -7,7 +7,6 @@ namespace TeamCityRestClientNet.Api
 {
     public interface IVcsRoot : IIdentifiable
     {
-        string Name { get; }
         string Url { get; }
         string DefaultBranch { get; }
         Task Delete();
@@ -28,7 +27,6 @@ namespace TeamCityRestClientNet.Api
     public interface IVcsRootInstance : IIdentifiable
     {
         Id VcsRootId { get; }
-        string Name { get; }
     }
 
     public interface IVcsRootInstanceLocator : ILocator<IVcsRootInstance> { }

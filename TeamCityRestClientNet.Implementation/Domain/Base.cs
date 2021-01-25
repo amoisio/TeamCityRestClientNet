@@ -31,6 +31,10 @@ namespace TeamCityRestClientNet.Domain
         protected TDto Dto { get; private set; }
         protected string IdString => this.Dto.Id;
         public Id Id => new Id(IdString);
+        public virtual string Name => this.Dto.Name;
+        public virtual string Href => this.Dto.Href;
+        public virtual string WebUrl => this.Dto.WebUrl;
+
         protected T NotNull<T>(Func<TDto, T> getter)
             => getter(this.Dto)
             ?? throw new NullReferenceException();

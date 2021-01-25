@@ -8,7 +8,6 @@ namespace TeamCityRestClientNet.Api
     public interface IUser : IIdentifiable
     {
         string Username { get; }
-        string Name { get; }
         string Email { get; }
         /**
          * Web UI URL for user, especially useful for error and log messages

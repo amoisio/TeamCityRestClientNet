@@ -20,7 +20,6 @@ namespace TeamCityRestClientNet.Api
         IBranch Branch { get; }
         BuildState State { get; }
         bool Personal { get; }
-        string Name { get; }
         IBuildCanceledInfo CanceledInfo { get; }
         IBuildCommentInfo Comment { get; }
         bool? Composite { get; }

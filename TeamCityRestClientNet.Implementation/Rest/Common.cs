@@ -23,6 +23,9 @@ namespace TeamCityRestClientNet.RestApi
     public abstract class IdDto
     {
         public string Id { get; set; }
+        public string Name { get; set; }
+        public string Href { get; set; }
+        public string WebUrl { get; set; }
     }
 
     public class ParametersDto

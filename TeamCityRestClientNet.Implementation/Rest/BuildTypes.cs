@@ -12,7 +12,6 @@ namespace TeamCityRestClientNet.RestApi
 
     public class BuildTypeDto : IdDto
     {
-        public string Name { get; set; }
         public string ProjectId { get; set; }
         public bool? Paused { get; set; }
         public BuildTypeSettingsDto Settings { get; set; }

@@ -21,7 +21,6 @@ namespace TeamCityRestClientNet.Domain
         }
 
         public string Username => Dto.Username;
-        public string Name => Dto.Name;
         public string Email => Dto.Email;
         public string GetHomeUrl()
             => Instance.GetUserUrlPage("admin/editUser.html", userId: Id);

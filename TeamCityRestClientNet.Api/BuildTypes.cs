@@ -6,7 +6,6 @@ namespace TeamCityRestClientNet.Api
 {
     public interface IBuildType : IIdentifiable 
     {
-        string Name { get; }
         Id ProjectId { get; }
         bool Paused { get; }
         /**

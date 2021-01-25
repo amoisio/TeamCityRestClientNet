@@ -11,7 +11,6 @@ namespace TeamCityRestClientNet.RestApi
 
     public class BuildAgentDto : IdDto
     {
-        public string Name { get; set; }
         public bool? Connected { get; set; }
         public bool? Enabled { get; set; }
         public bool? Authorized { get; set; }

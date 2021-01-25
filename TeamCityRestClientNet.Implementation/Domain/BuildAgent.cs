@@ -32,7 +32,6 @@ namespace TeamCityRestClientNet.Domain
             return new BuildAgent(dto, instance);
         }
 
-        public string Name => Dto.Name.SelfOrNullRef();
         public AsyncLazy<IBuildAgentPool> Pool { get; }
         public bool Connected => Dto.Connected.Value;
         public bool Enabled => Dto.Enabled.Value;

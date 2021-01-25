@@ -12,7 +12,6 @@ namespace TeamCityRestClientNet.RestApi
 
     public class ProjectDto : IdDto
     {
-        public string Name { get; set; }
         public string ParentProjectId { get; set; }
         public bool? Archived { get; set; }
         public ProjectListDto Projects { get; set; } = new ProjectListDto();

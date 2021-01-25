@@ -43,7 +43,6 @@ namespace TeamCityRestClientNet.Domain
             return new BuildAgentPool(dto, instance);
         }
 
-        public string Name => NotNull(dto => dto.Name);
         public AsyncLazy<List<IProject>> Projects { get; }
         public AsyncLazy<List<IBuildAgent>> Agents { get; }
 

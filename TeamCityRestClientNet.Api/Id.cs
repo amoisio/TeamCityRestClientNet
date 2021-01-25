@@ -5,6 +5,9 @@ namespace TeamCityRestClientNet.Api
     public interface IIdentifiable
     {
         Id Id { get; }
+        string Name { get; }
+        string Href { get; }
+        string WebUrl { get; }
     }
 
     readonly public struct Id : IEquatable<Id>

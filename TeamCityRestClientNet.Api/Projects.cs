@@ -6,7 +6,6 @@ namespace TeamCityRestClientNet.Api
 {
     public interface IProject : IIdentifiable
     {
-        string Name { get; }
         bool Archived { get; }
         Id? ParentProjectId { get; }
         /**

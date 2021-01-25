@@ -11,7 +11,6 @@ namespace TeamCityRestClientNet.RestApi
     
     public class BuildAgentPoolDto : IdDto
     {
-        public string Name { get; set; }
         public ProjectListDto Projects { get; set; } = new ProjectListDto();
         public BuildAgentListDto Agents { get; set; } = new BuildAgentListDto();
     }

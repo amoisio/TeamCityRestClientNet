@@ -13,7 +13,6 @@ namespace TeamCityRestClientNet.RestApi
 
     public class VcsRootDto : IdDto
     {
-        public string Name { get; set; }
         public NameValuePropertiesDto Properties { get; set; }
     }
 
@@ -26,7 +25,6 @@ namespace TeamCityRestClientNet.RestApi
     public class VcsRootInstanceDto : IdDto
     {
         public string VcsRootId { get; set; }
-        public string Name { get; set; }
     }
 
     [XmlRoot("vcs-root")]

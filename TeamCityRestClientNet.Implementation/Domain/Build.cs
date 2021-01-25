@@ -94,7 +94,7 @@ namespace TeamCityRestClientNet.Domain
             }
         }
         public bool Personal => this.Dto.Personal ?? false;
-        public string Name => Dto.BuildType.Name;
+        public override string Name => Dto.BuildType.Name;
         public IBuildCanceledInfo CanceledInfo
             => this.Dto.CanceledInfo != null
                 ? new BuildCanceledInfo(this.Dto.CanceledInfo, Instance)

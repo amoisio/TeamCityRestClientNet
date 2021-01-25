@@ -6,7 +6,6 @@ namespace TeamCityRestClientNet.Api
 {
     public interface IBuildAgent : IIdentifiable
     {
-        string Name { get; }
         AsyncLazy<IBuildAgentPool> Pool { get; }
         bool Connected { get; }
         bool Enabled { get; }
@@ -30,7 +29,6 @@ namespace TeamCityRestClientNet.Api
 
     public interface IBuildAgentPool : IIdentifiable
     {
-        string Name { get; }
         AsyncLazy<List<IProject>> Projects { get; }
         AsyncLazy<List<IBuildAgent>> Agents { get; }
     }
