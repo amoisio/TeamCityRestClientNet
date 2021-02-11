@@ -48,19 +48,19 @@ namespace TeamCityRestClientNet.Api
 
     public class InProject : IInvestigationScope
     {
-        private readonly IProject project;
+        public IProject Project { get; }
         public InProject(IProject project)
         {
-            this.project = project;
+            this.Project = project;
         }
     }
 
     public class InBuildType : IInvestigationScope
     {
-        private readonly IBuildType configuration;
+        public IBuildType Configuration { get; }
         public InBuildType(IBuildType configuration)
         {
-            this.configuration = configuration;
+            this.Configuration = configuration;
         }
     }
 }
