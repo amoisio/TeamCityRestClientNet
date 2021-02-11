@@ -11,21 +11,20 @@ namespace TeamCityRestClientNet.FakeServer
     {
         public BuildTypeDto Create(string buildTypeXml)
         {
-            using (var strReader = new StringReader(buildTypeXml))
-            using (var xmlReader = XmlReader.Create(strReader))
+            using var strReader = new StringReader(buildTypeXml);
+            using var xmlReader = XmlReader.Create(strReader);
+            var serializer = new XmlSerializer(typeof(NewBuildTypeDescription));
+            var newDto = serializer.Deserialize(xmlReader) as NewBuildTypeDescription;
+            var dto = new BuildTypeDto
             {
-                var serializer = new XmlSerializer(typeof(NewBuildTypeDescription));
-                var newDto = serializer.Deserialize(xmlReader) as NewBuildTypeDescription;
-                var dto = new BuildTypeDto
-                {
-                    Id = newDto.Name,
-                    Name = newDto.Name
-                };
-                this.Add(dto);
-                return dto;
-            }
+                Id = newDto.Name,
+                Name = newDto.Name
+            };
+            this.Add(dto);
+            return dto;
         }
 
+        #pragma warning disable IDE0060
         public TagsDto Tags(BuildRepository builds, string id)
         {
             var tags = builds.All().Items

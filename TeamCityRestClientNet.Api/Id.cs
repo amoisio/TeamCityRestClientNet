@@ -28,7 +28,7 @@ namespace TeamCityRestClientNet.Api
         public bool Equals(Id other) => String.Equals(StringId, other.StringId);
 
         public override bool Equals(object obj)
-            => obj is Id ? this.Equals((Id)obj) : false;
+            => obj is Id id && this.Equals(id);
 
         public override int GetHashCode() => StringId?.GetHashCode() ?? 0;
     }

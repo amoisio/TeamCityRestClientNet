@@ -11,23 +11,21 @@ namespace TeamCityRestClientNet.FakeServer
     {
         public VcsRootDto Create(string xmlString)
         {
-            using (var strReader = new StringReader(xmlString))
-            using (var xmlReader = XmlReader.Create(strReader))
+            using var strReader = new StringReader(xmlString);
+            using var xmlReader = XmlReader.Create(strReader);
+            var serializer = new XmlSerializer(typeof(NewVcsRoot));
+            var newDto = serializer.Deserialize(xmlReader) as NewVcsRoot;
+
+            // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
+            // for Ids. - is not one of those characters.
+            if (newDto.Id.Contains('-'))
             {
-                var serializer = new XmlSerializer(typeof(NewVcsRoot));
-                var newDto = serializer.Deserialize(xmlReader) as NewVcsRoot;
-
-                // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
-                // for Ids. - is not one of those characters.
-                if (newDto.Id.Contains('-'))
-                {
-                    throw new InvalidOperationException("Invalid character in id.");
-                }
-
-                var dto = newDto.ToVcsRootDto();
-                _itemsById.Add(dto.Id, dto);
-                return dto;
+                throw new InvalidOperationException("Invalid character in id.");
             }
+
+            var dto = newDto.ToVcsRootDto();
+            _itemsById.Add(dto.Id, dto);
+            return dto;
         }
 
         public VcsRootDto CreateVcsRestClientGit() => new VcsRootDto

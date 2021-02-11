@@ -52,12 +52,10 @@ namespace TeamCityRestClientNet.FakeServer
 
         public T XmlContentAs<T>()
         {
-            using (var sr = new StringReader(Content))
-            using (var xr = XmlReader.Create(sr))
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                return (T)serializer.Deserialize(xr);
-            }
+            using var sr = new StringReader(Content);
+            using var xr = XmlReader.Create(sr);
+            var serializer = new XmlSerializer(typeof(T));
+            return (T)serializer.Deserialize(xr);
         }
         
         public bool HasLocatorSegment => !String.IsNullOrEmpty(LocatorSegment);
@@ -70,7 +68,7 @@ namespace TeamCityRestClientNet.FakeServer
             } 
             catch 
             {
-                return default(string);    
+                return default;    
             }
         }
         public string GetLocator(string locatorName = null)
@@ -148,7 +146,7 @@ namespace TeamCityRestClientNet.FakeServer
         {
             if (!String.IsNullOrEmpty(query))
             {
-                var parameters = query.Substring(1).Split('&');
+                var parameters = query[1..].Split('&');
                 foreach (var parameter in parameters)
                 {
                     var parts = parameter.Split('=');
@@ -157,9 +155,9 @@ namespace TeamCityRestClientNet.FakeServer
 
                     if (key == "locator")
                     {
-                        foreach (var locator in ParseLocators(val))
+                        foreach (var (name, value) in ParseLocators(val))
                         {
-                            _locators.Add(locator.name, locator.value);
+                            _locators.Add(name, value);
                         }
                     }
 

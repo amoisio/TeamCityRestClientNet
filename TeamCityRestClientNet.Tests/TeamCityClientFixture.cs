@@ -22,7 +22,7 @@ namespace TeamCityRestClientNet.Tests
 
         public TeamCityFixture()
         {
-            this.Handler = new RedirectToFakeServer(new FakeServer.FakeServer(Logger));
+            this.Handler = new RedirectToFakeServer(new FakeServer.FakeServer());
             this.TeamCity = new TeamCityServerBuilder()
               .WithServerUrl(serverUrl)
               .WithBearerAuthentication(_token)

@@ -23,7 +23,7 @@ namespace TeamCityRestClientNet.BuildAgentPools
         [Fact]
         public async Task Can_be_retrieved_by_GETting_the_agentPools_end_point_with_id()
         {
-            var agent = await _teamCity.BuildAgentPools.ById(new Id("0"));
+            await _teamCity.BuildAgentPools.ById(new Id("0"));
 
             AssertApiCall(HttpMethod.Get, "/app/rest/agentPools/id:0");
         }

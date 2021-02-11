@@ -119,20 +119,22 @@ namespace TeamCityRestClientNet.Domain
             string logicalBranchName = null,
             bool personal = false)
         {
-            var request = new TriggerBuildRequestDto();
-            request.BuildType = new BuildTypeDto { Id = this.IdString };
-            request.BranchName = logicalBranchName;
-            request.Comment = comment != null ? new CommentDto { Text = comment } : null;
-            request.Personal = personal;
-            request.TriggeringOptions = new TriggeringOptionsDto
+            var request = new TriggerBuildRequestDto
             {
-                CleanSources = cleanSources,
-                RebuildAllDependencies = rebuildAllDependencies,
-                QueueAtTop = queueAtTop
-            };
-            request.Properties = parameters != null
+                BuildType = new BuildTypeDto { Id = this.IdString },
+                BranchName = logicalBranchName,
+                Comment = comment != null ? new CommentDto { Text = comment } : null,
+                Personal = personal,
+                TriggeringOptions = new TriggeringOptionsDto
+                {
+                    CleanSources = cleanSources,
+                    RebuildAllDependencies = rebuildAllDependencies,
+                    QueueAtTop = queueAtTop
+                },
+                Properties = parameters != null
                 ? new ParametersDto(parameters.Select(par => new ParameterDto(par.Key, par.Value)).ToList())
-                : null;
+                : null
+            };
 
             var triggeredBuildDto = await Service.TriggerBuild(request).ConfigureAwait(false);
             return await Instance.Builds.ById(

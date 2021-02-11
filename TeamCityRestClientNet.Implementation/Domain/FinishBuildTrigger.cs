@@ -31,9 +31,7 @@ namespace TeamCityRestClientNet.Domain
                     ?.FirstOrDefault(prop => prop.Name == "afterSuccessfulBuildOnly")
                     ?.Value;
 
-                return Boolean.TryParse(afterBuild, out bool result)
-                    ? result
-                    : false;
+                return Boolean.TryParse(afterBuild, out bool result) && result;
             }
         }
 

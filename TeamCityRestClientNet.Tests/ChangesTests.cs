@@ -24,7 +24,7 @@ namespace TeamCityRestClientNet.Changes
         [Fact]
         public async Task Can_be_retrieved_by_GETting_the_changes_end_point_with_id()
         {
-            var change = await _teamCity.Changes.ById(new Id("1"));
+            await _teamCity.Changes.ById(new Id("1"));
 
             AssertApiCall(HttpMethod.Get, "/app/rest/changes/1");
         }

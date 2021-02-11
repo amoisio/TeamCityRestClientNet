@@ -79,6 +79,7 @@ namespace TeamCityRestClientNet.RestApi
     {
         public UserDto User { get; set; }
         public string Timestamp { get; set; }
+        // TODO: Add prop for comment data
     }
 
     public class TriggeredDto

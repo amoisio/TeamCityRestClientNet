@@ -26,8 +26,8 @@ namespace TeamCityRestClientNet.Tests
         {
             var calls = ApiCalls.Where(call => call.Method == method && call.RequestPath == requestPath);
             int count = calls.Count();
-            Xunit.Assert.False(count > 1, $"Multiple Api calls found for {method.ToString()} {requestPath}.");
-            Xunit.Assert.False(count == 0, $"No Api calls found for {method.ToString()} {requestPath}.");
+            Xunit.Assert.False(count > 1, $"Multiple Api calls found for {method} {requestPath}.");
+            Xunit.Assert.False(count == 0, $"No Api calls found for {method} {requestPath}.");
 
             var apiCall = calls.Single();
             foreach(var assert in asserts)

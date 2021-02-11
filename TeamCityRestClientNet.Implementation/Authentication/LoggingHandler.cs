@@ -36,7 +36,7 @@ namespace TeamCityRestClientNet.Authentication
         private async Task LogRequest(HttpRequestMessage request)
         {
             var sb = new StringBuilder();
-            sb.Append($"HTTP/{request.Version.ToString()} ");
+            sb.Append($"HTTP/{request.Version} ");
             sb.Append($"{request.Method.Method} ");
             sb.Append($"{request.RequestUri} - ");
             if (_options.LogRequestHeaders)
@@ -69,7 +69,7 @@ namespace TeamCityRestClientNet.Authentication
         private async Task LogResponse(HttpResponseMessage response)
         {
             var sb = new StringBuilder();
-            sb.Append($"HTTP/{response.Version.ToString()} ");
+            sb.Append($"HTTP/{response.Version} ");
             sb.Append($"{response.StatusCode} ");
             sb.Append($"{response.ReasonPhrase} ");
             if (_options.LogResponseHeaders)

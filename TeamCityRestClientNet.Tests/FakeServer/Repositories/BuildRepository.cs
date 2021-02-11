@@ -56,7 +56,7 @@ namespace TeamCityRestClientNet.FakeServer
                 {
                     new ArtifactFileDto
                     {
-                        Name = "Artifact name",
+                        Name = $"Artifact name {id}",
                         FullName = "Artifact full name",
                         Size = 10000,
                         ModificationTime = "20210104T210609+0000"
@@ -85,6 +85,7 @@ namespace TeamCityRestClientNet.FakeServer
             build.PinInfo = null;
         }
 
+        #pragma warning disable IDE0060
         public void Pin(string id, string comment)
         {
             var build = ById(id);
@@ -96,7 +97,8 @@ namespace TeamCityRestClientNet.FakeServer
                     Id = "1",
                     Username = "jodoe",
                     Name = "John Doe"
-                }
+                },
+                
             };
         }
 

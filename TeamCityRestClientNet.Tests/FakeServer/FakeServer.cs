@@ -11,11 +11,9 @@ namespace TeamCityRestClientNet.FakeServer
     /// </summary>
     public class FakeServer
     {
-        private readonly ILogger _logger;
         private readonly DataBuilder _data;
-        public FakeServer(ILogger logger)
+        public FakeServer()
         {
-            _logger = logger;
             _data = new DataBuilder();
             _data.Initialize();
         }

@@ -59,7 +59,7 @@ namespace TeamCityRestClientNet.Domain
             var fullDto = isFullDto
                 ? dto
                 : await instance.Service.Investigation(dto.Id).ConfigureAwait(false);
-            return new Investigation(dto, instance);
+            return new Investigation(fullDto, instance);
         }
 
         public InvestigationState State => Dto.State ?? throw new NullReferenceException();

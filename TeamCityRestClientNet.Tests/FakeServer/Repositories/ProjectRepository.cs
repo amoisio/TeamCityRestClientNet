@@ -12,25 +12,23 @@ namespace TeamCityRestClientNet.FakeServer
     {
         public ProjectDto Create(string xmlString)
         {
-            using (var strReader = new StringReader(xmlString))
-            using (var xmlReader = XmlReader.Create(strReader))
+            using var strReader = new StringReader(xmlString);
+            using var xmlReader = XmlReader.Create(strReader);
+            var serializer = new XmlSerializer(typeof(NewProjectDescriptionDto));
+            var newDto = serializer.Deserialize(xmlReader) as NewProjectDescriptionDto;
+
+            // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
+            // for Ids. - is not one of those characters.
+            if (newDto.Id.Contains('-'))
             {
-                var serializer = new XmlSerializer(typeof(NewProjectDescriptionDto));
-                var newDto = serializer.Deserialize(xmlReader) as NewProjectDescriptionDto;
-
-                // TODO: Refactor id checks elsewhere. TeamCity has a limited set of characters which are suitable
-                // for Ids. - is not one of those characters.
-                if (newDto.Id.Contains('-'))
-                {
-                    throw new InvalidOperationException("Invalid character in id.");
-                }
-
-                var dto = newDto.ToProjectDto();
-                var parent = ById(dto.ParentProjectId);
-                parent.Projects.Items.Add(dto);
-                _itemsById.Add(dto.Id, dto);
-                return dto;
+                throw new InvalidOperationException("Invalid character in id.");
             }
+
+            var dto = newDto.ToProjectDto();
+            var parent = ById(dto.ParentProjectId);
+            parent.Projects.Items.Add(dto);
+            _itemsById.Add(dto.Id, dto);
+            return dto;
         }
 
         public override ProjectDto Delete(string id)

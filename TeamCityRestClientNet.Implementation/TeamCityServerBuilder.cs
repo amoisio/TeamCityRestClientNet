@@ -19,7 +19,8 @@ namespace TeamCityRestClientNet
         private string _serverUrlBase;
         private string _bearerToken;
         private ICSRFTokenStore _csrfTokenStore;
-        private long _timeout;
+        // TODO: Implement timeout
+        // private long _timeout;
         private ILogger _logger;
         private LogOptions _options;
         private RefitSettings _settings;
@@ -67,15 +68,15 @@ namespace TeamCityRestClientNet
             return this;
         }
 
-        /// <summary>
-        /// Configure the query timeout used with the TeamCity REST API.
-        /// </summary>
-        /// <param name="timeout">Query timeout in seconds.</param>
-        public TeamCityServerBuilder WithQueryTimeout(long timeout)
-        {
-            _timeout = timeout;
-            return this;
-        }
+        // /// <summary>
+        // /// Configure the query timeout used with the TeamCity REST API.
+        // /// </summary>
+        // /// <param name="timeout">Query timeout in seconds.</param>
+        // public TeamCityServerBuilder WithQueryTimeout(long timeout)
+        // {
+        //     _timeout = timeout;
+        //     return this;
+        // }
 
         /// <summary>
         /// Configure the token used for Bearer token authentication.
@@ -189,12 +190,14 @@ namespace TeamCityRestClientNet
         {
             if (_settings == null)
             {
-                _settings = new RefitSettings();
-                _settings.ContentSerializer = new NewtonsoftJsonContentSerializer(
+                _settings = new RefitSettings
+                {
+                    ContentSerializer = new NewtonsoftJsonContentSerializer(
                     new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                    })
+                };
             }
             return _settings;
         }

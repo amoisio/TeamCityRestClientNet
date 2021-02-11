@@ -21,7 +21,7 @@ namespace TeamCityRestClientNet.Locators
         private DateTimeOffset? _since;
         private DateTimeOffset? _until;
         private BuildStatus? _status = BuildStatus.SUCCESS;
-        private List<string> _tags = new List<string>();
+        private readonly List<string> _tags = new List<string>();
         private int? _limitResults;
         private int? _pageSize;
         private string _branch;

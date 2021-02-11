@@ -20,7 +20,7 @@ namespace TeamCityRestClientNet
         public const string TEAMCITY_DATETIME_FORMAT = "yyyyMMddTHHmmsszz00";
         public const string TEAMCITY_DEFAUL_LOCALE = "en-US";
         public ITeamCityService Service { get; }
-        private readonly ILogger _logger;
+        public ILogger Logger { get; }
 
         internal TeamCityServer(
             string serverUrl,
@@ -39,7 +39,7 @@ namespace TeamCityRestClientNet
                 this.ServerUrlBase = serverUrlBase;
 
             this.Service = service ?? throw new ArgumentNullException(nameof(service));
-            this._logger = logger ?? NullLogger.Instance;
+            this.Logger = logger ?? NullLogger.Instance;
         }
 
         public string ServerUrl { get; }

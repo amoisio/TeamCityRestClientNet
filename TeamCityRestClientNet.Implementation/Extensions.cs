@@ -25,9 +25,9 @@ namespace TeamCityRestClientNet.Extensions
             
             int index = str.IndexOf(pattern);
             if (index == -1)
-                return missingDelimiter == null ? str : missingDelimiter;
+                return missingDelimiter ?? str;
 
-            return str.Substring(index + 1);
+            return str[(index + 1)..];
         }
 
         public static string SubstringBefore(this string str, string pattern, string missingDelimiter = null)
@@ -37,7 +37,7 @@ namespace TeamCityRestClientNet.Extensions
 
             int index = str.IndexOf(pattern);
             if (index == -1)
-                return missingDelimiter == null ? str : missingDelimiter;
+                return missingDelimiter ?? str;
 
             return str.Substring(0, index);
         }
@@ -47,7 +47,7 @@ namespace TeamCityRestClientNet.Extensions
         /// If item is null, short-circuits and returns null.
         /// </summary>
         public static U Let<T, U>(this T item, Func<T, U> transform)
-            => (item == null) ? default(U) : transform(item);
+            => (item == null) ? default : transform(item);
 
         public static string Let<T>(this T value, string pattern)
             => (value == null) ? null : string.Format(pattern, value);
@@ -66,17 +66,13 @@ namespace TeamCityRestClientNet.Extensions
         /// returns the value.
         /// </summary>
         public static T SelfOrNullRef<T>(this Nullable<T> value) where T : struct
-            => value.HasValue
-                ? value.Value
-                : throw new NullReferenceException();
+            => value ?? throw new NullReferenceException();
 
         /// <summary>
         /// Throws nullRef is nullable is null. Otherwise, returns the value.
         /// </summary>
         public static T ValueOrNullRef<T>(this Nullable<T> value) where T : struct
-            => value.HasValue 
-                ? value.Value 
-                : throw new NullReferenceException();
+            => value ?? throw new NullReferenceException();
                 
         public static string RemovePrefix(this string str, string prefix)
         {
@@ -89,7 +85,7 @@ namespace TeamCityRestClientNet.Extensions
                 var index = str.IndexOf(prefix, StringComparison.CurrentCultureIgnoreCase);
                 if (index == 0)
                 {
-                    return str.Substring(prefix.Length);
+                    return str[prefix.Length..];
                 }
                 else
                 {

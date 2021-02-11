@@ -12,7 +12,7 @@ namespace TeamCityRestClientNet.Api
         public readonly string stringId;
         public override string ToString() => this.stringId;
 
-        public bool isSnapshotDependencyError
+        public bool IsSnapshotDependencyError
             => this.stringId == "SNAPSHOT_DEPENDENCY_ERROR_BUILD_PROCEEDS_TYPE"
             || this.stringId == "SNAPSHOT_DEPENDENCY_ERROR";
 

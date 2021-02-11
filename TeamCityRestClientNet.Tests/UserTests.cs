@@ -12,7 +12,7 @@ namespace TeamCityRestClientNet.Users
         [Fact]
         public async Task Can_be_retrieved_by_GETting_the_users_end_point()
         {
-            var users = await _teamCity.Users.All().ToListAsync();
+            await _teamCity.Users.All().ToListAsync();
 
             AssertApiCall(HttpMethod.Get, "/app/rest/users");
         }

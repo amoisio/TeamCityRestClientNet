@@ -218,10 +218,8 @@ namespace TeamCityRestClientNet.Domain
             try
             {
                 var stream = await OpenArtifactStream(artifactPath).ConfigureAwait(false);
-                using (var fileStream = outputFile.Open(FileMode.Create))
-                {
-                    await stream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
-                }
+                using var fileStream = outputFile.Open(FileMode.Create);
+                await stream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -273,10 +271,8 @@ namespace TeamCityRestClientNet.Domain
 
         private async Task SaveToFile(Stream logStream, FileInfo outputFile)
         {
-            using (var fileStream = outputFile.Open(FileMode.Create))
-            {
-                await logStream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
-            }
+            using var fileStream = outputFile.Open(FileMode.Create);
+            await logStream.CopyToAsync(fileStream, ARTIFACT_BUFFER).ConfigureAwait(false);
         }
 
         public async Task<IBuildArtifact> FindArtifact(string pattern, string parentPath = "")

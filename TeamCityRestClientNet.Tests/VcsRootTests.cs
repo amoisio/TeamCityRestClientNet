@@ -52,7 +52,7 @@ namespace TeamCityRestClientNet.VcsRoots
         public async Task Can_be_retrieved_by_GETtin_vcsroot_end_point_with_id_locator()
         {
             var rootId = new Id("TeamCityRestClientNet_Bitbucket");
-            var root = await _teamCity.VcsRoots.ById(rootId);
+            await _teamCity.VcsRoots.ById(rootId);
 
             AssertApiCall(HttpMethod.Get, "/app/rest/vcs-roots/TeamCityRestClientNet_Bitbucket");
         }

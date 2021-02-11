@@ -53,7 +53,7 @@ namespace TeamCityRestClientNet.BuildAgents
         [Fact]
         public async Task Can_be_retrieved_by_GETting_the_agents_end_point_with_id()
         {
-            var agent = await _teamCity.BuildAgents.ById(new Id("1"));
+            await _teamCity.BuildAgents.ById(new Id("1"));
 
             AssertApiCall(HttpMethod.Get, "/app/rest/agents/id:1");
         }

@@ -77,7 +77,7 @@ namespace TeamCityRestClientNet.Projects
         [Fact]
         public async Task Can_be_retrieved_by_GETtin_the_projects_end_point_with_project_id()
         {
-            var project = await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
+            await _teamCity.Projects.ById(new Id("TeamCityRestClientNet"));
 
             AssertApiCall(HttpMethod.Get, "/app/rest/projects/TeamCityRestClientNet");
         }
